@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="序言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;在 Java 语言中为了达到更加灵活的控制对象的生命周期的目的。在 JDK 1.2版本后引入了对象的引用类型，其中分为四种，分别有强引用（StrongReference），软引用（SoftReference），弱引用（WeakReference ）和虚引用（PhantomReference）； 强引用（Stro">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 中关于对象的引用小结">
+<meta property="og:url" content="http://yoursite.com/2017/10/16/Java%20%E4%B8%AD%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%BC%95%E7%94%A8%E5%B0%8F%E7%BB%93/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="序言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;在 Java 语言中为了达到更加灵活的控制对象的生命周期的目的。在 JDK 1.2版本后引入了对象的引用类型，其中分为四种，分别有强引用（StrongReference），软引用（SoftReference），弱引用（WeakReference ）和虚引用（PhantomReference）； 强引用（Stro">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-10-16T06:15:30.000Z">
+<meta property="article:modified_time" content="2018-09-04T14:19:04.000Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2017/10/16/Java%20%E4%B8%AD%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%BC%95%E7%94%A8%E5%B0%8F%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Java 中关于对象的引用小结 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/16/Java%20%E4%B8%AD%E5%85%B3%E4%BA%8E%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%BC%95%E7%94%A8%E5%B0%8F%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 中关于对象的引用小结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2017-10-16 14:15:30" itemprop="dateCreated datePublished" datetime="2017-10-16T14:15:30+08:00">2017-10-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 Java 语言中为了达到更加灵活的控制对象的生命周期的目的。在 JDK 1.2版本后引入了对象的引用类型，其中分为四种，分别有强引用（StrongReference），软引用（SoftReference），弱引用（WeakReference ）和虚引用（PhantomReference）；</p>
+<h2 id="强引用（StrongReference）"><a href="#强引用（StrongReference）" class="headerlink" title="强引用（StrongReference）"></a>强引用（StrongReference）</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=red>强引用（StrongReference）</font>是 Java 的默认引用实现，它会尽可能长时间的存活于 JVM 内， 当没有任何对象指向它时 GC 执行后将会被回收。当然，当内存空间不足时 JVM 宁可抛出 OutOfMemoryError 错误，也不会靠随意回收具有强引用的对象来解决内存不足的问题。<br>如下代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">String test_strong_reference = <span class="string">"MaxSoft"</span>; <span class="comment">// 强引用类型</span></span><br><span class="line">Object maxsoft = <span class="keyword">new</span> Object(); <span class="comment">// 强引用类型</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/** 以下代码如果内存容量不足，则会抛出OOM异常 即 内存空间不足时 JVM 宁可抛出 </span></span><br><span class="line"><span class="comment">OutOfMemoryError 错误，也不会靠随意回收具有强引用的对象来解决内存不足的问题 **/</span></span><br><span class="line">Object[] strong_refers = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">Object[] strong_refers1 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">Object[] strong_refers2 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">Object[] strong_refers3 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">Object[] strong_refers4 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br></pre></td></tr></table></figure>
+<p>当然，如果想中断强引用和某个对象之间的关联，可以显式地将引用赋值为null，这样JVM在合适的时间就会回收该对象。<br>如下代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该代码段是摘自 java.util.concurrent.ArrayBlockingQueue 中的片段</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = ArrayBlockingQueue.<span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">	<span class="keyword">int</span> i = lastRet;</span><br><span class="line">	<span class="keyword">if</span> (i == -<span class="number">1</span>)</span><br><span class="line">	    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">	lastRet = -<span class="number">1</span>;</span><br><span class="line">	E x = lastItem;</span><br><span class="line">	lastItem = <span class="keyword">null</span>; <span class="comment">// 这里交给了 GC 来进行后续的内存回收工作</span></span><br><span class="line">	<span class="comment">// only remove if item still at index</span></span><br><span class="line">	<span class="keyword">if</span> (x != <span class="keyword">null</span> &amp;&amp; x == items[i]) &#123;</span><br><span class="line">	    <span class="keyword">boolean</span> removingHead = (i == takeIndex);</span><br><span class="line">	    removeAt(i);</span><br><span class="line">	    <span class="keyword">if</span> (!removingHead)</span><br><span class="line">		nextIndex = dec(nextIndex);</span><br><span class="line">	&#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="软引用（SoftReference）"><a href="#软引用（SoftReference）" class="headerlink" title="软引用（SoftReference）"></a>软引用（SoftReference）</h2><p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=red>软引用（SoftReference）</font>如果一个对象只具有软引用，那就类似于我们日常工作台上的花瓶可有可无，如果工作台的面积足够大，我们就可能一直会将花瓶摆设下去，如果工作台面积不够，那我们一定会移除它来摆设其他必须的用品。JVM对软引用的对象内存回收也是如此，如果内存空间足够，垃圾回收器就不会回收它，如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以被程序使用。软引用可用来实现内存敏感的高速缓存。 软引用可以和一个引用队列（ReferenceQueue）联 合使用，如果软引用所引用的对象被垃圾回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。<br>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test_soft_refer</span><span class="params">()</span></span>&#123;</span><br><span class="line">   Object soft_refer = <span class="keyword">new</span>  Object();  </span><br><span class="line">   SoftReference obj_soft_refer=<span class="keyword">new</span> SoftReference(soft_refer); </span><br><span class="line">   <span class="comment">// 此时 soft_refer 是一个强引用对象</span></span><br><span class="line">   soft_refer = <span class="keyword">null</span>;</span><br><span class="line">   <span class="comment">// 此时 soft_refer 变为了一个软引用对象，当JVM内存不足时即会被回收掉</span></span><br><span class="line">   <span class="keyword">try</span>&#123;</span><br><span class="line">     Object[] strong_refers = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     Object[] strong_refers1 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     System.out.println(<span class="string">"-------&gt;"</span> + (obj_soft_refer.get()==<span class="keyword">null</span>)); <span class="comment">// false</span></span><br><span class="line">     Object[] strong_refers2 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     Object[] strong_refers3 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     Object[] strong_refers4 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">   &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">     <span class="comment">/** 结果为 true； </span></span><br><span class="line"><span class="comment">         如果前面不将 soft_refer = null; 则结果为false,因为此时 soft_refer 为强引用；</span></span><br><span class="line"><span class="comment">         否则即为true，这是由于前面发生了OOM而soft_refer被回收了； **/</span></span><br><span class="line">     System.out.println(<span class="string">"-------&gt;"</span> + (obj_soft_refer.get()==<span class="keyword">null</span>)); </span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实我们可以在上述示例代码中发现，在内存不足时虽然清除掉了soft_refer 对象，但是任然保留了 obj_soft_refer 对象。那么问题来了，我们是不是也要将其清除掉呢？<br>其实 SoftReference 作为一个Java对象，除了具有保存软引用的特殊性之外，也具有Java对象的一般性。所以，当软可及对象被回收之后，虽然这个 SoftReference 对象的 get() 方法返回 null ,但这个SoftReference 对象已经不再具有存在的价值，需要一个适当的清除机制，避免大量SoftReference对象带来的内存泄漏。所以在java.lang.ref包里还提供了 ReferenceQueue 。在创建 SoftReference 对象的时候，使用了一个 ReferenceQueue 对象作为参数提供给 SoftReference 的构造方法，如示例代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ReferenceQueue queue = <span class="keyword">new</span>  ReferenceQueue();  </span><br><span class="line">SoftReference  obj_soft_refer=<span class="keyword">new</span>  SoftReference(soft_refer, queue);</span><br></pre></td></tr></table></figure>
+<p>当上述示例中 SoftReference 所软引用的 soft_refer 被垃圾收集器回收的同时， obj_soft_refer 所强引用的 SoftReference 对象也将被列入 ReferenceQueue 。换句话说就是 ReferenceQueue 中保存的对象是    Reference 对象，而且是已经失去了它所软引用的对象的 Reference 对象。我们从它的命名中可以看出，它是一个队列，当我们调用它的poll()方法的时候，如果这个队列中不是空队列，那么将返回队列前面的那个Reference对象。无论何时，我们都可以调用 ReferenceQueue 的 poll() 方法来检查是否有它所关心的非强可及对象（即软引用对象）被回收。如果队列为空，将返回一个 null ,否则该方法返回队列中前面的一个 Reference 对象。那么从这里我们就可以知道利用这个方法来检查哪个 SoftReference 所软引用的对象已经被回收。同事，我们就可以把这些失去所软引用的对象的 SoftReference 对象清除掉。<br>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test_soft_refer</span><span class="params">()</span></span>&#123;</span><br><span class="line">   Object soft_refer = <span class="keyword">new</span>  Object();  </span><br><span class="line">   ReferenceQueue queue = <span class="keyword">new</span>  ReferenceQueue();  </span><br><span class="line">   SoftReference obj_soft_refer=<span class="keyword">new</span> SoftReference(soft_refer,queue); </span><br><span class="line">   <span class="comment">// 此时 soft_refer 是一个强引用对象</span></span><br><span class="line">   soft_refer = <span class="keyword">null</span>;</span><br><span class="line">   <span class="comment">// 此时 soft_refer 变为了一个软引用对象，当JVM内存不足时即会被回收掉</span></span><br><span class="line">   <span class="keyword">try</span>&#123;</span><br><span class="line">     Object[] strong_refers = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     Object[] strong_refers1 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     System.out.println(<span class="string">"-------&gt;"</span> + (obj_soft_refer.get()==<span class="keyword">null</span>)); <span class="comment">// false</span></span><br><span class="line">     Object[] strong_refers2 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     Object[] strong_refers3 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">     Object[] strong_refers4 = <span class="keyword">new</span> Object[<span class="number">100000000</span>];</span><br><span class="line">   &#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">     <span class="comment">/** 结果为 true； </span></span><br><span class="line"><span class="comment">         如果前面不将 soft_refer = null; 则结果为false,因为此时 soft_refer 为强引用；</span></span><br><span class="line"><span class="comment">         否则即为true，这是由于前面发生了OOM而soft_refer被回收了； **/</span></span><br><span class="line">     System.out.println(<span class="string">"-------&gt;"</span> + (obj_soft_refer.get()==<span class="keyword">null</span>)); </span><br><span class="line">     <span class="keyword">while</span> ((obj_soft_refer = (Object) queue.poll()) != <span class="keyword">null</span>) &#123;  </span><br><span class="line">         <span class="comment">// 清除 obj_soft_refer</span></span><br><span class="line">     &#125;  </span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="弱引用（WeakReference）"><a href="#弱引用（WeakReference）" class="headerlink" title="弱引用（WeakReference）"></a>弱引用（WeakReference）</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=red>弱引用（WeakReference）</font>如果一个对象只具有弱引用，那就类似于我们可有可无的工作台闲置物品。弱引用与软引用的区别在于：只具有弱引用的对象拥有更短暂的生命周期。在垃圾回收器线程扫描它所管辖的内存区域的过程中，一旦发现了只具有弱引用的对象，不管当前内存空间足够与否，都会回收它的内存。不过，由于垃圾回收器是一个优先级很低的线程， 因此不一定会很快发现那些只具有弱引用的对象。  弱引用也可以和一个引用队列（ReferenceQueue）联合使用，如果弱引用所引用的对象被垃圾回 收，Java虚拟机就会把这个弱引用加入到与之关联的引用队列中。<br>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">      WeakReference&lt;Object&gt; weak_refer_obj = <span class="keyword">new</span> WeakReference&lt;Object&gt;(<span class="keyword">new</span> Object());  </span><br><span class="line">      System.out.println(weak_refer_obj.get() == <span class="keyword">null</span>);    <span class="comment">// 结果为 false </span></span><br><span class="line">      System.gc();<span class="comment">//通知GVM回收资源  </span></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">	Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">	<span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">      System.out.println(weak_refer_obj.get()==<span class="keyword">null</span>);  <span class="comment">// 结果为 true</span></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>不过需要注意的是，我们上述代码中被弱引用关联的对象只有弱引用与之关联。但是如果存在强引用同时与之关联，则进行垃圾回收时也不会回收该对象（软引用也是如此）。<br>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">      Object weak_refer = <span class="keyword">new</span> Object();</span><br><span class="line">      WeakReference&lt;Object&gt; weak_refer_obj = <span class="keyword">new</span> WeakReference&lt;Object&gt;(weak_refer);  </span><br><span class="line">      System.out.println(weak_refer_obj.get() == <span class="keyword">null</span>);  <span class="comment">// 结果为 false</span></span><br><span class="line">      System.gc();<span class="comment">//通知GVM回收资源  </span></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">	Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">	<span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125;</span><br><span class="line">      System.out.println(weak_refer_obj.get()==<span class="keyword">null</span>);  <span class="comment">// 结果为false 主要原因是在方法体中第一行代码存在强引用关系；</span></span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="虚引用（PhantomReference）"><a href="#虚引用（PhantomReference）" class="headerlink" title="虚引用（PhantomReference）"></a>虚引用（PhantomReference）</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=red>虚引用（PhantomReference）</font> 和前面的软引用、弱引用不同，它并不影响对象的生命周期。在java中用 java.lang.ref.PhantomReference 类表示。如果一个对象与虚引用关联，则跟没有引用与之关联一样，在任何时候都可能被垃圾回收器回收。但是要注意的是，虚引用必须和引用队列关联使用，当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会把这个虚引用加入到与之 关联的引用队列中。程序可以通过判断引用队列中是否已经加入了虚引用，来了解被引用的对象是否将要被垃圾回收。如果程序发现某个虚引用已经被加入到引用队列，那么就可以在所引用的对象的内存被回收之前采取必要的清除动作。<br>如下示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    ReferenceQueue&lt;Object&gt; queue = <span class="keyword">new</span> ReferenceQueue&lt;Object&gt;();  </span><br><span class="line">    PhantomReference&lt;Object&gt; phantom_refer = <span class="keyword">new</span> PhantomReference&lt;Object&gt;(<span class="keyword">new</span> Object(), queue);  </span><br><span class="line">    System.out.println(phantom_refer.get()==<span class="keyword">null</span>); <span class="comment">// 结果为 true </span></span><br><span class="line">    ReferenceQueue&lt;Object&gt; queue_1 = <span class="keyword">new</span> ReferenceQueue&lt;Object&gt;();</span><br><span class="line">    Object refer_obj = <span class="keyword">new</span> Object(); <span class="comment">// 这里存在强引用</span></span><br><span class="line">    PhantomReference&lt;Object&gt; phantom_refer_obj = <span class="keyword">new</span> PhantomReference&lt;Object&gt;(refer_obj, queue);</span><br><span class="line">    System.out.println(phantom_refer_obj.get()==<span class="keyword">null</span>); <span class="comment">// 结果为 true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/07/03/Java%20%E5%BA%94%E7%94%A8%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E5%AE%9E%E8%B7%B5/" rel="prev" title="Java 应用性能调优实践">
+      <i class="fa fa-chevron-left"></i> Java 应用性能调优实践
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/01/27/hello-world/" rel="next" title="Hello World MaxSoft 2020-01-20 PM 11:00">
+      Hello World MaxSoft 2020-01-20 PM 11:00 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序言"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#强引用（StrongReference）"><span class="nav-number">2.</span> <span class="nav-text">强引用（StrongReference）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软引用（SoftReference）"><span class="nav-number">3.</span> <span class="nav-text">软引用（SoftReference）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#弱引用（WeakReference）"><span class="nav-number">4.</span> <span class="nav-text">弱引用（WeakReference）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚引用（PhantomReference）"><span class="nav-number">5.</span> <span class="nav-text">虚引用（PhantomReference）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">91k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:23</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

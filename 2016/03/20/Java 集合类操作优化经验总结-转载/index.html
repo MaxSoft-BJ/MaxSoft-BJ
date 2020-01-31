@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;毕业到现在已经有小俩年的时间了，在这俩年中一直都是围绕着 JavaWeb 相关的技术进行 JavaWeb 系统开发（Java，JSP，JavaScript，SQL 等）。学到的知识相对于学校中学习的知识要既丰富又有深度……&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;本着站">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java 集合类操作优化经验总结">
+<meta property="og:url" content="http://yoursite.com/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;毕业到现在已经有小俩年的时间了，在这俩年中一直都是围绕着 JavaWeb 相关的技术进行 JavaWeb 系统开发（Java，JSP，JavaScript，SQL 等）。学到的知识相对于学校中学习的知识要既丰富又有深度……&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;本着站">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/2016-03-20-001.png">
+<meta property="og:image" content="http://yoursite.com/uploads/2017-03-20-001.png">
+<meta property="og:image" content="http://yoursite.com/uploads/2017-03-20-002.png">
+<meta property="og:image" content="http://yoursite.com/uploads/2017-03-20-003.png">
+<meta property="og:image" content="http://yoursite.com/uploads/2017-03-20-004.png">
+<meta property="article:published_time" content="2016-03-20T12:37:20.000Z">
+<meta property="article:modified_time" content="2020-01-31T08:01:31.404Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="转载">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/2016-03-20-001.png">
+
+<link rel="canonical" href="http://yoursite.com/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Java 集合类操作优化经验总结 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Java 集合类操作优化经验总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2016-03-20 20:37:20" itemprop="dateCreated datePublished" datetime="2016-03-20T20:37:20+08:00">2016-03-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;毕业到现在已经有小俩年的时间了，在这俩年中一直都是围绕着 JavaWeb 相关的技术进行 JavaWeb 系统开发（Java，JSP，JavaScript，SQL 等）。学到的知识相对于学校中学习的知识要既丰富又有深度……<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本着站在巨人的肩膀上成长的想法，经常 Google 或 Baidu 一些有深度或相对丰富的技术博客来膜拜学习。今天看到了这位牛人对于Java 集合相关知识的总结，觉着是我的菜 +_+ ，很合胃口就转来了。转载自【<a href="https://www.ibm.com/developerworks/cn/java/j-lo-set-operation/index.html" target="_blank" rel="noopener"><font color=red>IBM Java technology</font></a>】</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在实际的项目开发中会有很多的对象，如何高效、方便地管理对象，成为影响程序性能与可维护性的重要环节。Java 提供了集合框架来解决此类问题，线性表、链表、哈希表等是常用的数据结构，在进行 Java 开发时，JDK 已经为我们提供了一系列相应的类来实现基本的数据结构，所有类都在 java.util 这个包里，图1. 描述了集合类的关系。<img src="/uploads/2016-03-20-001.png" title="图 1.集合类之间关系"/>本文讲的就是集合框架的使用经验总结，注意，本文所有代码基于 JDK7。</p>
+<h2 id="集合接口"><a href="#集合接口" class="headerlink" title="集合接口"></a>集合接口</h2><h3 id="Collection-接口"><a href="#Collection-接口" class="headerlink" title="Collection 接口"></a>Collection 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Collection 是最基本的集合接口，一个 Collection 代表一组 Object，即 Collection 的元素（Elements）。一些 Collection 允许相同的元素、支持对元素进行排序，另一些则不行。JDK 不提供直接继承自 Collection 的类，JDK 提供的类都是继承自 Collection 的子接口，如 List 和 Set。所有实现 Collection 接口的类都必须提供两个标准的构造函数，无参数的构造函数用于创建一个空的 Collection，有一个 Collection 参数的构造函数用于创建一个新的 Collection，这个新的 Collection 与传入的 Collection 有相同的元素，后一个构造函数允许用户复制一个 Collection。<br><font color=red>如何遍历 Collection 中的每一个元素？</font><br>不论 Collection 的实际类型如何，它都支持一个 iterator() 的方法，该方法返回一个迭代子，使用该迭代子即可逐一访问 Collection 中每一个元素。典型的用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Iterator it = collection.iterator(); <span class="comment">// 获得一个迭代子</span></span><br><span class="line"><span class="keyword">while</span>(it.hasNext())&#123;</span><br><span class="line">	Object obj = it.next(); <span class="comment">// 得到下一个元素</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Collection 接口派生的两个接口是 List 和 Set。<br>Collection 接口提供的主要方法：<br>1· boolean add(Object o) 添加对象到集合；<br>2· boolean remove(Object o) 删除指定的对象；<br>3· int size() 返回当前集合中元素的数量；<br>4· boolean contains(Object o) 查找集合中是否有指定的对象；<br>5· boolean isEmpty() 判断集合是否为空；<br>6· Iterator iterator() 返回一个迭代器；<br>7· boolean containsAll(Collection c) 查找集合中是否有集合 C 中的元素；<br>8· boolean addAll(Collection c) 将集合 C 中所有的元素添加给该集合；<br>9· void clear() 删除集合中所有元素；<br>10· void removeAll(Collection c) 从集合中删除 C 集合中也有的元素；<br>11· void retainAll(Collection c) 从集合中删除集合 C 中不包含的元素；</p>
+<h3 id="List-接口"><a href="#List-接口" class="headerlink" title="List 接口"></a>List 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List 是有序的 Collection，使用此接口能够精确的控制每个元素插入的位置。用户能够使用索引（元素在 List 中的位置，类似于数组下标）来访问 List 中的元素，这类似于 Java 的数组。和下文要提到的 Set 不同，List 允许有相同的元素。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;除了具有 Collection 接口必备的 iterator() 方法外，List 还提供一个 listIterator() 方法，返回一个 ListIterator 接口。和标准的 Iterator 接口相比，ListIterator 多了一些 add() 之类的方法，允许添加、删除、设定元素、向前或向后遍历等功能。实现 List 接口的常用类有 LinkedList，ArrayList，Vector 和 Stack 等。<br>List 接口提供的主要方法：<br>1· void add(int index,Object element) 在指定位置上添加一个对象；<br>2· boolean addAll(int index,Collection c) 将集合 C 的元素添加到指定的位置；<br>3· Object get(int index) 返回 List 中指定位置的元素；<br>4· int indexOf(Object o) 返回第一个出现元素 O 的位置；<br>5· Object removeint(int index) 删除指定位置的元素；<br>6· Object set(int index,Object element) 用元素 element 取代位置 index 上的元素, 返回被取代的元素；</p>
+<h3 id="Map-接口"><a href="#Map-接口" class="headerlink" title="Map 接口"></a>Map 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map 没有继承 Collection 接口。Map 提供 Key 到 Value 的映射，一个 Map 中不能包含相同的 Key，每个 Key 只能映射一个 Value。Map 接口提供 3 种集合的视图，Map 的内容可以被当作一组 Key 集合，一组 Value 集合，或者一组 Key-Value 映射。<br>Map 提供的主要方法：<br>1· boolean equals(Object o) 比较对象；<br>2· boolean remove(Object o) 删除一个对象；<br>3· put(Object key,Object value) 添加 key 和 value。</p>
+<h3 id="RandomAccess-接口"><a href="#RandomAccess-接口" class="headerlink" title="RandomAccess 接口"></a>RandomAccess 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RandomAccess 接口是一个标志接口，本身并没有提供任何方法，任务凡是通过调用 RandomAccess 接口的对象都可以认为是支持快速随机访问的对象。此接口的主要目的是标识那些可支持快速随机访问的 List 实现。任何一个基于数组的 List 实现都实现了 RaodomAccess 接口，而基于链表的实现则都没有。因为只有数组能够进行快速的随机访问，而对链表的随机访问需要进行链表的遍历。因此，此接口的好处是，可以在应用程序中知道正在处理的 List 对象是否可以进行快速随机访问，从而针对不同的 List 进行不同的操作，以提高程序的性能。</p>
+<h2 id="集合类介绍"><a href="#集合类介绍" class="headerlink" title="集合类介绍"></a>集合类介绍</h2><h3 id="LinkedList-类"><a href="#LinkedList-类" class="headerlink" title="LinkedList 类"></a>LinkedList 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedList 实现了 List 接口，允许 Null 元素。此外 LinkedList 提供额外的 Get、Remove、Insert 等方法在 LinkedList 的首部或尾部操作数据。这些操作使得 LinkedList 可被用作堆栈（Stack）、队列（Queue）或双向队列（Deque）。请注意 LinkedList 没有同步方法，它不是线程同步的，即如果多个线程同时访问一个 List，则必须自己实现访问同步。一种解决方法是在创建 List 时构造一个同步的 List，方法如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List list = Collections.synchronizedList(<span class="keyword">new</span> LinkedList(...));</span><br></pre></td></tr></table></figure>
+<h3 id="ArrayList-类"><a href="#ArrayList-类" class="headerlink" title="ArrayList 类"></a>ArrayList 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 实现了可变大小的数组。它允许所有元素，包括 Null。Size、IsEmpty、Get、Set 等方法的运行时间为常数，但是 Add 方法开销为分摊的常数，添加 N 个元素需要 O(N) 的时间，其他的方法运行时间为线性。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;每个 ArrayList 实例都有一个容量（Capacity），用于存储元素的数组的大小，这个容量可随着不断添加新元素而自动增加。当需要插入大量元素时，在插入前可以调用 ensureCapacity 方法来增加 ArrayList 的容量以提高插入效率。和 LinkedList 一样，ArrayList 也是线程非同步的（unsynchronized）。<br>ArrayList 提供的主要方法：<br>1· Boolean add(Object o) 将指定元素添加到列表的末尾；<br>2· Boolean add(int index,Object element) 在列表中指定位置加入指定元素；<br>3· Boolean addAll(Collection c) 将指定集合添加到列表末尾；<br>4· Boolean addAll(int index,Collection c) 在列表中指定位置加入指定集合；<br>5· Boolean clear() 删除列表中所有元素；<br>6· Boolean clone() 返回该列表实例的一个拷贝；<br>7· Boolean contains(Object o) 判断列表中是否包含元素；<br>8· Boolean ensureCapacity(int m) 增加列表的容量，如果必须，该列表能够容纳 m 个元素；<br>9· Object get(int index) 返回列表中指定位置的元素；<br>10· Int indexOf(Object elem) 在列表中查找指定元素的下标；<br>11· Int size() 返回当前列表的元素个数；</p>
+<h3 id="Vector-类"><a href="#Vector-类" class="headerlink" title="Vector 类"></a>Vector 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vector 非常类似于 ArrayList，区别是 Vector 是线程同步的。由 Vector 创建的 Iterator，虽然和 ArrayList 创建的 Iterator 是同一接口，但是，因为 Vector 是同步的，当一个 Iterator 被创建而且正在被使用，另一个线程改变了 Vector 的状态（例如，添加或删除了一些元素），这时调用 Iterator 的方法时将抛出 ConcurrentModificationException，因此必须捕获该异常。</p>
+<h3 id="Stack-类"><a href="#Stack-类" class="headerlink" title="Stack 类"></a>Stack 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack 继承自 Vector，实现了一个后进先出的堆栈。Stack 提供 5 个额外的方法使得 Vector 得以被当作堆栈使用。除了基本的 Push 和 Pop 方法，还有 Peek 方法得到栈顶的元素，Empty 方法测试堆栈是否为空，Search 方法检测一个元素在堆栈中的位置。注意，Stack 刚创建后是空栈。</p>
+<h3 id="Set-类"><a href="#Set-类" class="headerlink" title="Set 类"></a>Set 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set 是一种不包含重复的元素的 Collection，即任意的两个元素 e1 和 e2 都有 e1.equals(e2)=false。Set 最多有一个 null 元素。很明显，Set 的构造函数有一个约束条件，传入的 Collection 参数不能包含重复的元素。请注意，必须小心操作可变对象（Mutable Object），如果一个 Set 中的可变元素改变了自身状态，这可能会导致一些问题。</p>
+<h3 id="Hashtable-类"><a href="#Hashtable-类" class="headerlink" title="Hashtable 类"></a>Hashtable 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hashtable 继承 Map 接口，实现了一个基于 Key-Value 映射的哈希表。任何非空（non-null）的对象都可作为 Key 或者 Value。添加数据使用 Put(Key，Value)，取出数据使用 Get(Key)，这两个基本操作的时间开销为常数。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hashtable 通过 Initial Capacity 和 Load Factor 两个参数调整性能。通常缺省的 Load Factor 0.75 较好地实现了时间和空间的均衡。增大 Load Factor 可以节省空间但相应的查找时间将增大，会影响像 Get 和 Put 这样的操作。使用 Hashtable 的简单示例，将 1、2、3 这三个数字放到 Hashtable 里面，他们的 Key 分别是”one”、”two”、”three”，代码如清单 2 所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Hashtable numbers = <span class="keyword">new</span> Hashtable();</span><br><span class="line">numbers.put(“one”, <span class="keyword">new</span> Integer(<span class="number">1</span>));</span><br><span class="line">numbers.put(“two”, <span class="keyword">new</span> Integer(<span class="number">2</span>));</span><br><span class="line">numbers.put(“three”, <span class="keyword">new</span> Integer(<span class="number">3</span>));</span><br></pre></td></tr></table></figure>
+<p>如果我们需要取出一个数，比如 2，可以用相应的 key 来取出，代码如清单 3 所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer n = (Integer)numbers.get(“two”); </span><br><span class="line">System.out.println(“two =”+ n);</span><br></pre></td></tr></table></figure>
+<p>由于作为 Key 的对象将通过计算其散列函数来确定与之对应的 Value 的位置，因此任何作为 key 的对象都必须实现 HashCode 和 Equals 方法。HashCode 和 Equals 方法继承自根类 Object，如果你用自定义的类当作 Key 的话，要相当小心，按照散列函数的定义，如果两个对象相同，即 obj1.equals(obj2)=true，则它们的 HashCode 必须相同，但如果两个对象不同，则它们的 HashCode 不一定不同，如果两个不同对象的 HashCode 相同，这种现象称为冲突，冲突会导致操作哈希表的时间开销增大，所以尽量定义好的 HashCode() 方法，能加快哈希表的操作。<br>如果相同的对象有不同的 HashCode，对哈希表的操作会出现意想不到的结果（期待的 Get 方法返回 Null），要避免这种问题，最好同时复写 Equals 方法和 HashCode 方法，而不要只写其中一个。</p>
+<h3 id="HashMap-类"><a href="#HashMap-类" class="headerlink" title="HashMap 类"></a>HashMap 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 和 Hashtable 类似，不同之处在于 HashMap 是线程非同步的，并且允许 Null，即 Null Value 和 Null Key。但是将 HashMap 视为 Collection 时（values() 方法可返回 Collection），其迭代子操作时间开销和 HashMap 的容量成比例。因此，如果迭代操作的性能相当重要的话，不要将 HashMap 的初始化容量设得过高，或者 Load Factor 参数设置过低。</p>
+<h3 id="WeakHashMap-类"><a href="#WeakHashMap-类" class="headerlink" title="WeakHashMap 类"></a>WeakHashMap 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 是一种改进的 HashMap，它对 Key 实行“弱引用”，如果一个 Key 不再被外部所引用，那么该 Key 可以被 GC 回收。</p>
+<h2 id="集合类实践"><a href="#集合类实践" class="headerlink" title="集合类实践"></a>集合类实践</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList、Vector、LinkedList 均来自 AbstractList 的实现，而 AbstractList 直接实现了 List 接口，并扩展自 AbstarctCollection。ArrayList 和 Vector 使用了数组实现，ArrayList 没有对任何一个方法提供线程同步，因此不是线程安全的，Vector 中绝大部分方法都做了线程同步，是一种线程安全的实现。LinkedList 使用了循环双向链表数据结构，由一系列表项连接而成，一个表项总是包含 3 个部分，元素内容、前驱表项和后驱表项。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当 ArrayList 对容量的需求超过当前数组的大小时，需要进行扩容。扩容过程中，会进行大量的数组复制操作，而数组复制时，最终将调用 System.arraycopy() 方法。LinkedList 由于使用了链表的结构，因此不需要维护容量的大小，然而每次的元素增加都需要新建一个 Entry 对象，并进行更多的赋值操作，在频繁的系统调用下，对性能会产生一定的影响，在不间断地生成新的对象还是占用了一定的资源。而因为数组的连续性，因此总是在尾端增加元素时，只有在空间不足时才产生数组扩容和数组复制。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 是基于数组实现的，而数组是一块连续的内存空间，如果在数组的任意位置插入元素，必然导致在该位置后的所有元素需要重新排列，因此其效率较差，尽可能将数据插入到尾部。LinkedList 不会因为插入数据导致性能下降。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 的每一次有效的元素删除操作后都要进行数组的重组，并且删除的元素位置越靠前，数组重组时的开销越大，要删除的元素位置越靠后，开销越小。LinkedList 要移除中间的数据需要便利完半个 List。<br> ArrayList 和 LinkedList 使用示例代码：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.LinkedList;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayListandLinkedList</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line"> <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"> ArrayList list = <span class="keyword">new</span> ArrayList();</span><br><span class="line"> Object obj = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5000000</span>;i++)&#123;</span><br><span class="line"> list.add(obj);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> LinkedList list1 = <span class="keyword">new</span> LinkedList();</span><br><span class="line"> Object obj1 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5000000</span>;i++)&#123;</span><br><span class="line"> list1.add(obj1);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> Object obj2 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</span><br><span class="line"> list.add(<span class="number">0</span>,obj2);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> Object obj3 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</span><br><span class="line"> list1.add(obj1);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> list.remove(<span class="number">0</span>);</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> list1.remove(<span class="number">250000</span>);</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br> 执行结果如下图：<img src="/uploads/2017-03-20-001.png" title="上述代码运行结果图">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 是将 Key 做 Hash 算法，然后将 Hash 值映射到内存地址，直接取得 Key 所对应的数据。在 HashMap 中，底层数据结构使用的是数组，所谓的内存地址即数组的下标索引。HashMap 的高性能需要保证以下几点：<br>1· Hash 算法必须是高效的；<br>2· Hash 值到内存地址 (数组索引) 的算法是快速的；<br>3· 根据内存地址 (数组索引) 可以直接取得对应的值。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 实际上是一个链表的数组。前面已经介绍过，基于 HashMap 的链表方式实现机制，只要 HashCode() 和 Hash() 方法实现得足够好，能够尽可能地减少冲突的产生，那么对 HashMap 的操作几乎等价于对数组的随机访问操作，具有很好的性能。但是，如果 HashCode() 或者 Hash() 方法实现较差，在大量冲突产生的情况下，HashMap 事实上就退化为几个链表，对 HashMap 的操作等价于遍历链表，此时性能很差。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 的一个功能缺点是它的无序性，被存入到 HashMap 中的元素，在遍历 HashMap 时，其输出是无序的。如果希望元素保持输入的顺序，可以使用 LinkedHashMap 替代。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedHashMap 继承自 HashMap，具有高效性，同时在 HashMap 的基础上，又在内部增加了一个链表，用以存放元素的顺序。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 通过 hash 算法可以最快速地进行 Put() 和 Get() 操作。TreeMap 则提供了一种完全不同的 Map 实现。从功能上讲，TreeMap 有着比 HashMap 更为强大的功能，它实现了 SortedMap 接口，这意味着它可以对元素进行排序。TreeMap 的性能略微低于 HashMap。如果在开发中需要对元素进行排序，那么使用 HashMap 便无法实现这种功能，使用 TreeMap 的迭代输出将会以元素顺序进行。LinkedHashMap 是基于元素进入集合的顺序或者被访问的先后顺序排序，TreeMap 则是基于元素的固有顺序 (由 Comparator 或者 Comparable 确定)。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedHashMap 是根据元素增加或者访问的先后顺序进行排序，而 TreeMap 则根据元素的 Key 进行排序。<br>清单 6 所示代码演示了使用 TreeMap 实现业务逻辑的排序，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.TreeMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Student</span>&gt;</span>&#123;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> String name;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> score;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name,<span class="keyword">int</span> score)</span></span>&#123;</span><br><span class="line"><span class="keyword">this</span>.name = name;</span><br><span class="line"><span class="keyword">this</span>.score = score;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="comment">//告诉 TreeMap 如何排序</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Student o)</span> </span>&#123;</span><br><span class="line"><span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line"><span class="keyword">if</span>(o.score&lt;<span class="keyword">this</span>.score)&#123;</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;<span class="keyword">else</span> <span class="keyword">if</span>(o.score&gt;<span class="keyword">this</span>.score)&#123;</span><br><span class="line"><span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line">StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">sb.append(<span class="string">"name:"</span>);</span><br><span class="line">sb.append(name);</span><br><span class="line">sb.append(<span class="string">" "</span>);</span><br><span class="line">sb.append(<span class="string">"score:"</span>);</span><br><span class="line">sb.append(score);</span><br><span class="line"><span class="keyword">return</span> sb.toString();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">TreeMap map = <span class="keyword">new</span> TreeMap();</span><br><span class="line">Student s1 = <span class="keyword">new</span> Student(<span class="string">"1"</span>,<span class="number">100</span>);</span><br><span class="line">Student s2 = <span class="keyword">new</span> Student(<span class="string">"2"</span>,<span class="number">99</span>);</span><br><span class="line">Student s3 = <span class="keyword">new</span> Student(<span class="string">"3"</span>,<span class="number">97</span>);</span><br><span class="line">Student s4 = <span class="keyword">new</span> Student(<span class="string">"4"</span>,<span class="number">91</span>);</span><br><span class="line">map.put(s1, <span class="keyword">new</span> StudentDetailInfo(s1));</span><br><span class="line">map.put(s2, <span class="keyword">new</span> StudentDetailInfo(s2));</span><br><span class="line">map.put(s3, <span class="keyword">new</span> StudentDetailInfo(s3));</span><br><span class="line">map.put(s4, <span class="keyword">new</span> StudentDetailInfo(s4));</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数位于 S4 和 S2 之间的人</span></span><br><span class="line">Map map1=((TreeMap)map).subMap(s4, s2);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数比 s1 低的人</span></span><br><span class="line">map1=((TreeMap)map).headMap(s1);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数比 s1 高的人</span></span><br><span class="line">map1=((TreeMap)map).tailMap(s1);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudentDetailInfo</span></span>&#123;</span><br><span class="line">Student s;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">StudentDetailInfo</span><span class="params">(Student s)</span></span>&#123;</span><br><span class="line"><span class="keyword">this</span>.s = s;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> s.name + <span class="string">"'s detail information"</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上示例代码运行结果如下：<img src="/uploads/2017-03-20-002.png" title="上述示例代码运行结果图">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 特点是当除了自身有对 Key 的引用外，如果此 Key 没有其他引用，那么此 Map 会自动丢弃该值。如清单 8 所示代码声明了两个 Map 对象，一个是 HashMap，一个是 WeakHashMap，同时向两个 map 中放入 A、B 两个对象，当 HashMap 删除 A，并且 A、B 都指向 Null 时，WeakHashMap 中的 A 将自动被回收掉。出现这个状况的原因是，对于 A 对象而言，当 HashMap 删除并且将 A 指向 Null 后，除了 WeakHashMap 中还保存 A 外已经没有指向 A 的指针了，所以 WeakHashMap 会自动舍弃掉 a，而对于 B 对象虽然指向了 null，但 HashMap 中还有指向 B 的指针，所以 WeakHashMap 将会保留 B 对象。<br>WeakHashMap 示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.HashMap; </span><br><span class="line"><span class="keyword">import</span> java.util.Iterator; </span><br><span class="line"><span class="keyword">import</span> java.util.Map; </span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest</span> </span>&#123; </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123; </span><br><span class="line"> String a = <span class="keyword">new</span> String(<span class="string">"a"</span>); </span><br><span class="line"> String b = <span class="keyword">new</span> String(<span class="string">"b"</span>); </span><br><span class="line"> Map weakmap = <span class="keyword">new</span> WeakHashMap(); </span><br><span class="line"> Map map = <span class="keyword">new</span> HashMap(); </span><br><span class="line"> map.put(a, <span class="string">"aaa"</span>); </span><br><span class="line"> map.put(b, <span class="string">"bbb"</span>);</span><br><span class="line"> weakmap.put(a, <span class="string">"aaa"</span>); </span><br><span class="line"> weakmap.put(b, <span class="string">"bbb"</span>);</span><br><span class="line"> map.remove(a);</span><br><span class="line"> a=<span class="keyword">null</span>; </span><br><span class="line"> b=<span class="keyword">null</span>;</span><br><span class="line"> System.gc(); </span><br><span class="line"> Iterator i = map.entrySet().iterator(); </span><br><span class="line"> <span class="keyword">while</span> (i.hasNext()) &#123; </span><br><span class="line"> Map.Entry en = (Map.Entry)i.next(); </span><br><span class="line"> System.out.println(<span class="string">"map:"</span>+en.getKey()+<span class="string">":"</span>+en.getValue()); </span><br><span class="line"> &#125; </span><br><span class="line"> Iterator j = weakmap.entrySet().iterator(); </span><br><span class="line"> <span class="keyword">while</span> (j.hasNext()) &#123; </span><br><span class="line"> Map.Entry en = (Map.Entry)j.next(); </span><br><span class="line"> System.out.println(<span class="string">"weakmap:"</span>+en.getKey()+<span class="string">":"</span>+en.getValue()); </span><br><span class="line"> &#125; </span><br><span class="line"> &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码运行结果如下：<img src="/uploads/2017-03-20-003.png" title="WeakHashMap 示例运行结果图"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 主要通过 expungeStaleEntries 这个函数来实现移除其内部不用的条目，从而达到自动释放内存的目的。基本上只要对 WeakHashMap 的内容进行访问就会调用这个函数，从而达到清除其内部不再为外部引用的条目。但是如果预先生成了 WeakHashMap，而在 GC 以前又不曾访问该 WeakHashMap, 那不是就不能释放内存了吗？如下示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest1</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"> List&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt; maps = <span class="keyword">new</span> ArrayList&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt;();</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line"> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt; d = <span class="keyword">new</span> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;();</span><br><span class="line"> d.put(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>], <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>]);</span><br><span class="line"> maps.add(d);</span><br><span class="line"> System.gc();</span><br><span class="line"> System.err.println(i);</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不改变任何 JVM 参数的情况运行清单 10 所示代码，由于 Java 默认内存是 64M，抛出内存溢出了错误。<br>上述示例运行结果如下：<img src="/uploads/2017-03-20-004.png" title="上述示例运行结果图"/>果不其然，WeakHashMap 这个时候并没有自动帮我们释放不用的内存。清单 12 所示代码不会出现内存溢出问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest2</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"> List&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt; maps = <span class="keyword">new</span> ArrayList&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt;();</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line"> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt; d = <span class="keyword">new</span> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;();</span><br><span class="line"> d.put(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>], <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>]);</span><br><span class="line"> maps.add(d);</span><br><span class="line"> System.gc();</span><br><span class="line"> System.err.println(i);</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line"> System.err.println(j + <span class="string">" size"</span> + maps.get(j).size());</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果发现这次测试输出正常, 不再出现内存溢出问题。<br>总的来说，WeakHashMap 并不是你什么也干它就能自动释放内部不用的对象的，而是在你访问它的内容的时候释放内部不用的对象。<br>WeakHashMap 实现弱引用，是因为它的 Entry&lt;K,V&gt;是继承自 WeakReference<K>的，<br>在 WeakHashMap$Entry&lt;K,V&gt;的类定义及构造函数里面如清单 13 所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">K</span>&gt; </span></span><br><span class="line"><span class="class"><span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="title">Entry</span>(<span class="title">K</span> <span class="title">key</span>, <span class="title">V</span> <span class="title">value</span>, <span class="title">ReferenceQueue</span>&lt;<span class="title">K</span>&gt; <span class="title">queue</span>,<span class="title">int</span> <span class="title">hash</span>, <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="title">next</span>) </span>&#123; </span><br><span class="line"><span class="keyword">super</span>(key, queue); </span><br><span class="line"><span class="keyword">this</span>.value = value; </span><br><span class="line"><span class="keyword">this</span>.hash = hash; </span><br><span class="line"><span class="keyword">this</span>.next = next; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请注意它构造父类的语句：“super(key, queue);”，传入的是 Key，因此 Key 才是进行弱引用的，Value 是直接强引用关联在 this.value 之中。在 System.gc() 时，Key 中的 Byte 数组进行了回收，而 Value 依然保持 (Value 被强关联到 Entry 上，Entry 又关联在 Map 中，Map 关联在 ArrayList 中)。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For 循环中每次都 New 一个新的 WeakHashMap，在 Put 操作后，虽然 GC 将 WeakReference 的 Key 中的 Byte 数组回收了，并将事件通知到了 ReferenceQueue，但后续却没有相应的动作去触发 WeakHashMap 去处理 ReferenceQueue，所以 WeakReference 包装 Key 依然存在于 WeakHashMap 中，其对应的 value 也当然存在。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;那 value 是何时被清除的呢? 对清单 10 和清单 11 两个示例程序进行分析可知，清单 11 的 maps.get(j).size() 触发了 Value 的回收，那又如何触发的呢？查看 WeakHashMap 源码可知,Size 方法调用了 expungeStaleEntries 方法，该方法对 JVM 要回收的的 Entry(Quene 中) 进行遍历，并将 Entry 的 Value 置空，回收了内存。所以效果是 Key 在 GC 的时候被清除，Value 在 Key 清除后访问 WeakHashMap 被清除。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 类是线程不同步的，可以使用 Collections.synchronizedMap 方法来构造同步的 WeakHashMap, 每个键对象间接地存储为一个弱引用的指示对象。因此，不管是在映射内还是在映射之外，只有在垃圾回收器清除某个键的弱引用之后，该键才会自动移除。需要注意的是，WeakHashMap 中的值对象由普通的强引用保持。因此应该小心谨慎，确保值对象不会直接或间接地强引用其自身的键，因为这会阻止键的丢弃。注意，值对象可以通过 WeakHashMap 本身间接引用其对应的键，这就是说，某个值对象可能强引用某个其他的键对象，而与该键对象相关联的值对象转而强引用第一个值对象的键。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;处理此问题的一种方法是，在插入前将值自身包装在 WeakReferences 中，如：m.put(key, new WeakReference(value))，然后，分别用 get 进行解包，该类所有“collection 视图方法”返回的迭代器均是快速失败的，在迭代器创建之后，如果从结构上对映射进行修改，除非通过迭代器自身的 Remove 或 Add 方法，其他任何时间任何方式的修改，迭代器都将抛出 ConcurrentModificationException。因此，面对并发的修改，迭代器很快就完全失败，而不是冒着在将来不确定的时间任意发生不确定行为的风险。<br>注意，我们不能确保迭代器不失败，一般来说，存在不同步的并发修改时，不可能做出任何完全确定的保证。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;综合前面的介绍和实例代码，我们可以知道，如果涉及到堆栈、队列等操作，应该考虑用 List。对于需要快速插入、删除元素等操作，应该使用 LinkedList。如果需要快速随机访问元素，应该使用 ArrayList。如果程序在单线程环境中，或者访问仅仅在一个线程中进行，考虑非同步的类，其效率较高。如果多个线程可能同时操作一个类，应该使用同步的类。要特别注意对哈希表的操作，作为 Key 的对象要正确复写 Equals 和 HashCode 方法。尽量返回接口而非实际的类型，如返回 List 而非 ArrayList，这样如果以后需要将 ArrayList 换成 LinkedList 时，客户端代码不用改变，这就是针对抽象进行编程思想。<br>本文只是针对应用层面的分享，后续文章会针对具体源代码级别的实现进行深入介绍，也会对具体实现所基于的算法进行深入介绍，请有需要的读者关注后续文章。非常感谢作者的精心分享【<a href="https://www.ibm.com/developerworks/cn/java/j-lo-set-operation/index.html" target="_blank" rel="noopener"><font color=red>源地址</font></a>】</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/06/23/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%8610/" rel="prev" title="JavaScript基础知识整理<十>-笔记">
+      <i class="fa fa-chevron-left"></i> JavaScript基础知识整理<十>-笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/07/03/Java%20%E5%BA%94%E7%94%A8%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%E5%AE%9E%E8%B7%B5/" rel="next" title="Java 应用性能调优实践">
+      Java 应用性能调优实践 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合接口"><span class="nav-number">2.</span> <span class="nav-text">集合接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Collection-接口"><span class="nav-number">2.1.</span> <span class="nav-text">Collection 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#List-接口"><span class="nav-number">2.2.</span> <span class="nav-text">List 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Map-接口"><span class="nav-number">2.3.</span> <span class="nav-text">Map 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RandomAccess-接口"><span class="nav-number">2.4.</span> <span class="nav-text">RandomAccess 接口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合类介绍"><span class="nav-number">3.</span> <span class="nav-text">集合类介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LinkedList-类"><span class="nav-number">3.1.</span> <span class="nav-text">LinkedList 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ArrayList-类"><span class="nav-number">3.2.</span> <span class="nav-text">ArrayList 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vector-类"><span class="nav-number">3.3.</span> <span class="nav-text">Vector 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stack-类"><span class="nav-number">3.4.</span> <span class="nav-text">Stack 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Set-类"><span class="nav-number">3.5.</span> <span class="nav-text">Set 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hashtable-类"><span class="nav-number">3.6.</span> <span class="nav-text">Hashtable 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap-类"><span class="nav-number">3.7.</span> <span class="nav-text">HashMap 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WeakHashMap-类"><span class="nav-number">3.8.</span> <span class="nav-text">WeakHashMap 类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集合类实践"><span class="nav-number">4.</span> <span class="nav-text">集合类实践</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">91k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:23</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

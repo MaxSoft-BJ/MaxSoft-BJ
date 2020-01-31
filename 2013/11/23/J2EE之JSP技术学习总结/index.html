@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;学习JSP技术也有小一个学期的时间了，借今天是周末的时间来简单的做一个总结。也为下一个月底开始的期末考试做个准备，免去挂科补考之苦 &gt;V&lt;…… JSP概念&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;JSP的全名是Java Server Pages，翻译为中文名">
+<meta property="og:type" content="article">
+<meta property="og:title" content="J2EE之JSP技术学习总结">
+<meta property="og:url" content="http://yoursite.com/2013/11/23/J2EE%E4%B9%8BJSP%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;学习JSP技术也有小一个学期的时间了，借今天是周末的时间来简单的做一个总结。也为下一个月底开始的期末考试做个准备，免去挂科补考之苦 &gt;V&lt;…… JSP概念&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;JSP的全名是Java Server Pages，翻译为中文名">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/jsp.png">
+<meta property="article:published_time" content="2013-11-23T14:20:30.000Z">
+<meta property="article:modified_time" content="2020-01-31T07:28:16.795Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="JSP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/jsp.png">
+
+<link rel="canonical" href="http://yoursite.com/2013/11/23/J2EE%E4%B9%8BJSP%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>J2EE之JSP技术学习总结 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2013/11/23/J2EE%E4%B9%8BJSP%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          J2EE之JSP技术学习总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2013-11-23 22:20:30" itemprop="dateCreated datePublished" datetime="2013-11-23T22:20:30+08:00">2013-11-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;学习JSP技术也有小一个学期的时间了，借今天是周末的时间来简单的做一个总结。也为下一个月底开始的期末考试做个准备，免去挂科补考之苦 &gt;V&lt;……</p>
+<h2 id="JSP概念"><a href="#JSP概念" class="headerlink" title="JSP概念"></a>JSP概念</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JSP的全名是Java Server Pages，翻译为中文名就是Java服务器页面。JSP的本质是一个简化的Servlet，它是由Sun公司提倡并参与组建的一种动态网站页面技术。JSP是由HTML标记语言，Java程序代码，JSP标签而组成的扩展名为.jsp的文本文件。使用JSP开发的网站应用可以在任何装有JRE运行环境和JavaWeb容器的操作系统上运行，即跨平台性比较好。</p>
+<h2 id="JSP语法"><a href="#JSP语法" class="headerlink" title="JSP语法"></a>JSP语法</h2><p>JSP的语法有如下几类：</p>
+<pre><code>1&gt; &lt;%@    ...    %&gt;  定义JSP指令
+
+2&gt; &lt;%!    ...    %&gt;  定义Java代码段的全局成员变量
+
+3&gt; &lt;%     ...    %&gt;  定义Java成员变量,编写Java处理逻辑
+
+4&gt; &lt;%=    ...    %&gt;  输出内容到页面
+
+5&gt; &lt;xxx:xxx xx=&quot;&quot; ... &gt; ... &lt;/xxx:xxx&gt; 系统JSP标签 第三方标签 以及 自定义标签 </code></pre><p>JSP页面示例：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&lt;%<span class="meta">@page</span> language=<span class="string">"java"</span> contentType=<span class="string">"text/html; charset=UTF-8"</span> pageEncoding=<span class="string">"UTF-8"</span>%&gt;</span><br><span class="line">&lt;%<span class="meta">@page</span> <span class="keyword">import</span>=<span class="string">"java.util.Date"</span>%&gt;</span><br><span class="line">&lt;%-- &lt;%<span class="meta">@include</span> file=<span class="string">"personal.jsp"</span> %&gt; --%&gt;</span><br><span class="line">&lt;%<span class="meta">@taglib</span> prefix=<span class="string">"spring"</span> uri=<span class="string">"http://www.springframework.org/tags"</span>%&gt;</span><br><span class="line">&lt;%-- &lt;%<span class="meta">@taglib</span> prefix=<span class="string">"custome"</span> tagdir=<span class="string">"自定义标签路径"</span>%&gt; --%&gt;</span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD HTML 4.01 Transitional//EN"</span> <span class="string">"http://www.w3.org/TR/html4/loose.dtd"</span>&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv=<span class="string">"Content-Type"</span> content=<span class="string">"text/html; charset=UTF-8"</span>&gt;</span><br><span class="line">&lt;title&gt;Insert title here&lt;/title&gt;</span><br><span class="line">&lt;%! String flag = <span class="string">"MaxSoft"</span>; %&gt;</span><br><span class="line">&lt;%! <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DateUtils</span></span>&#123;</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Date <span class="title">getNowDate</span><span class="params">()</span></span>&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> Date();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; </span><br><span class="line">%&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line"></span><br><span class="line">&lt;jsp:include page=<span class="string">"maxsoft.jsp"</span>/&gt;</span><br><span class="line">&lt;%-- &lt;spring:message text="Spring"&gt;&lt;/spring:message&gt; --%&gt;</span><br><span class="line">&lt;% String date = DateUtils.getNowDate().toLocaleString(); %&gt;</span><br><span class="line"></span><br><span class="line">北京时间：</span><br><span class="line"></span><br><span class="line">&lt;%=flag + <span class="string">":"</span> + date %&gt;</span><br><span class="line">&lt;%-- 注释内容 --%&gt;</span><br><span class="line">&lt;%-- &lt;% String name = <span class="string">"MaxSoft"</span>; %&gt; --%&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>运行效果：<br><img  src="/uploads/jsp.png"/></p>
+<h2 id="JSP标签库"><a href="#JSP标签库" class="headerlink" title="JSP标签库"></a>JSP标签库</h2><p>在使用JSP标签之前要在JSP页面中通过<font color=red>&lt;%@taglib prefix=”标签前缀” uri=“网络标签库地址” %&gt;</font> 或 <font color=red>&lt;%@taglib  prefix=”标签前缀”  tagdir=“自定义标签库地址” %&gt;</font> 将要使用的标签导入到当前的JSP页面中才可以使用。当然在JSP页面中有系统默认的标签库，是不需要导入就可以使用。具体可以参照以上的JSP页面示例。</p>
+<p>我们在JSP中常用的标签有如下几种：</p>
+<pre><code>1&gt; &lt;%@page import=“” language=&quot;&quot; pageEncoding=“” contentType=&quot;&quot; autoFlush=&quot;&quot; buffer=&quot;&quot; errorPage=&quot;&quot; %&gt;
+     --import 用于将java类包导入到当前页面，可以导入多个，用“,”分割
+     --language 用于指定服务器端的语言环境 默认为Java
+     --pageEncoding 指定页面编码
+     --contentType 指定当前页面的编码方式
+     --autoFlush 自动刷新缓冲区
+     --buffer 响应输出流的缓冲区大小，默认8KB
+     --errorPage 指定错误页面，也可以在web.xml中设置
+
+2&gt; &lt;%@include file=&quot;b.jsp&quot;%&gt; 包含指定页面的内容
+
+3&gt; &lt;%@taglib prefix=&quot;spring&quot; uri=&quot;http://www.springframework.org/tags&quot; %&gt; 引入指定的标签库
+
+4&gt; &lt;jsp:useBean  id=&quot;user&quot; class=&quot;org.maxsoft.User&quot;&gt; 引入指定的类并创建该类实例
+5&gt; &lt;jsp:setProperty name=&quot;user&quot; property=&quot;name&quot; value=&quot;maxsoft&quot;&gt; 对应类实例设置属性
+6&gt; &lt;jsp:getProperty name=&quot;user&quot; property=&quot;name&quot;&gt; 获取类实例的属性
+7&gt; 其他的逻辑控制标签，页面跳转标签等</code></pre><h2 id="JSP内置对象"><a href="#JSP内置对象" class="headerlink" title="JSP内置对象"></a>JSP内置对象</h2><p>JSP的内置对象总共有9个(作用域由大到小)，分别是<br><font color=red>application</font> (javax.servlet.ServletContext) <font color=green>作用域 Application，随着Web容器的生命周期而存在</font>；<br><font color=red>session</font>(javax.servlet.http.HttpSession) <font color=green>作用域 Session，随着一次有效会话的生命周期而存在</font>；<br><font color=red>request</font>(javax.servlet.ServletRequest) <font color=green>作用域 Request，随着一次请求而存在</font>；<br><font color=red>pageContext</font>(javax.servlet.jsp.PageContext) <font color=green>作用域 Page，只在当前页面有效</font>；<br><font color=red>response</font>(javax.servlet.SrvletResponse) <font color=green>作用域 Page，只在当前页面有效</font>；<br><font color=red>out</font>(javax.servlet.jsp.JspWriter) <font color=green>作用域 Page，只在当前页面有效</font>；<br><font color=red>page</font>(当前页面对象及javax.lang.Object) <font color=green>作用域 Page，只在当前页面有效</font>；<br><font color=red>exception</font>(javax.lang.Throwable) <font color=green>作用域 Page，只在当前页面有效</font>；<br><font color=red>config</font>(javax.servlet.ServletConfig) <font color=green>作用域 Page，只在当前页面有效</font>；<br>其中out与response.write()不要同时使用，因为在服务响应之前，Web容器会先把out缓冲区的数据刷新给response对象中，然后才在response独享缓冲区获取响应数据。</p>
+<h2 id="JSP的工作原理"><a href="#JSP的工作原理" class="headerlink" title="JSP的工作原理"></a>JSP的工作原理</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当浏览器发起一个请求到WEB容器，如果请求地址是以.jsp结尾时，Web容器则会把请求交给JSP引擎来编译执行。如果请求地址没有.jsp结尾时，Web容器会在Web.xml中查询对应的Servlet映射页面（存在jsp与Servlet的映射关系）解析编译并执行或直接执行Servlet并响应结果信息到客户端；Web容器中的JSP引擎就是一个Servlet程序，它负责解释和执行JSP页面。即把jsp页面交给JSP引擎翻译成一个Servlet程序，然后把该Servlet程序编译成Servlet的class文件，最后由WEB容器来装载和解释执行这个被编译后的Servlet程序，并响应结果给客户端。 </p>
+<p>More info: <a href="http://www.oracle.com/technetwork/java/javaee/jsp/index.html" target="_blank" rel="noopener">Java Server Page</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JSP/" rel="tag"># JSP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2015/02/13/Java%20%E4%B8%AD%E7%9A%84%20HashMap%20%E4%B8%8E%20HashTable/" rel="next" title="Java 中的 HashMap 与 HashTable">
+      Java 中的 HashMap 与 HashTable <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSP概念"><span class="nav-number">2.</span> <span class="nav-text">JSP概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSP语法"><span class="nav-number">3.</span> <span class="nav-text">JSP语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSP标签库"><span class="nav-number">4.</span> <span class="nav-text">JSP标签库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSP内置对象"><span class="nav-number">5.</span> <span class="nav-text">JSP内置对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSP的工作原理"><span class="nav-number">6.</span> <span class="nav-text">JSP的工作原理</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">91k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:23</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

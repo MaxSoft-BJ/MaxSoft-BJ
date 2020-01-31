@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;今天主要学习总结关于 JavaScript 语言的面向对象的基础知识。在 ECMAScript 中，对象由特性（attribute）构成，特性可以是原始值，也可以是引用值。如果特性存放的是函数，它将被看作对象的方法（method），否则该特性被看作对象的属性（property）。&amp;nbsp;&amp;nbsp;&amp;nbs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript基础知识整理&lt;十&gt;-笔记">
+<meta property="og:url" content="http://yoursite.com/2015/06/23/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%8610/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;今天主要学习总结关于 JavaScript 语言的面向对象的基础知识。在 ECMAScript 中，对象由特性（attribute）构成，特性可以是原始值，也可以是引用值。如果特性存放的是函数，它将被看作对象的方法（method），否则该特性被看作对象的属性（property）。&amp;nbsp;&amp;nbsp;&amp;nbs">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/object_001.png">
+<meta property="og:image" content="http://yoursite.com/uploads/object_002.png">
+<meta property="og:image" content="http://yoursite.com/uploads/modify_obj.png">
+<meta property="article:published_time" content="2015-06-23T13:01:11.000Z">
+<meta property="article:modified_time" content="2020-01-30T10:18:44.864Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/object_001.png">
+
+<link rel="canonical" href="http://yoursite.com/2015/06/23/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%8610/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>JavaScript基础知识整理<十>-笔记 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/23/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%8610/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript基础知识整理<十>-笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2015-06-23 21:01:11" itemprop="dateCreated datePublished" datetime="2015-06-23T21:01:11+08:00">2015-06-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;今天主要学习总结关于 JavaScript 语言的面向对象的基础知识。在 ECMAScript 中，对象由特性（attribute）构成，特性可以是原始值，也可以是引用值。如果特性存放的是函数，它将被看作对象的方法（method），否则该特性被看作对象的属性（property）。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;由于 ECMAScript 并没有正式的类。所以，ECMA-262 把对象定义描述为对象的配方。这是 ECMAScript 逻辑上的一种折中方案，因为对象定义实际上是对象自身。即使类并不真正存在，我们也把对象定义叫做类，因为大多数开发者对此术语更熟悉，而且从功能上说，两者是等价的。</p>
+<h2 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h2><p><font color=red>对象</font>：ECMAScript 把对象（object）定义为“属性的无序集合，每个属性存放一个原始值、对象或函数”。<br/><font color=red>类</font>：每个对象都由类定义，可以把类看做对象的配方。类不仅要定义对象的接口，还要定义对象的内部工作。<br/><font color=red>实例</font>：程序使用类创建对象时，生成的对象叫作类的实例（instance）。对类生成的对象的个数的唯一限制来自于运行代码的机器的物理内存。每个实例的行为相同，但实例处理一组独立的数据。由类创建对象实例的过程叫做实例化（instantiation）。<br>面相对象的特点：<br>封装 - 可以把相关的信息（无论数据或方法）存储在对象中<br>继承 - 由另一个类（或多个类）得来类的属性和方法<br>多态 - 可以编写能以多种方法运行的函数或方法<br>聚集 - 可以把一个对象存储在另一个对象内</p>
+<h3 id="对象属性或方法的绑定"><a href="#对象属性或方法的绑定" class="headerlink" title="对象属性或方法的绑定"></a>对象属性或方法的绑定</h3><p><font color=red>绑定（binding）</font>指把对象的接口与对象实例结合在一起的方法。<br/><font color=red>早绑定（early binding）</font>是指在实例化对象之前定义它的属性和方法，这样编译器或解释程序就能够提前转换机器代码。在 Java 和 Visual Basic 这样的语言中，有了早绑定，就可以在开发环境中使用 IntelliSense（即给开发者提供对象中属性和方法列表的功能）。ECMAScript 不是强类型语言，所以不支持早绑定。<br/><font color=red>晚绑定（late binding）</font>指的是编译器或解释程序在运行前，不知道对象的类型。使用晚绑定，无需检查对象的类型，只需检查对象是否支持属性和方法即可。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> student = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">student.name=<span class="string">"MaxSoft"</span>;</span><br><span class="line">student.age=<span class="number">20</span>;</span><br><span class="line">student.sex=<span class="string">'男'</span>;</span><br><span class="line">student.height=<span class="number">168</span>;</span><br><span class="line">student.study = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">"study"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><font color=red><b>注意</b></font>：ECMAScript 中的所有变量都采用晚绑定方法。</p>
+<h3 id="对象回收"><a href="#对象回收" class="headerlink" title="对象回收"></a>对象回收</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECMAScript 语言也拥有类似 Java 语言的垃圾回收机制，在我们编写程序代码可以不用手动回收无效的对象。当然，便于我们的程序的可维护性以及养成良好的编码习惯，建议在该释放销毁的时候尽量手动处理；<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> employeer = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">employeer.id=<span class="string">"52028"</span>;</span><br><span class="line">employeer.name=<span class="string">"MaxSoft"</span>;</span><br><span class="line">employeer.mainjob=<span class="string">"Java programming "</span>;</span><br><span class="line">employeer.otherjob=<span class="string">"javascript"</span>;</span><br><span class="line"><span class="comment">//移除 otherjob</span></span><br><span class="line"><span class="keyword">delete</span> employeer.otherjob;</span><br><span class="line"><span class="built_in">console</span>.log(employeer.otherjob)</span><br><span class="line"><span class="comment">//销毁对象</span></span><br><span class="line">employeer = <span class="literal">null</span>;</span><br><span class="line"><span class="built_in">console</span>.log(employeer.id);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/object_001.png'/>在上述示例中我们通过 delete 运算符移除了属性otherjob，后面我们对 employeer 进行了销毁处理；</p>
+<h2 id="对象类型"><a href="#对象类型" class="headerlink" title="对象类型"></a>对象类型</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 ECMAScript 中，可以创建并使用的对象有三种：本地对象、内置对象和宿主对象。<br><font color=red><b>本地对象</b></font>：指独立于宿主环境的 ECMAScript 实现提供的对象；主要包括：Object, Function, Array, String, Boolean, Number, Date, RegExp, Error, EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError；<br/><font color=red><b>内置对象</b></font>：指由 ECMAScript 实现提供的、独立于宿主环境的所有对象，在 ECMAScript 程序开始执行时出现。ECMA-262 只定义了两个内置对象，即 Global 和 Math （它们也是本地对象，根据定义，每个内置对象都是本地对象）。<br/><font color=red><b>宿主对象</b></font>：所有非本地对象都是宿主对象（host object），即由 ECMAScript 实现的宿主环境提供的对象。所有 BOM 和 DOM 对象都是宿主对象。</p>
+<h2 id="对象作用域"><a href="#对象作用域" class="headerlink" title="对象作用域"></a>对象作用域</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=red><b>作用域</b></font>：指的是变量的适用范围。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在ECMAScript 中只存在一种作用域 - 公用作用域。ECMAScript 中的所有对象的所有属性和方法都是公用的。由于我们开发人员的习惯有以下几种方法来进行对私有变量和公有变量进行了区分的公约：<br>&nbsp;&nbsp;● 对象属性前后加下划线标识私有属性<br>&nbsp;&nbsp;● 对象属性前加下划线标识私有属性<br>&nbsp;&nbsp;● 对象属性前加私有变量标识，例如：”obj.private_id”等<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">obj._name_ = <span class="string">"maxsoft"</span>;</span><br><span class="line">obj._age = <span class="string">"24"</span>;</span><br><span class="line">obj.private_sex = <span class="string">"男"</span>;</span><br><span class="line">obj.getName = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>._name_;</span><br><span class="line">&#125;</span><br><span class="line">obj.getAge = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>._age;</span><br><span class="line">&#125;</span><br><span class="line">obj.getSex = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">this</span>.private_sex;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"姓名："</span>+obj.getName());</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"年龄："</span>+obj.getAge());</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"性别："</span>+obj.getSex());</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src="/uploads/object_002.png">在上述示例我们用到了 this 关键字，该关键词主要表示当前执行的方法所属的对象；那么在我们的示例中的 this 就是指 obj 对象。<br><font color=red><b>注意</b></font>： this 关键字在 ECMAScript 语言中是相对比较重要的知识点。</p>
+<h2 id="创建及修改对象"><a href="#创建及修改对象" class="headerlink" title="创建及修改对象"></a>创建及修改对象</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;使用预定义对象只是面向对象语言的能力的一部分，它真正强大之处在于能够创建自己专用的类和对象。在 ECMAScript 语言中，不仅可以创建对象，还可以修改已有对象的行为，这主要得益于对象的 prototype 属性。通过 prototype 属性不仅可以定义构造函数的属性和方法，还可以为本地对象添加属性和方法。示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Number</span>.prototype.toHex = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"0x"</span> + <span class="keyword">this</span>.toString(<span class="number">16</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">Number</span>.prototype.toOct = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"0"</span> + <span class="keyword">this</span>.toString(<span class="number">8</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> num = <span class="keyword">new</span> <span class="built_in">Number</span>(<span class="number">17</span>);</span><br><span class="line"><span class="built_in">console</span>.log(num.toHex());</span><br><span class="line"><span class="built_in">console</span>.log(num.toOct());</span><br><span class="line"><span class="built_in">Number</span>.prototype.toLocalString=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"I am override method;"</span> + <span class="keyword">this</span>.toString();</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(num.toString());</span><br><span class="line"><span class="built_in">console</span>.log(num.toLocalString());</span><br></pre></td></tr></table></figure>
+<p>运行结果如下图：<img src='/uploads/modify_obj.png' />上述示例中我们通过对象的 prototype 属性进行对象的一系列的属性修改新增等操作。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;到此，JavaScript 语言的核心基础知识也算是学习了一遍，补缺了在大学时期没有进行学习的遗漏。同时，也加深了一些基础知识的认知。但是相对于目前工作中使用的 JavaScript 语言的高级用法，这确实只是一点基础！后续的工作中会继续总结使用到的高级用法以及其他的知识点（浏览器对象模型( BOM )、文档对象模型( DOM )）。</p>
+<p>参阅 <a href="http://www.w3school.com.cn/js/pro_js_implement.asp" target="_blank" rel="noopener">W3C School</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/06/21/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%869/" rel="prev" title="JavaScript基础知识整理<九>-笔记">
+      <i class="fa fa-chevron-left"></i> JavaScript基础知识整理<九>-笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/" rel="next" title="Java 集合类操作优化经验总结">
+      Java 集合类操作优化经验总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面向对象"><span class="nav-number">2.</span> <span class="nav-text">面向对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象属性或方法的绑定"><span class="nav-number">2.1.</span> <span class="nav-text">对象属性或方法的绑定</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象回收"><span class="nav-number">2.2.</span> <span class="nav-text">对象回收</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象类型"><span class="nav-number">3.</span> <span class="nav-text">对象类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对象作用域"><span class="nav-number">4.</span> <span class="nav-text">对象作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建及修改对象"><span class="nav-number">5.</span> <span class="nav-text">创建及修改对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">6.</span> <span class="nav-text">结束语</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">91k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:23</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;上一章节总结了 ECMAScript 的语法结构，今天主要总结 ECMAScript 变量以及关键字和保留关键字。 变量&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ECMAScript 语言使用 var 运算符声明变量。变量名需要遵守一些简单的规则。 变量申明ECMASc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript基础知识整理&lt;三&gt;-笔记">
+<meta property="og:url" content="http://yoursite.com/2015/06/07/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%863/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;上一章节总结了 ECMAScript 的语法结构，今天主要总结 ECMAScript 变量以及关键字和保留关键字。 变量&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ECMAScript 语言使用 var 运算符声明变量。变量名需要遵守一些简单的规则。 变量申明ECMASc">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/var_name_reg.png">
+<meta property="og:image" content="http://yoursite.com/uploads/hello_msg_res.png">
+<meta property="og:image" content="http://yoursite.com/uploads/key_word.png">
+<meta property="og:image" content="http://yoursite.com/uploads/key_word_exce.png">
+<meta property="og:image" content="http://yoursite.com/uploads/key_word_exce_ie.png">
+<meta property="og:image" content="http://yoursite.com/uploads/key_word_protect.png">
+<meta property="article:published_time" content="2015-06-07T06:23:02.000Z">
+<meta property="article:modified_time" content="2020-01-30T10:18:44.866Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/var_name_reg.png">
+
+<link rel="canonical" href="http://yoursite.com/2015/06/07/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%863/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>JavaScript基础知识整理<三>-笔记 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/07/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%863/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript基础知识整理<三>-笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2015-06-07 14:23:02" itemprop="dateCreated datePublished" datetime="2015-06-07T14:23:02+08:00">2015-06-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上一章节总结了 ECMAScript 的语法结构，今天主要总结 ECMAScript 变量以及关键字和保留关键字。</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECMAScript 语言使用 var 运算符声明变量。变量名需要遵守一些简单的规则。</p>
+<h3 id="变量申明"><a href="#变量申明" class="headerlink" title="变量申明"></a>变量申明</h3><p>ECMAScript 中的变量是用 var 运算符（variable 的缩写）加变量名进行定义。例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span>;</span><br><span class="line"><span class="keyword">var</span> age = <span class="number">24</span>;</span><br><span class="line"><span class="keyword">var</span> sex = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+<p>在这个例子中，声明了变量 name , age , sex 并进行了相对应的初始化值操作。由于 ECMAScript 是弱类型语言，所以解释程序会为变量自动创建对应的初始化值数据类型，无需明确的类型声明。<br>我们还可以通过 var 同时定义多个变量名，如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span>, age = <span class="number">24</span>, sex = <span class="literal">false</span>, msg;</span><br></pre></td></tr></table></figure>
+<p>通过上面的例子我们发现用同一个 var 语句定义的变量不具有相同的类型也是可以的。与 Java 不同，ECMAScript 中的变量并不一定要初始化（例如上面例子中的 msg 就没有初始化值）。</p>
+<h3 id="变量命名"><a href="#变量命名" class="headerlink" title="变量命名"></a>变量命名</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECMAScript 语言申明变量名和 Java 语言一样，需要遵守以下两条简单的规则（必须）：<br>1&gt; 首字符必须是字母、下划线（_）或美元符号（$）<br>2&gt; 除首字母外的其他字符可以是下划线、美元符号或任何字母或数字字符</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span>;</span><br><span class="line"><span class="keyword">var</span> _name_1 = <span class="string">"MaxSoft"</span>;</span><br><span class="line"><span class="keyword">var</span> $sex = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+<p> ECMAScript 的变量名命名规则和 Java , C++ 等语言类似，都有以下著名的命名规则：<br> 1&gt; <font color=red>Camel 标记法（驼峰标记法） ：</font>首字母是小写的，接下来的字母都以大写字符开头。例如：<br> <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> isExist = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure><br> 2&gt; <font color=red>Pascal 标记法（帕斯卡标记法）：</font>首字母是大写的，接下来的字母都以大写字符开头。例如：<br> <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> IsExist = <span class="literal">false</span>, Name = <span class="string">"MaxSoft"</span>, BeginDate = <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="string">'2014-07-01'</span>);</span><br></pre></td></tr></table></figure><br>3&gt; <font color=red>匈牙利类型标记法：</font>在以 Pascal 标记法命名的变量前附加一个小写字母（或小写字母序列），说明该变量的类型。例如，i 表示整数，s 表示字符串等，如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> bIsExist = <span class="literal">false</span>;  <span class="comment">// b 表示 boolean 类型</span></span><br><span class="line"><span class="keyword">var</span> sName = <span class="string">"MaxSoft"</span>; <span class="comment">// s 表示字符串类型</span></span><br><span class="line"><span class="keyword">var</span> iAge = <span class="number">24</span>; <span class="comment">// i 表示数字整型类型</span></span><br></pre></td></tr></table></figure>
+<p>如下为匈牙利类型标记法常用的前缀：<img src='/uploads/var_name_reg.png'> ECMAScript 语言另一个比较神奇的方面就是在使用变量之前可以不申明，直接使用。如下所示：<br> <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name  = <span class="string">"MaxSoft"</span>;</span><br><span class="line">hello_msg = <span class="string">"Hello, "</span> + name;</span><br><span class="line"><span class="built_in">console</span>.log(hello_msg);</span><br></pre></td></tr></table></figure><br> 以上示例的运行结果如下所示：<img src='/uploads/hello_msg_res.png'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 ECMAScript 的解释器中遇到未声明的标识符时，用该变量名创建一个全局变量，并将其初始化为指定的值。这是 ECMAScript 语言的便利之处，但是这种做法相对比较不可取，最好的习惯是像使用其他程序设计语言一样，在使用变量前，进行必要的申明。</p>
+<h2 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECMAScript 语言中的关键字大部分都和 Java, C++ 等程序设计语言类似，都包含以下关键字：<img src='/uploads/key_word.png'> 在 ECMAScript 语言中关键字也是不能被当做变量名来使用。如下：<br> <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="keyword">delete</span>=<span class="number">3</span>;</span><br><span class="line"><span class="keyword">var</span> <span class="keyword">break</span>=<span class="string">"MaxSoft"</span>;</span><br></pre></td></tr></table></figure><br> 运行结果如下图：<br> Google Chrome<img src='/uploads/key_word_exce.png'>IE9<img src='/uploads/key_word_exce_ie.png'>从以上俩种异常运行结果可以看到由于每种浏览器的 ECMAScript 语言解释器不同，所以抛出的异常信息可能不太一样，但是最终的意义都是一样的。</p>
+<h2 id="保留关键字"><a href="#保留关键字" class="headerlink" title="保留关键字"></a>保留关键字</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 ECMAScript 语言中保留了很多 Java, C++ 中的关键字，其在某种意义上就是为将来的关键字而保留的单词。因此保留字不建议被用作变量名或函数名，以免在将来的 ECMAScript 语言中实现了被保留的关键字而发生不必要的异常问题。被保留关键字列表如下：<br><img src='/uploads/key_word_protect.png' /></p>
+<p><font color=red><b>注意：</b>如果将保留字用作变量名或函数名，那么除非将来的浏览器实现了该保留字，否则很可能收不到任何错误消息。当浏览器将其实现后，该单词将被看做关键字，如此将出现关键字错误。</font></p>
+<p>参阅 <a href="http://www.w3school.com.cn/js/pro_js_implement.asp" target="_blank" rel="noopener">W3C School</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/06/06/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%862/" rel="prev" title="JavaScript基础知识整理<二>-笔记">
+      <i class="fa fa-chevron-left"></i> JavaScript基础知识整理<二>-笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/06/08/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%864/" rel="next" title="JavaScript基础知识整理<四>-笔记">
+      JavaScript基础知识整理<四>-笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#变量"><span class="nav-number">2.</span> <span class="nav-text">变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#变量申明"><span class="nav-number">2.1.</span> <span class="nav-text">变量申明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#变量命名"><span class="nav-number">2.2.</span> <span class="nav-text">变量命名</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关键字"><span class="nav-number">3.</span> <span class="nav-text">关键字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保留关键字"><span class="nav-number">4.</span> <span class="nav-text">保留关键字</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">91k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:23</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

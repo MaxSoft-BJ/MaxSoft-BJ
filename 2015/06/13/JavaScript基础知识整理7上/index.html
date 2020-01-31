@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;今天玩的有点嗨了，回来居然进入不了学习的状态，嚓嚓 …… 言归正传，我们前一节总结了引用类型的相关知识点，本节主要学习和整理总结 ECMAScript 中相关运算符的知识点。 类型运算符&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ECMAScript 语言中提供的关于类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript基础知识整理&lt;七&gt;-上-笔记">
+<meta property="og:url" content="http://yoursite.com/2015/06/13/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%8A/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;今天玩的有点嗨了，回来居然进入不了学习的状态，嚓嚓 …… 言归正传，我们前一节总结了引用类型的相关知识点，本节主要学习和整理总结 ECMAScript 中相关运算符的知识点。 类型运算符&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ECMAScript 语言中提供的关于类型">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/typeof_1.png">
+<meta property="og:image" content="http://yoursite.com/uploads/instanceof.png">
+<meta property="og:image" content="http://yoursite.com/uploads/delete.png">
+<meta property="og:image" content="http://yoursite.com/uploads/void.png">
+<meta property="og:image" content="http://yoursite.com/uploads/dubble_plus_sub.png">
+<meta property="og:image" content="http://yoursite.com/uploads/plus_sub.png">
+<meta property="og:image" content="http://yoursite.com/uploads/add.png">
+<meta property="og:image" content="http://yoursite.com/uploads/sub.png">
+<meta property="og:image" content="http://yoursite.com/uploads/mult.png">
+<meta property="og:image" content="http://yoursite.com/uploads/divsion.png">
+<meta property="og:image" content="http://yoursite.com/uploads/modle.png">
+<meta property="article:published_time" content="2015-06-13T11:13:11.000Z">
+<meta property="article:modified_time" content="2020-01-30T10:18:44.870Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/typeof_1.png">
+
+<link rel="canonical" href="http://yoursite.com/2015/06/13/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%8A/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>JavaScript基础知识整理<七>-上-笔记 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/13/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%8A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript基础知识整理<七>-上-笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2015-06-13 19:13:11" itemprop="dateCreated datePublished" datetime="2015-06-13T19:13:11+08:00">2015-06-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;今天玩的有点嗨了，回来居然进入不了学习的状态，嚓嚓 …… 言归正传，我们前一节总结了引用类型的相关知识点，本节主要学习和整理总结 ECMAScript 中相关运算符的知识点。</p>
+<h2 id="类型运算符"><a href="#类型运算符" class="headerlink" title="类型运算符"></a>类型运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECMAScript 语言中提供的关于类型相关的运算符有俩个，分别是 typeof 和 instanceof；在使用 typeof 运算符时采用引用类型存储值会出现一个问题，无论引用的是什么类型的对象，它都返回 “object”；而 instanceof 则是 ECMAScript 语言中用来解决这个问题。</p>
+<h3 id="typeof-运算符"><a href="#typeof-运算符" class="headerlink" title="typeof 运算符"></a>typeof 运算符</h3><p>typeof 运算符有一个参数，即要检查的变量或值；对变量或值调用 typeof 运算符将返回下列值之一：<br>● undefined - 如果变量是 Undefined 类型的<br>● boolean - 如果变量是 Boolean 类型的<br>● number - 如果变量是 Number 类型的<br>● string - 如果变量是 String 类型的<br>● object - 如果变量是一种引用类型或 Null 类型的</p>
+<p>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span></span><br><span class="line"><span class="keyword">var</span> obj = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">typeof</span> name);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">typeof</span> obj);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下图：<img src='/uploads/typeof_1.png'></p>
+<h3 id="instanceof-运算符"><a href="#instanceof-运算符" class="headerlink" title="instanceof 运算符"></a>instanceof 运算符</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; instanceof 运算符与 typeof 运算符相似，用于识别正在处理的对象的类型。与 typeof 方法不同的是，instanceof 方法要求开发者明确地确认对象为某特定类型。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> msg = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">"hello MaxSoft"</span>);</span><br><span class="line"><span class="built_in">console</span>.log(msg <span class="keyword">instanceof</span> <span class="built_in">String</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">typeof</span> msg);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下图：<img src='/uploads/instanceof.png'></p>
+<h2 id="一元运算符"><a href="#一元运算符" class="headerlink" title="一元运算符"></a>一元运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一元运算符只有一个参数，即要操作的对象或值。例如 delete , void , ++ , + , - - , - 等，它们是 ECMAScript 中最简单的运算符。</p>
+<h3 id="delete"><a href="#delete" class="headerlink" title=" delete "></a><font color=red> delete </font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 该运算符是删除当前对象的自定义属性或方法的引用，但是不能删除系统默认的属性和方法。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> employee = <span class="keyword">new</span> <span class="built_in">Object</span>();</span><br><span class="line">employee.name = <span class="string">"MaxSoft"</span>;</span><br><span class="line">employee.age = <span class="number">24</span>;</span><br><span class="line"><span class="built_in">console</span>.log(employee.name);</span><br><span class="line"><span class="keyword">delete</span> employee.name;</span><br><span class="line"><span class="built_in">console</span>.log(employee.name);</span><br><span class="line"><span class="keyword">delete</span> employee.toString</span><br><span class="line"><span class="built_in">console</span>.log(employee.toString());</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/delete.png'/>从上述的运行结果我们看到，name 属性被删除后，再访问其结果就变成了 undefined ；而 toString 方法被删除后，再访问其依然有效。</p>
+<h3 id="void"><a href="#void" class="headerlink" title=" void "></a><font color=red> void </font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 该运算符对任何值返回 undefined，通常用于避免输出不应该输出的值。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> win_res = <span class="built_in">window</span>.open(<span class="string">'about:blank'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(win_res);</span><br><span class="line"><span class="keyword">var</span> win_res_1 = <span class="keyword">void</span>(<span class="built_in">window</span>.open(<span class="string">'about:blank'</span>));</span><br><span class="line"><span class="built_in">console</span>.log(win_res_1);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/void.png'/>通过以上代码发现，没有使用 void 运算符则返回了有效的结果，而使用 void 运算符则返回了 undefined；</p>
+<h3 id="增量-减量"><a href="#增量-减量" class="headerlink" title=" 增量/减量(++ / - -)"></a><font color=red> 增量/减量(++ / - -)</font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;一元（前，后）增量和一元（前，后）减量是直接从 C（和 Java）借用的两个运算符。这两个运算符使用的情况分为四种。示例代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> age = <span class="number">24</span>;</span><br><span class="line"><span class="built_in">console</span>.log(++age);</span><br><span class="line"><span class="built_in">console</span>.log(age);</span><br><span class="line"><span class="keyword">var</span> age_1 = <span class="number">24</span>;</span><br><span class="line"><span class="built_in">console</span>.log(age_1++);</span><br><span class="line"><span class="built_in">console</span>.log(age_1);</span><br><span class="line"><span class="keyword">var</span> age_2 = <span class="number">24</span>;</span><br><span class="line"><span class="built_in">console</span>.log(--age_2);</span><br><span class="line"><span class="built_in">console</span>.log(age_2);</span><br><span class="line"><span class="built_in">console</span>.log(age_2--);</span><br><span class="line"><span class="built_in">console</span>.log(age_2);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/dubble_plus_sub.png'/>通过上诉运行结果我们可以得出如下结论：<br>● <font color=red><b>++</b></font>：如果在变量前面则先执行运算再使用变量，如果在变量后面则先使用变量再执行运算；<br>● <font color=red><b>- -</b></font>：如果在变量前面则先执行运算再使用变量，如果在变量后面则先执行运算再使用变量；</p>
+<h3 id="加减"><a href="#加减" class="headerlink" title=" 加减(+ / -)"></a><font color=red> 加减(+ / -)</font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;一元加法和一元减法运算符和我们数学中的加法减法用法相同。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> age =<span class="number">24</span>;</span><br><span class="line"><span class="built_in">console</span>.log(-age);</span><br><span class="line"><span class="built_in">console</span>.log(+age);</span><br><span class="line"><span class="keyword">var</span> name=<span class="string">"MaxSoft："</span>;</span><br><span class="line"><span class="built_in">console</span>.log(name + age);</span><br><span class="line"><span class="built_in">console</span>.log(name - age);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/plus_sub.png'/>通过上述运行结果我们发现，一元加法除了与数学中的加法相同的用法外， 在编程语言中还有字符串的拼接功能，而减法则没有；</p>
+<h2 id="加-减-乘-除-取模运算符"><a href="#加-减-乘-除-取模运算符" class="headerlink" title="加|减|乘|除|取模运算符"></a>加|减|乘|除|取模运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 加（+），减（-），乘（*），除（/），取模（%）运算符和我们高中数学中的用法完全相同。</p>
+<h3 id="加法"><a href="#加法" class="headerlink" title="加法(+)"></a><font color=red>加法(+)</font></h3><p>该运算符在处理特殊值时，ECMAScript 中的加法也有一些特殊行为：<br>● 某个运算数是 NaN，那么结果为 NaN<br>● -Infinity 加 -Infinity，结果为 -Infinity<br>● Infinity 加 -Infinity，结果为 NaN<br>● +0 加 +0，结果为 +0<br>● -0 加 +0，结果为 +0<br>● 6. -0 加 -0，结果为 -0<br>如果某个运算数是字符串，那么采用下列规则：<br>● 如果两个运算数都是字符串，把第二个字符串连接到第一个上。<br>● 如果只有一个运算数是字符串，把另一个运算数转换成字符串，结果是两个字符串连接成的字符串。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> number = <span class="number">5</span> + <span class="number">20</span>;</span><br><span class="line"><span class="built_in">console</span>.log(number);</span><br><span class="line"><span class="keyword">var</span> code = <span class="string">"55"</span>;</span><br><span class="line"><span class="built_in">console</span>.log(number + code);</span><br><span class="line"><span class="keyword">var</span> result = <span class="string">"MaxSoft ："</span> + number;</span><br><span class="line"><span class="built_in">console</span>.log(result);</span><br><span class="line"><span class="built_in">console</span>.log(result + code);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/add.png'/>通过上述示例我们可以非常清晰的理解加法（+）运算符俩种用法的差别；</p>
+<h3 id="减法"><a href="#减法" class="headerlink" title="减法(-)"></a><font color=red>减法(-)</font></h3><p>该运算符与加法运算符一样，在处理特殊值时，也有一些特殊行为：<br>● 某个运算数是 NaN，那么结果为 NaN<br>● Infinity 减 Infinity，结果为 NaN<br>● -Infinity 减 -Infinity，结果为 NaN<br>● Infinity 减 -Infinity，结果为 Infinity<br>● -Infinity 减 Infinity，结果为 -Infinity<br>● +0 减 +0，结果为 +0<br>● -0 减 -0，结果为 -0<br>● +0 减 -0，结果为 +0<br>● 某个运算符不是数字，那么结果为 NaN<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> number = <span class="number">24</span>;</span><br><span class="line"><span class="keyword">var</span> num = <span class="number">12</span>;</span><br><span class="line"><span class="keyword">var</span> code = <span class="string">"code"</span>;</span><br><span class="line"><span class="built_in">console</span>.log(number - num);</span><br><span class="line"><span class="built_in">console</span>.log(num - number);</span><br><span class="line"><span class="built_in">console</span>.log(number - code);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span> - num);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">null</span> - num);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">false</span> - num);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">true</span> - num);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/sub.png'/>通过上述示例我们可以看到如果运算数都是数字，那么执行常规的减法运算，并返回结果；否则返回NaN；<br/><font color=red><b>注意</b>：这里的 null , false , true 执行了类型隐式转换后进行运算</font>&nbsp;</p>
+<h3 id="乘法-lowast"><a href="#乘法-lowast" class="headerlink" title="乘法(&lowast;)"></a><font color=red>乘法(&lowast;)</font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;乘法运算符由星号（*）表示，用于两个操作数进行相乘。ECMAScript 中的乘法语法与 C 语言中的相同；但是，在处理特殊值时，ECMAScript 中的乘法也存在一些特殊的行为：<br>● 如果结果太大或太小，那么生成的结果是 Infinity 或 -Infinity。<br>● 如果某个运算数是 NaN，结果为 NaN。<br>● Infinity 乘以 0，结果为 NaN。<br>● Infinity 乘以 0 以外的任何数字，结果为 Infinity 或 -Infinity。<br>● Infinity 乘以 Infinity，结果为 Infinity。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> age = <span class="number">4</span> * <span class="number">6</span>;</span><br><span class="line"><span class="keyword">var</span> pi = <span class="number">-3</span>;</span><br><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span>;</span><br><span class="line"><span class="built_in">console</span>.log(age);</span><br><span class="line"><span class="built_in">console</span>.log(age * pi);</span><br><span class="line"><span class="built_in">console</span>.log(pi * pi);</span><br><span class="line"><span class="built_in">console</span>.log(age * name);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">false</span> * age);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">null</span> * age);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/mult.png'/>通过上述示例我们可以更加直观的看到如果运算数是数字，那么执行常规的乘法运算，即两个正数或两个负数为正数，两个运算数符号不同，结果为负数。</p>
+<h3 id="除法"><a href="#除法" class="headerlink" title="除法(/)"></a><font color=red>除法(/)</font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;除法运算符由斜杠（/）表示，用第二个运算数除第一个运算数。该运算符与乘法运算符相似，在处理特殊值时，该运算符也有一些特殊行为：<br>● 如果结果太大或太小，那么生成的结果是 Infinity 或 -Infinity。<br>● 如果某个运算数是 NaN，结果为 NaN。<br>● Infinity 被 Infinity 除，结果为 NaN。<br>● Infinity 被任何数字除，结果为 Infinity。<br>● 0 除一个任何非无穷大的数字，结果为 NaN。<br>● Infinity 被 0 以外的任何数字除，结果为 Infinity 或 -Infinity。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> age = <span class="number">48</span> / <span class="number">2</span>;</span><br><span class="line"><span class="keyword">var</span> pi = <span class="number">-3</span>;</span><br><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span>;</span><br><span class="line"><span class="built_in">console</span>.log(age);</span><br><span class="line"><span class="built_in">console</span>.log(age / pi);</span><br><span class="line"><span class="built_in">console</span>.log(pi / pi);</span><br><span class="line"><span class="built_in">console</span>.log(age / name);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">false</span> / age);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="literal">null</span> / age);</span><br><span class="line"><span class="built_in">console</span>.log(age / <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/divsion.png'/>通过上述示例我们可以更加直观的看到，如果运算数是数字，那么执行常规的除法运算，即两个正数或两个负数为正数，两个运算数符号不同，结果为负数。</p>
+<h3 id="取模"><a href="#取模" class="headerlink" title="取模(%)"></a><font color=red>取模(%)</font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;除法（余数）运算符由百分号（%）表示。该运算符与上述其他运算符相似，对于特殊值，该运算符也有其特殊的行为：<br>● 如果被除数是 Infinity，或除数是 0，结果为 NaN<br>● Infinity 被 Infinity 除，结果为 NaN<br>● 如果除数是无穷大的数，结果为被除数<br>● 如果被除数为 0，结果为 0<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> temp = <span class="number">28</span>;</span><br><span class="line"><span class="keyword">var</span> age = <span class="number">3</span>;</span><br><span class="line"><span class="built_in">console</span>.log(age%temp);</span><br><span class="line"><span class="built_in">console</span>.log(temp%age);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>%age);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">0</span>/age);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/modle.png'/>通过上述示例我们可以更加直观的看到，如果运算数是数字，那么执行常规的算术除法运算，返回除法运算得到的余数。</p>
+<p><font color=red><b>注意</b>：上述运算符中，只要有一个操作数为NaN，则结果就会返回NaN；</font></p>
+<p>呃呃…… 又到凌晨1点了。洗洗睡，明天继续……<br>参阅 <a href="http://www.w3school.com.cn/js/pro_js_implement.asp" target="_blank" rel="noopener">W3C School</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/06/12/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%866/" rel="prev" title="JavaScript基础知识整理<六>-笔记">
+      <i class="fa fa-chevron-left"></i> JavaScript基础知识整理<六>-笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/06/14/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%AD/" rel="next" title="JavaScript基础知识整理<七>-中-笔记">
+      JavaScript基础知识整理<七>-中-笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型运算符"><span class="nav-number">2.</span> <span class="nav-text">类型运算符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#typeof-运算符"><span class="nav-number">2.1.</span> <span class="nav-text">typeof 运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#instanceof-运算符"><span class="nav-number">2.2.</span> <span class="nav-text">instanceof 运算符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一元运算符"><span class="nav-number">3.</span> <span class="nav-text">一元运算符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#delete"><span class="nav-number">3.1.</span> <span class="nav-text"> delete </span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#void"><span class="nav-number">3.2.</span> <span class="nav-text"> void </span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增量-减量"><span class="nav-number">3.3.</span> <span class="nav-text"> 增量&#x2F;减量(++ &#x2F; - -)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加减"><span class="nav-number">3.4.</span> <span class="nav-text"> 加减(+ &#x2F; -)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#加-减-乘-除-取模运算符"><span class="nav-number">4.</span> <span class="nav-text">加|减|乘|除|取模运算符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加法"><span class="nav-number">4.1.</span> <span class="nav-text">加法(+)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减法"><span class="nav-number">4.2.</span> <span class="nav-text">减法(-)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#乘法-lowast"><span class="nav-number">4.3.</span> <span class="nav-text">乘法(&amp;lowast;)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#除法"><span class="nav-number">4.4.</span> <span class="nav-text">除法(&#x2F;)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#取模"><span class="nav-number">4.5.</span> <span class="nav-text">取模(%)</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">91k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:23</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;今天依然接续上一节的内容进行学习总结，主要有关系运算符，等性运算符，条件运算符，赋值运算符和逗号运算符； 关系运算符&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;关系运算符执行的是比较运算。主要包括：小于( &lt; )、大于( &gt; )、小于等于( &lt;&#x3D; )和大">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript基础知识整理&lt;七&gt;-下-笔记">
+<meta property="og:url" content="http://yoursite.com/2015/06/17/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%8B/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;今天依然接续上一节的内容进行学习总结，主要有关系运算符，等性运算符，条件运算符，赋值运算符和逗号运算符； 关系运算符&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;关系运算符执行的是比较运算。主要包括：小于( &lt; )、大于( &gt; )、小于等于( &lt;&#x3D; )和大">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/logic_1.png">
+<meta property="og:image" content="http://yoursite.com/uploads/equal_1.png">
+<meta property="og:image" content="http://yoursite.com/uploads/equal_all.png">
+<meta property="og:image" content="http://yoursite.com/uploads/condition_1.png">
+<meta property="og:image" content="http://yoursite.com/uploads/equal_rich.png">
+<meta property="article:published_time" content="2015-06-17T12:14:20.000Z">
+<meta property="article:modified_time" content="2020-01-30T10:18:44.871Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="JavaScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/logic_1.png">
+
+<link rel="canonical" href="http://yoursite.com/2015/06/17/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>JavaScript基础知识整理<七>-下-笔记 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/17/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript基础知识整理<七>-下-笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2015-06-17 20:14:20" itemprop="dateCreated datePublished" datetime="2015-06-17T20:14:20+08:00">2015-06-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;今天依然接续上一节的内容进行学习总结，主要有关系运算符，等性运算符，条件运算符，赋值运算符和逗号运算符；</p>
+<h2 id="关系运算符"><a href="#关系运算符" class="headerlink" title="关系运算符"></a>关系运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关系运算符执行的是比较运算。主要包括：小于( &lt; )、大于( &gt; )、小于等于( &lt;= )和大于等于( &gt;= )每个关系运算符都返回一个布尔值。执行行为如下：<br>&nbsp;&nbsp;● 如果俩个比较值都是 Number 类型的值，则按照 Number 的值进行比较；<br>&nbsp;&nbsp;● 如果俩个比较值都是字符串类型的值，则按照字符串的首字母的ASCII码值进行比较；<br>&nbsp;&nbsp;● 任何包含 NaN 的关系运算符都要返回 false；<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log( <span class="number">1</span> &gt; <span class="number">2</span>);</span><br><span class="line"><span class="built_in">console</span>.log( <span class="number">5</span> &gt; <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"AVC"</span> &gt; <span class="number">2</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"AVC"</span> &lt; <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"ABC"</span> &gt; <span class="string">"BCD"</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"abc"</span> &gt; <span class="string">"BCD"</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"24"</span> &gt; <span class="number">12</span>);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src="/uploads/logic_1.png" /><font color=red><b>注意</b></font>：比较一个数字和一个字符串，ECMAScript 都会把字符串转换成数字，然后按照数字顺序比较它们；</p>
+<h2 id="等性运算符"><a href="#等性运算符" class="headerlink" title="等性运算符"></a>等性运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;判断两个变量是否相等是程序设计中非常重要的运算。在处理原始值时，这种运算相当简单，但涉及对象，任务就稍有点复杂。ECMAScript 提供了两套等性运算符：等号和非等号用于处理原始值，全等号和非全等号用于处理对象。</p>
+<h3 id="等号和非等号"><a href="#等号和非等号" class="headerlink" title=" 等号和非等号"></a><font color=red> 等号和非等号</font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 ECMAScript 中，等号由双等号（==）表示，当且仅当两个运算数相等时，它返回 true。非等号由感叹号加等号（!=）表示，当且仅当两个运算数不相等时，它返回 true。为确定两个运算数是否相等，这两个运算符都会进行类型转换。<br>执行规则如下：<br>&nbsp;&nbsp;● 值 null 和 undefined 相等。<br>&nbsp;&nbsp;● 在检查相等性时，不能把 null 和 undefined 转换成其他值。<br>&nbsp;&nbsp;● 如果某个运算数是 NaN，等号将返回 false，非等号将返回 true。<br>&nbsp;&nbsp;● 如果两个运算数都是对象，那么比较的是它们的引用值。如果两个运算数指向同一对象，那么等号返回 true，否则两个运算数不等。<br>特殊行为结果如下：<img src='/uploads/equal_1.png'/><font color=red><b>注意</b></font>：即使两个数都是 NaN，等号仍然返回 false，因为根据规则，NaN 不等于 NaN。</p>
+<h3 id="全等号和非全等号"><a href="#全等号和非全等号" class="headerlink" title=" 全等号和非全等号"></a><font color=red> 全等号和非全等号</font></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;等号和非等号的同类运算符是全等号和非全等号。这两个运算符所做的与等号和非等号相同，只是它们在检查相等性前，不执行类型转换。<br>&nbsp;&nbsp;● 全等号由三个等号表示（===），只有在无需类型转换运算数就相等的情况下，才返回 true。<br>&nbsp;&nbsp;● 非全等号由感叹号加两个等号（!==）表示，只有在无需类型转换运算数不相等的情况下，才返回 true。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> age = <span class="string">"24"</span>;</span><br><span class="line"><span class="keyword">var</span> age_1 = <span class="number">24</span>;</span><br><span class="line"><span class="built_in">console</span>.log(age == age_1);</span><br><span class="line"><span class="built_in">console</span>.log(age === age_1);</span><br><span class="line"><span class="built_in">console</span>.log(age !== age_1);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src="/uploads/equal_all.png" />通过上述示例我们可以清晰的理解 等号 与 全等号 的区别。</p>
+<h2 id="条件运算符"><a href="#条件运算符" class="headerlink" title="条件运算符"></a>条件运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;条件运算符通常也被称为三目运算符是 ECMAScript 中功能最多的运算符，它的形式与 Java 中的相同。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> max = <span class="number">24</span>;</span><br><span class="line"><span class="keyword">var</span> min = <span class="number">20</span>;</span><br><span class="line"><span class="keyword">var</span> result = max &gt; min ? <span class="literal">true</span> : <span class="literal">false</span>;</span><br><span class="line"><span class="built_in">console</span>.log(result);</span><br><span class="line"><span class="keyword">var</span> result_1 = max &gt; min ? <span class="literal">false</span> : <span class="literal">true</span>;</span><br><span class="line"><span class="built_in">console</span>.log(result_1);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src="/uploads/condition_1.png" /></p>
+<h2 id="赋值运算符"><a href="#赋值运算符" class="headerlink" title="赋值运算符"></a>赋值运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;赋值运算分为简单赋值运算和复合赋值运算；<br>&nbsp;&nbsp;● 简单的赋值运算符由等号（=）实现，只是把等号右边的值赋予等号左边的变量。<br>&nbsp;&nbsp;● 复合赋值运算是由加，减，乘，除运算符或位移运算符加等号（=）实现的。<br>示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> hello = <span class="string">"Hello, "</span>;</span><br><span class="line">hello += <span class="string">"MaxSoft "</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"hello="</span> + hello);</span><br><span class="line"><span class="keyword">var</span> age = <span class="number">12</span>;</span><br><span class="line">age += <span class="number">12</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">"age="</span> + age);</span><br></pre></td></tr></table></figure>
+<p>运行结果如下：<img src='/uploads/equal_rich.png'/></p>
+<h2 id="逗号运算符"><a href="#逗号运算符" class="headerlink" title="逗号运算符"></a>逗号运算符</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;用逗号运算符可以在一条语句中执行多个运算，其常用变量声明中。<br>示例代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> age=<span class="number">24</span>, name=<span class="string">"MaxSoft"</span>, sex=<span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+<p>参阅 <a href="http://www.w3school.com.cn/js/pro_js_implement.asp" target="_blank" rel="noopener">W3C School</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/06/14/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%867%E4%B8%AD/" rel="prev" title="JavaScript基础知识整理<七>-中-笔记">
+      <i class="fa fa-chevron-left"></i> JavaScript基础知识整理<七>-中-笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/06/19/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%868/" rel="next" title="JavaScript基础知识整理<八>-笔记">
+      JavaScript基础知识整理<八>-笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关系运算符"><span class="nav-number">2.</span> <span class="nav-text">关系运算符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#等性运算符"><span class="nav-number">3.</span> <span class="nav-text">等性运算符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#等号和非等号"><span class="nav-number">3.1.</span> <span class="nav-text"> 等号和非等号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全等号和非全等号"><span class="nav-number">3.2.</span> <span class="nav-text"> 全等号和非全等号</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件运算符"><span class="nav-number">4.</span> <span class="nav-text">条件运算符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#赋值运算符"><span class="nav-number">5.</span> <span class="nav-text">赋值运算符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逗号运算符"><span class="nav-number">6.</span> <span class="nav-text">逗号运算符</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">91k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:23</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
