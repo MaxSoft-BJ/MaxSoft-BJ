@@ -474,6 +474,100 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/04/EasyUI%E6%89%A9%E5%B1%95%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/03/04/EasyUI%E6%89%A9%E5%B1%95%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6/" class="post-title-link" itemprop="url">EasyUI扩展自定义组件</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2017-03-04 10:05:30" itemprop="dateCreated datePublished" datetime="2017-03-04T10:05:30+08:00">2017-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最近项目组需要开发大量的自定义基础组件供业务开发同事使用，所以就借今天的时间来总结一下组件开发的思路。</p>
+<h2 id="统一样式风格的Window窗体"><a href="#统一样式风格的Window窗体" class="headerlink" title="统一样式风格的Window窗体"></a>统一样式风格的Window窗体</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次项目所有的基础组件都是基于 jQuery 和 EasyUI 进行的自定义的组合而设计实现的。今天主要总结 Window 窗体的自定义组件设计过程。其实，对于 jQuery 和 Easyui 的使用如果有 JavaScript 的扎实的基础，使用起来还是相对比较容易。今天总结的的关于 Window 统一风格样式的自定义组件主要就是基于 EasyUI 的 window 组件、LinkButton组件以及 jQuery 的相关技术。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过这样的组合之后，可以不用编写和维护大量的重复代码，而是像使用 EasyUI 的基础组件那样进行灵活的配置使用。</p>
+<h2 id="代码框架"><a href="#代码框架" class="headerlink" title="代码框架"></a>代码框架</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;扩展该组件的主要框架代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">jQuery</span>)</span>&#123;</span><br><span class="line">	jQuery.WinFrame = <span class="function"><span class="keyword">function</span>(<span class="params">options,params</span>)</span>&#123;</span><br><span class="line">		<span class="comment">//自定义实现代码</span></span><br><span class="line">	&#125;</span><br><span class="line"> &#125;)(jQuery);</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们看到上述代码中的参数使用了 jQuery ，这是因为通过这种方式可以把我们的自定义组件绑定到 jQuery 的对象上，而在使用的时候更加方便，同时，也不用改变开发同事对其的使用习惯（基于jQuery和EasyUI的使用习惯）。为什么这说呢？因为我们也可以这样实现上面的代码，示例如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">w</span>)</span>&#123;</span><br><span class="line">	w.WinFrame = <span class="function"><span class="keyword">function</span>(<span class="params">options,params</span>)</span>&#123;</span><br><span class="line">		<span class="comment">//自定义实现代码</span></span><br><span class="line">	&#125;</span><br><span class="line"> &#125;)(<span class="built_in">window</span>);</span><br></pre></td></tr></table></figure>
+<p>通过上述的实现方式，我们在使用的过程中就要摒弃jQuery和EasyUI的那种使用习惯（例如jQuery.WinFrame({})或$.WinFrame({})）而是要使用 window.WinFrame({})，如果我们项目中使用了 jQuery 框架，那么这种方式显然不利于组件的使用。<br/><font color=red>注意：上述中的参数必须是已经存在的全局变量，这样才可以在任何地方调用。否则会报参数无定义的异常。</font></p>
+<h2 id="组件代码"><a href="#组件代码" class="headerlink" title="组件代码"></a>组件代码</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接下来就是我们的具体的自定义组件实现代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/***************************************************************************************************************************</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@function </span>统一风格的window组件</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author <span class="variable">MaxSoft</span></span></span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date </span>2017-03-01</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version </span>1.0.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@exp</span></span></span><br><span class="line"><span class="comment">&lt;a id='test'&gt;&lt;/a&gt;</span></span><br><span class="line"><span class="comment">&lt;script type="text/javascript"&gt;</span></span><br><span class="line"><span class="comment">$(function()&#123;</span></span><br><span class="line"><span class="comment">	$("#test").linkbutton(&#123;</span></span><br><span class="line"><span class="comment">		text:'测试',</span></span><br><span class="line"><span class="comment">		onClick:function()&#123;</span></span><br><span class="line"><span class="comment">			$.WinFrame(&#123;</span></span><br><span class="line"><span class="comment">				width:700,</span></span><br><span class="line"><span class="comment">				height:400,</span></span><br><span class="line"><span class="comment">				title:'测试窗体',</span></span><br><span class="line"><span class="comment">				onInit:function(id)&#123;</span></span><br><span class="line"><span class="comment">					$("#"+id).html("&lt;font color=red&gt;AAAAAAAAAAAAAAAAAAAAAA&lt;/font&gt;");</span></span><br><span class="line"><span class="comment">				&#125;,</span></span><br><span class="line"><span class="comment">				onOkClick:function(id)&#123;</span></span><br><span class="line"><span class="comment">					return false;</span></span><br><span class="line"><span class="comment">				&#125;,</span></span><br><span class="line"><span class="comment">				onSuccess:function()&#123;</span></span><br><span class="line"><span class="comment">					alert("执行成功");</span></span><br><span class="line"><span class="comment">				&#125;,</span></span><br><span class="line"><span class="comment">				onTip:function()&#123;</span></span><br><span class="line"><span class="comment">					alert("发生异常");</span></span><br><span class="line"><span class="comment">				&#125;</span></span><br><span class="line"><span class="comment">			&#125;);</span></span><br><span class="line"><span class="comment">			console.log($.WinFrame('getInfos'));</span></span><br><span class="line"><span class="comment">		&#125;</span></span><br><span class="line"><span class="comment">	&#125;);</span></span><br><span class="line"><span class="comment">&#125;);</span></span><br><span class="line"><span class="comment">&lt;/script&gt;</span></span><br><span class="line"><span class="comment"> ***************************************************************************************************************************/</span></span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params">jQuery</span>)</span>&#123;</span><br><span class="line">	jQuery.WinFrame = <span class="function"><span class="keyword">function</span>(<span class="params">options,params</span>)</span>&#123;</span><br><span class="line">		<span class="keyword">var</span> _temp_id = <span class="string">""</span>;</span><br><span class="line">		<span class="keyword">if</span>(<span class="keyword">typeof</span>(options)===<span class="string">'object'</span> &amp;&amp; <span class="built_in">arguments</span>[<span class="number">1</span>])&#123;</span><br><span class="line">			_temp_id = <span class="built_in">arguments</span>[<span class="number">1</span>];</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">var</span> prefix_id_ = <span class="string">"maxsoft_ui_"</span> + _temp_id, suffix_id_ = <span class="string">"_2017_03_01_"</span>, _id_ = prefix_id_.concat(suffix_id_), _content_id_ = _id_.concat(<span class="string">"_content"</span>), _footer_id_ = _id_.concat(<span class="string">"_footer"</span>), _btn_ok_id_ = _id_.concat(<span class="string">"_ok"</span>), _btn_cancel_id_ = _id_.concat(<span class="string">"_cancel"</span>);</span><br><span class="line">		<span class="keyword">if</span>(<span class="keyword">typeof</span>(options)===<span class="string">'object'</span>)&#123;</span><br><span class="line">			<span class="keyword">var</span> _target_div_ = <span class="string">"&lt;div&gt;&lt;/div&gt;"</span>, _target_a_ = <span class="string">"&lt;a&gt;&lt;/a&gt;"</span>;</span><br><span class="line">			<span class="keyword">var</span> _default_options = &#123;<span class="attr">height</span>:<span class="number">400</span>, </span><br><span class="line">						width:<span class="number">800</span>,	</span><br><span class="line">						title:<span class="string">'Development Test Title'</span>, </span><br><span class="line">						maximizable:<span class="literal">false</span>, </span><br><span class="line">						minimizable:<span class="literal">false</span>, </span><br><span class="line">						collapsible:<span class="literal">false</span>, </span><br><span class="line">						resizable:<span class="literal">false</span>, </span><br><span class="line">						closable:<span class="literal">true</span>, </span><br><span class="line">						modal:<span class="literal">true</span>,</span><br><span class="line">						onInit:<span class="function"><span class="keyword">function</span>(<span class="params">id</span>)</span>&#123;&#125;,</span><br><span class="line">						onOkClick:<span class="function"><span class="keyword">function</span>(<span class="params">id</span>)</span>&#123;<span class="keyword">return</span> <span class="literal">false</span>;&#125;,<span class="comment">/*确定按钮的事件，参数为当前window中的datagrid对象，返回值为true或false*/</span></span><br><span class="line">						onSuccess:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; &#125;, <span class="comment">/*成功回调函数*/</span></span><br><span class="line">						onTip:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; &#125; <span class="comment">/*异常回调函数*/</span></span><br><span class="line">									&#125;;</span><br><span class="line">			<span class="keyword">var</span> win_1 = $(_target_div_); <span class="comment">/*窗体区域*/</span></span><br><span class="line">			win_1.attr(<span class="string">"id"</span>,_id_);</span><br><span class="line">			<span class="keyword">var</span> win_1_content = $(_target_div_); <span class="comment">/*内容区域*/</span></span><br><span class="line">			win_1_content.attr(<span class="string">"id"</span>,_content_id_);</span><br><span class="line">			<span class="keyword">var</span> win_1_footer = $(_target_div_); <span class="comment">/*底部区域*/</span></span><br><span class="line">			win_1_footer.attr(<span class="string">"id"</span>,_footer_id_);</span><br><span class="line">			win_1_footer.css(&#123;<span class="string">'height'</span>:<span class="string">'34px'</span>,<span class="string">'line-height'</span>:<span class="string">'34px'</span>,<span class="attr">padding</span>:<span class="string">'0px 10px 0px 0px'</span>,<span class="string">'text-align'</span>:<span class="string">'right'</span>,<span class="string">'vertical-align'</span>:<span class="string">'middle'</span>&#125;);</span><br><span class="line">			<span class="keyword">var</span> btn_css = &#123;<span class="string">'width'</span>:<span class="string">'65px'</span>,<span class="string">'margin-left'</span>:<span class="string">'10px'</span>,<span class="string">'margin-top'</span>:<span class="string">'4px'</span>&#125;</span><br><span class="line">			<span class="keyword">var</span> btn_ok = $(_target_a_); <span class="comment">/*确定按钮*/</span></span><br><span class="line">			btn_ok.attr(<span class="string">'id'</span>,_btn_ok_id_);</span><br><span class="line">			btn_ok.css(btn_css);</span><br><span class="line">			<span class="keyword">var</span> btn_cancel = $(_target_a_); <span class="comment">/*取消按钮*/</span></span><br><span class="line">			btn_cancel.attr(<span class="string">"id"</span>,_btn_cancel_id_);</span><br><span class="line">			btn_cancel.css(btn_css);</span><br><span class="line">			<span class="keyword">var</span> _final_options = &#123; <span class="attr">content</span>:win_1_content , <span class="attr">footer</span>:<span class="string">'#'</span>+_footer_id_ , <span class="attr">onClose</span>:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123; close_win(); &#125; &#125;;</span><br><span class="line">			$(<span class="string">"#"</span>+_id_).remove();</span><br><span class="line">			$(<span class="string">"body"</span>).append(win_1);</span><br><span class="line">			$(<span class="string">"#"</span>+_footer_id_).remove();</span><br><span class="line">			$(<span class="string">"body"</span>).append(win_1_footer);</span><br><span class="line">			$(<span class="string">"#"</span>+_footer_id_).append(btn_ok).append(btn_cancel);</span><br><span class="line">			options = $.extend(_default_options,options);</span><br><span class="line">			options = $.extend(options,_final_options); <span class="comment">/*这里使用了jquery的扩展方法对某些不必要的内容做了固化处理，即调用方不能修改原window组建的某些属性或方法；*/</span></span><br><span class="line">			$(<span class="string">"#"</span>+_id_).window(options);</span><br><span class="line">			options.onInit(_content_id_);</span><br><span class="line">			$(<span class="string">"#"</span> +_btn_cancel_id_).linkbutton(&#123;</span><br><span class="line">				text:<span class="string">"取消"</span>,</span><br><span class="line">				iconCls:<span class="string">"fa-cancel"</span>,</span><br><span class="line">				onClick:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">					close_win();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line">			$(<span class="string">"#"</span>+_btn_ok_id_).linkbutton(&#123;</span><br><span class="line">				text:<span class="string">"确定"</span>,</span><br><span class="line">				iconCls:<span class="string">"fa-ok"</span>,</span><br><span class="line">				onClick:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">					<span class="keyword">var</span> is = options.onOkClick(_content_id_);</span><br><span class="line">					<span class="keyword">if</span>(is)&#123;</span><br><span class="line">						close_win();</span><br><span class="line">						options.onSuccess();</span><br><span class="line">					&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">						options.onTip();</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line">			<span class="function"><span class="keyword">function</span> <span class="title">close_win</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">				$(<span class="string">"#"</span>+_id_).window(<span class="string">'destroy'</span>);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span> <span class="keyword">if</span>(<span class="keyword">typeof</span>(options)===<span class="string">'string'</span>)&#123;</span><br><span class="line">			<span class="keyword">var</span> methods = &#123;</span><br><span class="line">				getInfos:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">					<span class="keyword">var</span> version = &#123;<span class="attr">author</span>:<span class="string">"MaxSoft"</span>,<span class="attr">date</span>:<span class="string">"2018-03-01"</span>,<span class="attr">version</span>:<span class="string">"1.0.0"</span>,<span class="attr">description</span>:<span class="string">"统一风格的window组件，继承自 window，linkbutton "</span>&#125;;</span><br><span class="line">					<span class="keyword">return</span> version;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;;</span><br><span class="line">			<span class="keyword">return</span> methods[options](params);</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"> &#125;)(jQuery);</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;上述代码中我们通过 onInit 方法中提供的参数 id 来进行对该 id 所属的元素进行内容填充，从而达到为窗体内容进行初始化处理的目的。onOkClick 方法则是点击确定按钮的事件，onSuccess 是点击确定按钮后如果逻辑处理成功则进行成功信息的提示，否则通过 onTip 方法进行错误信息的提示。组件的配置参数完全基于 EasyUI 中的 window 组件的相关参数，所以使用该组件的过程可以参考 EasyUI 中 window 的API。</p>
+<h2 id="调用示例"><a href="#调用示例" class="headerlink" title="调用示例"></a>调用示例</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">HTML</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">"-//W3C//DTD HTML 4.01 Transitional//EN"</span> <span class="meta-string">"http://www.w3.org/TR/html4/loose.dtd"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>统一弹出框样式<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Generator"</span> <span class="attr">content</span>=<span class="string">"EditPlus"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Author"</span> <span class="attr">content</span>=<span class="string">"zhaoyl"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Keywords"</span> <span class="attr">content</span>=<span class="string">""</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"Description"</span> <span class="attr">content</span>=<span class="string">"Demo"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">type</span>=<span class="string">"text/css"</span> <span class="attr">href</span>=<span class="string">"assets/easyui/themes/icon.css"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span> <span class="attr">id</span>=<span class="string">"content"</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">type</span>=<span class="string">"text/css"</span> <span class="attr">href</span>=<span class="string">"assets/easyui/themes/material/easyui.css"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"assets/easyui/jquery.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"assets/easyui/jquery.easyui.min.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"assets/easyui/locale/easyui-lang-zh_CN.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"template.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"assets/yonyou/js/plugins/yonyou.jquery.customebilllayout.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">type</span>=<span class="string">"text/css"</span> <span class="attr">href</span>=<span class="string">"assets/yonyou/css/font-awesome.min.css"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">type</span>=<span class="string">"text/css"</span> <span class="attr">href</span>=<span class="string">"assets/yonyou/css/buttons-icon.css"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"assets/yonyou/js/utils/utils.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"yonyou.jquery.advanced.query.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"yonyou.jquery.btn.winframe.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">body</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">id</span>=<span class="string">'test'</span>&gt;</span><span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="javascript">$(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">	$(<span class="string">"#test"</span>).linkbutton(&#123;</span></span><br><span class="line"><span class="actionscript">		text:<span class="string">'测试'</span>,</span></span><br><span class="line"><span class="actionscript">		onClick:<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line">			jQuery.WinFrame(&#123;</span><br><span class="line">				height:400, </span><br><span class="line">				width:800,	</span><br><span class="line"><span class="actionscript">				title:<span class="string">'统一弹出框样式'</span>, </span></span><br><span class="line"><span class="actionscript">				onInit:<span class="function"><span class="keyword">function</span><span class="params">(id)</span></span>&#123;</span></span><br><span class="line"><span class="javascript">					$(<span class="string">"#"</span> + id).html(<span class="string">"【----初始化信息----】"</span>)</span></span><br><span class="line">				&#125;,</span><br><span class="line"><span class="actionscript">				onOkClick:<span class="function"><span class="keyword">function</span><span class="params">(id)</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">					alert(<span class="string">"确定按钮"</span>);</span></span><br><span class="line"><span class="actionscript">					<span class="keyword">return</span> <span class="literal">false</span>;</span></span><br><span class="line">				&#125;,</span><br><span class="line"><span class="actionscript">				onSuccess:<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">					alert(<span class="string">"成功事件"</span>);</span></span><br><span class="line">				&#125;,</span><br><span class="line"><span class="actionscript">				onTip:<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">					alert(<span class="string">"异常事件"</span>);</span></span><br><span class="line">				&#125;</span><br><span class="line"><span class="actionscript">			&#125;,<span class="string">"001"</span>);</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="示例效果"><a href="#示例效果" class="headerlink" title="示例效果"></a>示例效果</h2><p><img src="/uploads/2017-03-01-001.png" title="运行效果图" />以上内容就是本次关于自定义组件的实现过程。<br>More info: <a href="http://www.jeasyui.com/index.php" target="_blank" rel="noopener">EasyUI</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1684,106 +1778,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/06/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%862/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/06/06/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%862/" class="post-title-link" itemprop="url">JavaScript基础知识整理<二>-笔记</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-06-06 20:23:02" itemprop="dateCreated datePublished" datetime="2015-06-06T20:23:02+08:00">2015-06-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;昨天主要整理了 JavaScript 语言的历史渊源，以及其相关的组织部分。从今天开始主要总结一些 JavaScript 核心 ECMAScript 基础的语法知识，其实 ECMAScript 的语法结构和 Java 、C++ 等有许多相似之处。因为 ECMAScript 语言的设计者在当初设计该语言的时候借鉴了这些语言的相关语法结构。所以学习过 Java、C++ 的同学都比较相对容易的掌握其语法结构，笔者就是其中之一 O<sub>S</sub>O ……</p>
-<h2 id="语法结构"><a href="#语法结构" class="headerlink" title="语法结构"></a>语法结构</h2><p>1&gt; <font color=red>区分大小写</font>：和 Java 语言一样，变量、函数名、运算符以及其他一切内容都是区分大小写的；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span>;</span><br><span class="line"><span class="keyword">var</span> age = <span class="number">25</span>;</span><br><span class="line"><span class="keyword">var</span> sex = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">var</span> birthday = <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="string">'1992-03-13'</span>);</span><br></pre></td></tr></table></figure>
-<p>2&gt; <font color=red>变量为弱类型</font>：和 Java 、C++ 等语言不同，ECMAScript 的变量没有特定的数据类型。定义变量时只用 var 运算符，可以将变量初始化为任意值。因此，在程序运行过程中可以随时改变变量所存储的数据类型；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doAction</span>(<span class="params">flag</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> obj = &#123;&#125;;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">1</span>)&#123;</span><br><span class="line">		obj = &#123;<span class="attr">name</span>:<span class="string">'MaxSoft'</span>,<span class="attr">age</span>:<span class="number">24</span>,<span class="attr">sex</span>:<span class="literal">false</span>&#125;</span><br><span class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(flag ==<span class="number">2</span>)&#123;</span><br><span class="line">		obj = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">"系统异常"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		obj();</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		obj = <span class="string">"参数无效"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="keyword">typeof</span>(obj));</span><br><span class="line">	<span class="built_in">console</span>.log(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上代码执行结果如下图：<img src='/uploads/dynamic_type.png'><br>3&gt; <font color=red>行结束分号可有可无</font>：Java、C++ 等都要求每行代码以分号（;）结束才符合语法，而 ECMAScript 语法结构无该要求。出于 ECMAScript 程序代码的可读性与后期的可维护性，建议在编写 ECMAScript 程序时，尽量在该增加行结束标识的时候都加上结束标识符分号（;），养成一个良好的代码编写习惯。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name=<span class="string">"MaxSoft"</span></span><br><span class="line"><span class="keyword">var</span> age=<span class="number">24</span>;</span><br></pre></td></tr></table></figure>
-<p>4&gt; <font color=red>注释</font>：和 Java 语言的注释类似，有俩种：一种是单行注释（// 注释内容）； 一种是多行注释（/<em>注释内容</em>/）；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name=<span class="string">"MaxSoft"</span>; <span class="comment">// 声明姓名字段并初始化内容</span></span><br><span class="line"><span class="comment">/*获取Name字段的值*/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getName</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>5&gt; <font color=red>括号表示代码块</font>：从 Java 中借鉴的又一个概念是代码块。代码块表示一系列应该按顺序执行的语句，这些语句被封装在左花括号（{）和右花括号（}）之间；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doLogin</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">typeof</span>(data)==<span class="string">'undefined'</span> || data == <span class="literal">null</span>)&#123;</span><br><span class="line">		<span class="built_in">console</span>.error(<span class="string">'表单数据为空，请检查'</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>( <span class="keyword">typeof</span>(data)==<span class="string">'object'</span> )&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">'解析登录表单数据'</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">'数据类型有误....'</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="代码实例"><a href="#代码实例" class="headerlink" title="代码实例"></a>代码实例</h2><p>通过以下代码片段我们就可以更加直观的了解 ECMAScript 的语法结构。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params">name</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> msg = <span class="string">"你好，"</span>; <span class="comment">// 申明字符串</span></span><br><span class="line">	<span class="keyword">var</span> age = <span class="number">24</span>; <span class="comment">//申明数字类型变量</span></span><br><span class="line">	alert(<span class="string">"姓名："</span>+name + <span class="string">"; 年龄："</span> + age);</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">"姓名："</span>+name + <span class="string">"; 年龄："</span> + age);</span><br><span class="line">	<span class="keyword">return</span> msg + name;</span><br><span class="line">&#125;</span><br><span class="line">hello(<span class="string">'MaxSoft'</span>);</span><br></pre></td></tr></table></figure>
-<p>以上代码执行后，通过 hello(‘MaxSoft’); 调用执行，结果如下：<br>1&gt; 首先会弹出一个弹框<img src='/uploads/hello_res.png'>2&gt; 在浏览器的控制台会输出 ：姓名：MaxSoft; 年龄：24<br>3&gt; 方法的返回值为：”你好，MaxSoft”</p>
-<p><font color=red><b>注意：</b>以上代码的执行环境为 Google Chrome 浏览器；</font></p>
-<p>参阅 <a href="http://www.w3school.com.cn/js/pro_js_implement.asp" target="_blank" rel="noopener">W3C School</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1856,7 +1850,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">19</span>
+          <span class="site-state-item-count">23</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1869,7 +1863,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1912,13 +1906,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">91k</span>
+    <span title="站点总字数">119k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">1:23</span>
+    <span title="站点阅读时长">1:48</span>
 </div>
 
         

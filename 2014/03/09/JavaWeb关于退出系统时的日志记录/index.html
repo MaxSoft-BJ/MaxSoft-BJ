@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;通过这俩周的时间，终于把相关的独立模块功能都悉数完成了，接下来的工作就是和第三方框架（ Spring ， Struts2.0，Hibernate  ）来进行集成开发了。在前天和教导老师沟通后，又新增了几个相对较小，但是比较适用的新功能。分别有「登录退出日志记录」,「是否已登录的校验并剔除登录功能」,「防重复提交">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaWeb关于退出系统时的日志记录">
+<meta property="og:url" content="http://yoursite.com/2014/03/09/JavaWeb%E5%85%B3%E4%BA%8E%E9%80%80%E5%87%BA%E7%B3%BB%E7%BB%9F%E6%97%B6%E7%9A%84%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;通过这俩周的时间，终于把相关的独立模块功能都悉数完成了，接下来的工作就是和第三方框架（ Spring ， Struts2.0，Hibernate  ）来进行集成开发了。在前天和教导老师沟通后，又新增了几个相对较小，但是比较适用的新功能。分别有「登录退出日志记录」,「是否已登录的校验并剔除登录功能」,「防重复提交">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-03-09T11:51:32.000Z">
+<meta property="article:modified_time" content="2018-04-24T09:28:30.000Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="监听器">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2014/03/09/JavaWeb%E5%85%B3%E4%BA%8E%E9%80%80%E5%87%BA%E7%B3%BB%E7%BB%9F%E6%97%B6%E7%9A%84%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>JavaWeb关于退出系统时的日志记录 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2014/03/09/JavaWeb%E5%85%B3%E4%BA%8E%E9%80%80%E5%87%BA%E7%B3%BB%E7%BB%9F%E6%97%B6%E7%9A%84%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaWeb关于退出系统时的日志记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2014-03-09 19:51:32" itemprop="dateCreated datePublished" datetime="2014-03-09T19:51:32+08:00">2014-03-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过这俩周的时间，终于把相关的独立模块功能都悉数完成了，接下来的工作就是和第三方框架（ Spring ， Struts2.0，Hibernate  ）来进行集成开发了。在前天和教导老师沟通后，又新增了几个相对较小，但是比较适用的新功能。分别有「登录退出日志记录」,「是否已登录的校验并剔除登录功能」,「防重复提交功能」。<br>由于「防重复提交功能」需要用到Spring中相关的拦截器功能需要集成开发时进行记录总结，而「登录退出日志记录」,「是否已登录的校验并剔除登录功能」可以通过重写 Session 销毁事件进行统一处理，所以今天就统一介绍关于「登录退出日志记录」,「是否已登录的校验并剔除登录功能」的实现过程。「防重复提交功能」放到后面的集成开发中来做详细的记录总结。</p>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;首先登录日志记录可以通过登录事件后添加相关的日志记录逻辑进行登录日志的记录，相对比较简单，这里就不做过多的介绍了。我们主要来实现退出系统时的日志记录，退出系统主要有如下几种场景：<br>1· 登录系统后做完相关业务操作，点击退出按钮进行退出操作。<br>2· 登录系统后做完相关业务直接关闭浏览器<br>3· 登录后网络中断（边界场景）。<br/><font color=red><b>注意：</b>以上2,3 这种情况是相对不好处理，只能等到Session自动销毁后做相关日志信息记录以及其他的操作。</font><br>通过分析后我们可以得知用户不论以哪种场景做退出操作，都最终体现在了 Session 的销毁方面，所以我们为能够全面的覆盖以上这几种场景，可以直接将日志记录逻辑写入到Session销毁的方法中，进而完美的达到了我们预期的功能结果。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接下来我们分析「是否已登录的校验并剔除登录功能」，这个功能乍一看感觉相对比较复杂，其实当我们理解了 Session ，Appalachian（ ServletContext ）的生命周期后就会变得相对容易了。<br><b style="color:red;">Session</b>：从用户发起登录请求并进入系统后到用户点击退出操作或者长时间没有操作达到了系统中设定的 Session 销毁时间，为一个生命周期。<br><b style="color:red;">Application（ServletContext）</b>：从系统启动到系统停止，为一个生命周期。<br>首先我们可以在用户登录系统后将其唯一信息（UUID等）做为键写入到 Application（ ServletContext ）中（以备登录系统后用来校验该用户是否已经登录系统），并且在 Session 销毁时将 UUID 从 Application（ ServletContext ）中移除。如果用户在A电脑登录系统后，没有做退出操作，又在B电脑进行了登陆操作，这时可以通过校验逻辑在  Application（ ServletContext ）中获取该用户的 UUID ，如果有值，则表示用户已登录系统，这时可以进行合适的提示处理。如果没有值，则可以直接登陆。</p>
+<h2 id="代码逻辑"><a href="#代码逻辑" class="headerlink" title="代码逻辑"></a>代码逻辑</h2><p>1· 相关的Java大致代码逻辑如下（ SessionTimeoutListener.java ），主要实现了 HttpSessionListener ，HttpSessionAttributeListener 接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.session.listener;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletContext;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpSession;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpSessionAttributeListener;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpSessionBindingEvent;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpSessionEvent;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpSessionListener;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SessionTimeoutListener</span> <span class="keyword">implements</span> <span class="title">HttpSessionListener</span>, <span class="title">HttpSessionAttributeListener</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sessionCreated</span><span class="params">(HttpSessionEvent event)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//Session创建是触发事件</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sessionDestroyed</span><span class="params">(HttpSessionEvent event)</span> </span>&#123;</span><br><span class="line">		HttpSession session = event.getSession();</span><br><span class="line">		Object user = session.getAttribute(SessionConstant.USER_VO);</span><br><span class="line">		Object userName = session.getAttribute(SessionConstant.USER_NAME);</span><br><span class="line">		Object userCode = session.getAttribute(SessionConstant.USER_CODE);</span><br><span class="line">		</span><br><span class="line">		System.out.println( <span class="string">"User:"</span> + user + <span class="string">"  Name:"</span> + userName + <span class="string">"  Code:"</span> + userCode);</span><br><span class="line">		ServletContext context = session.getServletContext();</span><br><span class="line">		String user_uuid = (String)session.getAttribute(SessionConstant.USER_UUID);</span><br><span class="line">		context.removeAttribute(user_uuid);</span><br><span class="line">		</span><br><span class="line">		System.out.print(<span class="string">"Session登录信息超时销毁......"</span>);</span><br><span class="line">		System.out.print(<span class="string">"这里切入日志记录逻辑，进行日志信息的处理......"</span>);</span><br><span class="line">		System.out.print(<span class="string">"这里也可以进行数据持久操作......"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attributeAdded</span><span class="params">(HttpSessionBindingEvent event)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//Session增加属性时触发事件</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attributeRemoved</span><span class="params">(HttpSessionBindingEvent event)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//Session移除属性时触发事件</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attributeReplaced</span><span class="params">(HttpSessionBindingEvent event)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//Session替换属性值时触发事件</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2· 注册监听器如下代码：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">web-app</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">display-name</span>&gt;</span>FlexEngagementRing<span class="tag">&lt;/<span class="name">display-name</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 省略其他代码 --&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">listener</span>&gt;</span></span><br><span class="line">  		<span class="tag">&lt;<span class="name">listener-class</span>&gt;</span>org.maxsoft.session.listener.SessionTimeoutListener<span class="tag">&lt;/<span class="name">listener-class</span>&gt;</span></span><br><span class="line">  	<span class="tag">&lt;/<span class="name">listener</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">session-config</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">session-timeout</span>&gt;</span>5<span class="tag">&lt;/<span class="name">session-timeout</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">session-config</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">web-app</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>3· 校验是否已登录，如果已登录，则进行柔性提示并执行相关的操作。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.login;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"><span class="keyword">import</span> java.io.UnsupportedEncodingException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CheckController</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doGet</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span><span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>.doGet(request, response);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doPost</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">		String jsonStr = <span class="keyword">null</span>;</span><br><span class="line">		response.setContentType(<span class="string">"application/json;charset=utf-8"</span>);<span class="comment">//指定返回的格式为JSON格式  </span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			request.setCharacterEncoding(<span class="string">"UTF-8"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//这里可以通过用户名和密码进行查询用户，然后通过用户的UUID来进行校验。</span></span><br><span class="line">		String uuid = <span class="string">"MaxSoft_000000000000000000001"</span>;</span><br><span class="line">		<span class="comment">//这里获取内容的前提是必须要在登录成功注册 Session 后，</span></span><br><span class="line">		<span class="comment">//进行对相应的信息执行属性（req.getSession().getServletContext().setAttribute(uuid, "MaxSoft");）</span></span><br><span class="line">		String msg = (String)request.getSession().getServletContext().getAttribute(uuid);</span><br><span class="line">		<span class="keyword">if</span>(msg != <span class="keyword">null</span> &amp;&amp; msg.length() &gt; <span class="number">0</span>)&#123;</span><br><span class="line">			jsonStr =<span class="string">"&#123;\"state\":\"true\",\"msg\":\"当前用户已登录，是否踢出？\"&#125;"</span>;  </span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			jsonStr =<span class="string">"&#123;\"state\":\"false\",\"msg\":\"\"&#125;"</span>;  </span><br><span class="line">		&#125;</span><br><span class="line">		PrintWriter out =<span class="keyword">null</span> ;  </span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			out =response.getWriter() ;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;  </span><br><span class="line">		out.write(jsonStr);  </span><br><span class="line">		out.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过 Ajax 技术在登录验证通过后调用该请求，然后执行是否已经在线的验证逻辑，如果已经在线则进行柔性提示，否则直接进行 Session 注册并进入系统。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%9B%91%E5%90%AC%E5%99%A8/" rel="tag"># 监听器</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2014/02/27/JavaWeb%E9%A1%B9%E7%9B%AE%E5%B5%8C%E5%85%A5%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%E5%8A%9F%E8%83%BD%E6%B5%81%E7%A8%8B/" rel="prev" title="JavaWeb项目嵌入百度地图功能流程">
+      <i class="fa fa-chevron-left"></i> JavaWeb项目嵌入百度地图功能流程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2014/03/11/JavaWeb%E4%B9%8BServlet%EF%BC%8C%E8%BF%87%E6%BB%A4%E5%99%A8%EF%BC%8C%E7%9B%91%E5%90%AC%E5%99%A8%E6%80%BB%E7%BB%93/" rel="next" title="JavaWeb之Servlet，过滤器，监听器总结">
+      JavaWeb之Servlet，过滤器，监听器总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现原理"><span class="nav-number">2.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码逻辑"><span class="nav-number">3.</span> <span class="nav-text">代码逻辑</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">119k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:48</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2014/03/09/JavaWeb%E5%85%B3%E4%BA%8E%E9%80%80%E5%87%BA%E7%B3%BB%E7%BB%9F%E6%97%B6%E7%9A%84%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

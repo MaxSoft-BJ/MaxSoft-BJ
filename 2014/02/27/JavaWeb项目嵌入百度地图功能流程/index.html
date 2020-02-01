@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;最近俩天终于梳理清楚了毕设中的单独功能模块，首先就是关于企业加盟店的地图动态显示功能模块。由于服务端的功能相对比较简单只是单纯的录入分店地址后，将其转换为对应的GPS坐标返回给前端即可，所以这里不做过多的记录。今天主要记录在前端页面中嵌入百度地图并根据服务端提供的数据来动态的标记在地图中以便用户可以清晰的看到企">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaWeb项目嵌入百度地图功能流程">
+<meta property="og:url" content="http://yoursite.com/2014/02/27/JavaWeb%E9%A1%B9%E7%9B%AE%E5%B5%8C%E5%85%A5%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%E5%8A%9F%E8%83%BD%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;最近俩天终于梳理清楚了毕设中的单独功能模块，首先就是关于企业加盟店的地图动态显示功能模块。由于服务端的功能相对比较简单只是单纯的录入分店地址后，将其转换为对应的GPS坐标返回给前端即可，所以这里不做过多的记录。今天主要记录在前端页面中嵌入百度地图并根据服务端提供的数据来动态的标记在地图中以便用户可以清晰的看到企">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/map_0001.png">
+<meta property="og:image" content="http://yoursite.com/uploads/map_0002.png">
+<meta property="article:published_time" content="2014-02-27T11:51:12.000Z">
+<meta property="article:modified_time" content="2020-02-01T12:22:02.107Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="百度地图">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/map_0001.png">
+
+<link rel="canonical" href="http://yoursite.com/2014/02/27/JavaWeb%E9%A1%B9%E7%9B%AE%E5%B5%8C%E5%85%A5%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%E5%8A%9F%E8%83%BD%E6%B5%81%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>JavaWeb项目嵌入百度地图功能流程 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2014/02/27/JavaWeb%E9%A1%B9%E7%9B%AE%E5%B5%8C%E5%85%A5%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%E5%8A%9F%E8%83%BD%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaWeb项目嵌入百度地图功能流程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2014-02-27 19:51:12" itemprop="dateCreated datePublished" datetime="2014-02-27T19:51:12+08:00">2014-02-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最近俩天终于梳理清楚了毕设中的单独功能模块，首先就是关于企业加盟店的地图动态显示功能模块。由于服务端的功能相对比较简单只是单纯的录入分店地址后，将其转换为对应的GPS坐标返回给前端即可，所以这里不做过多的记录。今天主要记录在前端页面中嵌入百度地图并根据服务端提供的数据来动态的标记在地图中以便用户可以清晰的看到企业的各加盟分店分布情况。</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>开始该功能之前主要准备的工作如下：</p>
+<ol>
+<li><p>申请百度开发者账号；</p>
+</li>
+<li><p>通过申请到的百度开发者账号在控制台建立一个提供Web服务的应用实例；</p>
+</li>
+<li><p>获取Web应用实例中提供的访问应用秘钥AK；</p>
+</li>
+</ol>
+<p>以上操作的地址【<a href="https://passport.baidu.com/v2/?login&u=http%3A%2F%2Flbsyun.baidu.com%2Fapiconsole%2Fkey" target="_blank" rel="noopener">百度开发者</a>】，这里就不再演示了。</p>
+<h2 id="嵌入流程"><a href="#嵌入流程" class="headerlink" title="嵌入流程"></a>嵌入流程</h2><ol>
+<li>首先通过申请的百度开发者账号来获取访问应用AK，并嵌入到页面中，如下：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- 省略其他代码 --&gt;</span><br><span class="line">&lt;script type=<span class="string">"text/javascript"</span> src=<span class="string">"http://api.map.baidu.com/api?v=2.0&amp;ak=xxxxxxxxxxxxxxxxxxxxxxxxxxxx"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span></span><br></pre></td></tr></table></figure></li>
+<li>参考百度地图API进行地图嵌入代码的编写( MaxSoftPlugins.js )，以下为粗略的封装代码：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">$MaxSoftMapPlugin</span>(<span class="params">id</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> _map_div = <span class="built_in">document</span>.getElementById(id);</span><br><span class="line">	<span class="keyword">if</span>(_map_div == <span class="literal">null</span> || <span class="keyword">typeof</span>(_map_div)==<span class="string">'undefined'</span>)&#123;</span><br><span class="line">		alert(<span class="string">"请输入有效的ID值"</span>);</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		BaiduMap : <span class="function"><span class="keyword">function</span>(<span class="params">options</span>)</span>&#123;</span><br><span class="line">			<span class="keyword">var</span> _args = <span class="built_in">arguments</span>;</span><br><span class="line">			<span class="keyword">if</span>(<span class="keyword">typeof</span>(options)==<span class="string">'object'</span>)&#123;</span><br><span class="line">				<span class="comment">/***********************************************************************************************/</span></span><br><span class="line">				<span class="keyword">var</span> _data = options.data;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//通过指定容器的ID创建百度地图</span></span><br><span class="line">				<span class="keyword">var</span> _map = <span class="keyword">new</span> BMap.Map(id);</span><br><span class="line">				<span class="comment">//定义一个中心点坐标</span></span><br><span class="line">				<span class="keyword">var</span> _point = <span class="keyword">new</span> BMap.Point(<span class="number">116.609973</span> , <span class="number">39.930236</span>); </span><br><span class="line">				<span class="comment">//设定地图的中心点和坐标并将地图显示在地图容器中</span></span><br><span class="line">				_map.centerAndZoom(_point, <span class="number">14</span>);</span><br><span class="line">				<span class="comment">//window.map = _map; //将map变量存储在全局</span></span><br><span class="line">				<span class="comment">//启用地图拖拽事件，默认启用(可不写)</span></span><br><span class="line">				_map.enableDragging(); </span><br><span class="line">				<span class="comment">//启用地图滚轮放大缩小</span></span><br><span class="line">				_map.enableScrollWheelZoom();</span><br><span class="line">				<span class="comment">//启用鼠标双击放大，默认启用(可不写)</span></span><br><span class="line">				_map.enableDoubleClickZoom(); </span><br><span class="line">				<span class="comment">//启用键盘上下左右键移动地图</span></span><br><span class="line">				_map.enableKeyboard(); </span><br><span class="line">				<span class="built_in">window</span>.mapobj = _map;</span><br><span class="line">				<span class="comment">//向地图中添加缩放控件</span></span><br><span class="line">				<span class="keyword">var</span> _ctrl_nav = <span class="keyword">new</span> BMap.NavigationControl(&#123; <span class="attr">anchor</span>: BMAP_ANCHOR_TOP_LEFT, <span class="attr">type</span>: BMAP_NAVIGATION_CONTROL_LARGE &#125;);</span><br><span class="line">				_map.addControl(_ctrl_nav);</span><br><span class="line">				<span class="comment">//向地图中添加缩略图控件</span></span><br><span class="line">				<span class="keyword">var</span> _ctrl_ove = <span class="keyword">new</span> BMap.OverviewMapControl(&#123; <span class="attr">anchor</span>: BMAP_ANCHOR_BOTTOM_RIGHT, <span class="attr">isOpen</span>: <span class="number">1</span> &#125;);</span><br><span class="line">				_map.addControl(_ctrl_ove);</span><br><span class="line">				<span class="comment">//向地图中添加比例尺控件</span></span><br><span class="line">				<span class="keyword">var</span> _ctrl_sca = <span class="keyword">new</span> BMap.ScaleControl(&#123; <span class="attr">anchor</span>: BMAP_ANCHOR_BOTTOM_LEFT&#125;);</span><br><span class="line">				_map.addControl(_ctrl_sca);</span><br><span class="line"></span><br><span class="line">				<span class="keyword">var</span> _markerData = <span class="keyword">new</span> <span class="built_in">Array</span>();</span><br><span class="line">				<span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;_data.length;i++)&#123;</span><br><span class="line">					_markerData[i]=&#123; </span><br><span class="line">						title:<span class="string">'&lt;table cellspacing=0 cellpadding=0 border=0 height=20 width=450px style="font-size:14px; color:#b48d40;font-weight:bold;"&gt;&lt;tr&gt;&lt;td width=20px align=left valign=middle&gt;&lt;img src="http://api.map.baidu.com/lbsapi/getpoint/Images/logo.gif" height=20px width=20px/&gt;&lt;/td&gt;&lt;td align=left valign=middle &gt;&amp;nbsp;'</span>+_data[i].FName+<span class="string">'&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;'</span>, </span><br><span class="line">						content: <span class="string">"&lt;b style='font-size:12px; color:#b48d40;'&gt;电话："</span>+_data[i].FConnPhone+<span class="string">"&lt;br/&gt;地址："</span>+_data[i].FAddress, </span><br><span class="line">						point:_data[i].FIntroduce, </span><br><span class="line">						isOpen: <span class="number">0</span>, </span><br><span class="line">						icon: &#123; <span class="attr">w</span>: <span class="number">20</span>, <span class="attr">h</span>: <span class="number">24</span>, <span class="attr">l</span>: <span class="number">46</span>, <span class="attr">t</span>: <span class="number">22</span>, <span class="attr">x</span>: <span class="number">6</span>, <span class="attr">lb</span>: <span class="number">10</span>&#125; </span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; _markerData.length; i++) &#123;</span><br><span class="line">					<span class="keyword">var</span> _marker_data = _markerData[i];</span><br><span class="line">					<span class="keyword">var</span> _p0 = _marker_data.point.split(<span class="string">"|"</span>)[<span class="number">0</span>];</span><br><span class="line">					<span class="keyword">var</span> _p1 = _marker_data.point.split(<span class="string">"|"</span>)[<span class="number">1</span>];</span><br><span class="line">					<span class="keyword">var</span> _point = <span class="keyword">new</span> BMap.Point(_p0, _p1);</span><br><span class="line">					<span class="keyword">var</span> _iconImg = createIcon(_marker_data.icon);</span><br><span class="line">					<span class="keyword">var</span> _marker = <span class="keyword">new</span> BMap.Marker(_point, &#123; <span class="attr">icon</span>: _iconImg &#125;);</span><br><span class="line">					<span class="keyword">var</span> _label = <span class="keyword">new</span> BMap.Label(_marker_data.title, &#123; <span class="string">"offset"</span>: <span class="keyword">new</span> BMap.Size(_marker_data.icon.lb - _marker_data.icon.x + <span class="number">10</span>, <span class="number">-20</span>) &#125;);</span><br><span class="line">					_label.setStyle(&#123;<span class="attr">border</span>:<span class="string">"#eabc3c solid 1px"</span>&#125;);</span><br><span class="line">					_marker.setLabel(_label);</span><br><span class="line">					_map.addOverlay(_marker);</span><br><span class="line">					_label.setStyle(&#123;</span><br><span class="line">						borderColor: <span class="string">"#eabc3c"</span>,</span><br><span class="line">						color: <span class="string">"#333"</span>,</span><br><span class="line">						cursor: <span class="string">"pointer"</span></span><br><span class="line">					&#125;);</span><br><span class="line">					(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">						<span class="keyword">var</span> _iw = createInfoWindow(i);</span><br><span class="line">						<span class="keyword">var</span> _marker_obj = _marker;</span><br><span class="line">						_marker_obj.addEventListener(<span class="string">"click"</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">						<span class="keyword">this</span>.openInfoWindow(_iw);</span><br><span class="line">						&#125;);</span><br><span class="line">						_iw.addEventListener(<span class="string">"open"</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">						_marker_obj.getLabel().hide();</span><br><span class="line">						&#125;)</span><br><span class="line">						_iw.addEventListener(<span class="string">"close"</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">						_marker_obj.getLabel().show();</span><br><span class="line">						&#125;)</span><br><span class="line">						_label.addEventListener(<span class="string">"click"</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">						_marker_obj.openInfoWindow(_iw);</span><br><span class="line">						&#125;)</span><br><span class="line">						<span class="keyword">if</span> (!!_marker_data.isOpen) &#123;</span><br><span class="line">						_label.hide();</span><br><span class="line">						_marker_obj.openInfoWindow(_iw);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;)()</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="comment">//创建InfoWindow</span></span><br><span class="line">				<span class="function"><span class="keyword">function</span> <span class="title">createInfoWindow</span>(<span class="params">i</span>) </span>&#123;</span><br><span class="line">				<span class="keyword">var</span> md = _markerData[i];</span><br><span class="line">				<span class="keyword">var</span> iw = <span class="keyword">new</span> BMap.InfoWindow(<span class="string">"&lt;b class='iw_poi_title' title='"</span> + md.title + <span class="string">"'&gt;"</span> + md.title + <span class="string">"&lt;/b&gt;&lt;div class='iw_poi_content'&gt;"</span> + md.content + <span class="string">"&lt;/div&gt;"</span>);</span><br><span class="line">				<span class="keyword">return</span> iw;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="comment">//创建一个Icon</span></span><br><span class="line">				<span class="function"><span class="keyword">function</span> <span class="title">createIcon</span>(<span class="params">md</span>) </span>&#123;</span><br><span class="line">				<span class="keyword">var</span> icon = <span class="keyword">new</span> BMap.Icon(<span class="string">"http://app.baidu.com/map/images/us_mk_icon.png"</span>, <span class="keyword">new</span> BMap.Size(md.w, md.h), &#123; <span class="attr">imageOffset</span>: <span class="keyword">new</span> BMap.Size(-md.l, -md.t), <span class="attr">infoWindowOffset</span>: <span class="keyword">new</span> BMap.Size(md.lb + <span class="number">5</span>, <span class="number">1</span>), <span class="attr">offset</span>: <span class="keyword">new</span> BMap.Size(md.x, md.h) &#125;)</span><br><span class="line">				<span class="keyword">return</span> icon;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span>(<span class="keyword">typeof</span>(options.callback)==<span class="string">'function'</span>)&#123;</span><br><span class="line">					options.callback();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;<span class="keyword">else</span> <span class="keyword">if</span>(<span class="keyword">typeof</span>(options)==<span class="string">'string'</span>)&#123;</span><br><span class="line">				<span class="keyword">var</span> method = &#123;</span><br><span class="line">					test : <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">						<span class="built_in">console</span>.log(<span class="string">"This is test method."</span>);</span><br><span class="line">					&#125;,</span><br><span class="line">					addMarker:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">						<span class="keyword">var</span> point = <span class="keyword">new</span> BMap.Point(_args[<span class="number">1</span>].x,_args[<span class="number">1</span>].y);</span><br><span class="line">						<span class="comment">// 创建点坐标</span></span><br><span class="line">						mapobj.centerAndZoom(point,_args[<span class="number">1</span>].grade);</span><br><span class="line">						<span class="comment">// 初始化地图， 设置中心点坐标和地图级别</span></span><br><span class="line">						<span class="keyword">var</span> marker = <span class="keyword">new</span> BMap.Marker(point);</span><br><span class="line">						marker.title=<span class="string">'&lt;table cellspacing=0 cellpadding=0 border=0 height=20 width=250px style="font-size:14px; color:#b48d40;font-weight:bold;"&gt;&lt;tr&gt;&lt;td width=20px align=left valign=middle&gt;&lt;img src="'</span>+_args[<span class="number">1</span>].icon+<span class="string">'" height=20px width=20px/&gt;&lt;/td&gt;&lt;td align=left valign=middle &gt;&amp;nbsp;'</span>+_args[<span class="number">1</span>].name+<span class="string">'&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;'</span>;</span><br><span class="line">						marker.content= <span class="string">"&lt;b style='font-size:12px; color:#b48d40;'&gt;电话："</span>+_args[<span class="number">1</span>].phone+<span class="string">"&lt;br/&gt;地址："</span>+_args[<span class="number">1</span>].address; </span><br><span class="line">						marker.isOpen=<span class="number">0</span>;</span><br><span class="line">						marker.icon= &#123; <span class="attr">w</span>: <span class="number">20</span>, <span class="attr">h</span>: <span class="number">24</span>, <span class="attr">l</span>: <span class="number">46</span>, <span class="attr">t</span>: <span class="number">22</span>, <span class="attr">x</span>: <span class="number">6</span>, <span class="attr">lb</span>: <span class="number">10</span>&#125; ;</span><br><span class="line">						mapobj.addOverlay(marker);</span><br><span class="line">						<span class="keyword">var</span> label = <span class="keyword">new</span> BMap.Label(marker.title, &#123; <span class="string">"offset"</span>: <span class="keyword">new</span> BMap.Size(marker.icon.lb - marker.icon.x + <span class="number">10</span>, <span class="number">-20</span>) &#125;);</span><br><span class="line">						label.setStyle(&#123;<span class="attr">border</span>:<span class="string">"#eabc3c solid 1px"</span>,<span class="attr">background</span>:<span class="string">"#cecece"</span>&#125;);</span><br><span class="line">						marker.setLabel(label);</span><br><span class="line">						label.setStyle(&#123;</span><br><span class="line">							borderColor: <span class="string">"#eabc3c"</span>,</span><br><span class="line">							color: <span class="string">"#333"</span>,</span><br><span class="line">							cursor: <span class="string">"pointer"</span></span><br><span class="line">						&#125;);</span><br><span class="line">						label.hide();</span><br><span class="line">						<span class="keyword">var</span> iw = <span class="keyword">new</span> BMap.InfoWindow(<span class="string">"&lt;b class='iw_poi_title' title='"</span>+marker.title+<span class="string">"'&gt;"</span>+marker.title+<span class="string">"&lt;/b&gt;&lt;div class='iw_poi_content'&gt;"</span>+marker.content+<span class="string">"&lt;/div&gt;"</span>);</span><br><span class="line">						marker.addEventListener(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">evt</span>) </span>&#123;</span><br><span class="line">							 <span class="keyword">this</span>.openInfoWindow(iw);</span><br><span class="line">						&#125;);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">return</span> method[options]();</span><br><span class="line">			&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">				<span class="comment">//TODO</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>页面调用代码以及效果图如下：<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">HTML</span> <span class="meta-keyword">PUBLIC</span> <span class="meta-string">"-//W3C//DTD HTML 4.01 Transitional//EN"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">   	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"window-target"</span> <span class="attr">content</span>=<span class="string">"_top"</span>&gt;</span></span><br><span class="line">   	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"pragma"</span> <span class="attr">content</span>=<span class="string">"no-cache"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">"cache-control"</span> <span class="attr">content</span>=<span class="string">"no-cache"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"date"</span> <span class="attr">content</span>=<span class="string">"2014-02-26"</span> /&gt;</span> </span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"icon"</span> <span class="attr">href</span>=<span class="string">"/logo.ico"</span> <span class="attr">type</span>=<span class="string">"image/x-icon"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"shortcut icon"</span> <span class="attr">href</span>=<span class="string">"/logo.ico"</span> <span class="attr">type</span>=<span class="string">"image/x-icon"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"http://api.map.baidu.com/api?v=2.0&amp;ak=uFr65XlDBuvhvGYxw3UddQ7N"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"MaxSoftPlugins.js"</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">style</span>=<span class="string">"margin: 0px 0px 0px 0px;"</span> <span class="attr">align</span>=<span class="string">'center'</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">br</span>/&gt;</span><span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"map_content_div"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">style</span>=<span class="string">"width:600px;height:400px;border:#eabc3c solid 1px;"</span> <span class="attr">id</span>=<span class="string">"map_content"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span></span><br><span class="line"><span class="actionscript">	<span class="keyword">var</span> data = [&#123;FConnPhone : <span class="string">"13602058888"</span>, FName : <span class="string">"MaxSoft Telecom Network Technology Co., Ltd"</span>, FAddress : <span class="string">"北京市朝阳区 XXXX  "</span>, FIntroduce : <span class="string">"116.609973|39.930236"</span> &#125;];</span></span><br><span class="line"><span class="actionscript">	$MaxSoftMapPlugin(<span class="string">"map_content"</span>).BaiduMap(&#123;data:data,callback:<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="javascript">		<span class="built_in">console</span>.log(<span class="string">'Hello MaxSoft, 我要居中处理'</span>);</span></span><br><span class="line"><span class="javascript">		<span class="keyword">var</span> left  = (<span class="built_in">window</span>.screen.availWidth - <span class="built_in">parseInt</span>(<span class="built_in">document</span>.getElementById(<span class="string">"map_content"</span>).style.width) ) / <span class="number">2</span>;</span></span><br><span class="line"><span class="javascript">		<span class="built_in">document</span>.getElementById(<span class="string">"map_content_div"</span>).style[<span class="string">'padding-left'</span>] = left;</span></span><br><span class="line">	&#125;&#125;);</span><br><span class="line"><span class="actionscript">	$MaxSoftMapPlugin(<span class="string">"map_content"</span>).BaiduMap(<span class="string">'addMarker'</span>,&#123;grade:<span class="number">9</span>, </span></span><br><span class="line">		x:116.404, </span><br><span class="line">		y:39.915, </span><br><span class="line"><span class="actionscript">		name:<span class="string">"XXXXX西单分店"</span>,</span></span><br><span class="line"><span class="actionscript">		phone:<span class="string">'13602058888'</span>, </span></span><br><span class="line"><span class="actionscript">		address:<span class="string">"北京市西城区西单大悦城XXXX号"</span>, </span></span><br><span class="line"><span class="actionscript">		icon:<span class="string">'http://img.zcool.cn/community/018ac455ba317d32f87528a1dbc0e5.jpg'</span>&#125;);</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<img src="/uploads/map_0001.png" /><img src="/uploads/map_0002.png" /><h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;以上就是本次关于分店展示的功能模块的锥形，后面会进行详细的需求整理并设计。关于动态数据准备使用原生的 Ajax 来进行服务端数据的异步加载以满足我们在后台对分店的动态信息的可可编辑需求。</li>
+</ol>
+<p>参考信息 : <a href="http://lbsyun.baidu.com/index.php?title=jspopular" target="_blank" rel="noopener">百度地图API</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE/" rel="tag"># 百度地图</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2013/11/23/J2EE%E4%B9%8BJSP%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" rel="prev" title="J2EE之JSP技术学习总结">
+      <i class="fa fa-chevron-left"></i> J2EE之JSP技术学习总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2014/03/09/JavaWeb%E5%85%B3%E4%BA%8E%E9%80%80%E5%87%BA%E7%B3%BB%E7%BB%9F%E6%97%B6%E7%9A%84%E6%97%A5%E5%BF%97%E8%AE%B0%E5%BD%95/" rel="next" title="JavaWeb关于退出系统时的日志记录">
+      JavaWeb关于退出系统时的日志记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备工作"><span class="nav-number">2.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#嵌入流程"><span class="nav-number">3.</span> <span class="nav-text">嵌入流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">119k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:48</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2014/02/27/JavaWeb%E9%A1%B9%E7%9B%AE%E5%B5%8C%E5%85%A5%E7%99%BE%E5%BA%A6%E5%9C%B0%E5%9B%BE%E5%8A%9F%E8%83%BD%E6%B5%81%E7%A8%8B/',]
+      });
+      });
+  </script>
+
+</body>
+</html>
