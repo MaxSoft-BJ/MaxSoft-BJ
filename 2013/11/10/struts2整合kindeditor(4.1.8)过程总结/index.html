@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="简述&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;前些日子一个跑业务的朋友帮我接到一个小的项目，其中有好多模块用到了富文本编辑器，在网上找了好多，也看了好多，综合各方面的因素最后选择了kindeditor4.1.8，网上搜索了一下也没有看到一个帖子完完整整的介绍kindeditor4.1.8与struts2整合的过程，到是检索到了零零散散的几分文章作用不是太大">
+<meta property="og:type" content="article">
+<meta property="og:title" content="struts2整合kindeditor(4.1.8)过程总结">
+<meta property="og:url" content="http://yoursite.com/2013/11/10/struts2%E6%95%B4%E5%90%88kindeditor(4.1.8)%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="简述&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;前些日子一个跑业务的朋友帮我接到一个小的项目，其中有好多模块用到了富文本编辑器，在网上找了好多，也看了好多，综合各方面的因素最后选择了kindeditor4.1.8，网上搜索了一下也没有看到一个帖子完完整整的介绍kindeditor4.1.8与struts2整合的过程，到是检索到了零零散散的几分文章作用不是太大">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.blog.csdn.net/20131110105155562?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF4MTI2MzEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20131110112018093?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF4MTI2MzEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20131110112427515?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF4MTI2MzEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="article:published_time" content="2013-11-10T15:42:49.000Z">
+<meta property="article:modified_time" content="2018-02-05T23:25:46.000Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Struts2.0">
+<meta property="article:tag" content="Kindeditor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20131110105155562?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF4MTI2MzEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+<link rel="canonical" href="http://yoursite.com/2013/11/10/struts2%E6%95%B4%E5%90%88kindeditor(4.1.8)%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>struts2整合kindeditor(4.1.8)过程总结 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2013/11/10/struts2%E6%95%B4%E5%90%88kindeditor(4.1.8)%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          struts2整合kindeditor(4.1.8)过程总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2013-11-10 23:42:49" itemprop="dateCreated datePublished" datetime="2013-11-10T23:42:49+08:00">2013-11-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb第三方框架</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;前些日子一个跑业务的朋友帮我接到一个小的项目，其中有好多模块用到了富文本编辑器，在网上找了好多，也看了好多，综合各方面的因素最后选择了kindeditor4.1.8，网上搜索了一下也没有看到一个帖子完完整整的介绍kindeditor4.1.8与struts2整合的过程，到是检索到了零零散散的几分文章作用不是太大<del>~</del>好吧，自己动手吧，于是乎我打开了下载的kindeditor4.1.8的组件包，找到了其中的jsp上传文件的那一部分内容看了一边。开始编写Action（个人认为既然都用了struts2框架了就不想写servlet 了）。在这个过程中遇到了很多问题，不过都一一解决了。<br>好了，废话不多说了，开始整合过程：</p>
+<h2 id="详细过程"><a href="#详细过程" class="headerlink" title="详细过程"></a>详细过程</h2><p>1.首先下载&nbsp;&nbsp;<a href="http://kindeditor.net/view.php?bbsid=3&postid=7868" target="_blank">kindeditor4.1.8</a><br>2.打开下载的kindeditor4.1.8的包，先瘦身，把其中的不需要的文件删除掉如下图所示：<br><img src="http://img.blog.csdn.net/20131110105155562?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF4MTI2MzEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">3、建立Web项目，并加入struts2的依赖后，把kindeditor4.1.8中的jsp文件夹中的lib里面的json_simple-1.1.jar加入到构建路径中。<br>4、把kindeditor4.1.8的jsp文件剪切到外面，然后将剩下的全部拷贝到项目的WebRoot下，并建立文件夹attached（上传文件的存储区域）<br>5、开始创建包、编写action，其中的内容是重写了jsp/upload_json.jsp中的部分内容。代码重写的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.action;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> java.io.File;  </span><br><span class="line"><span class="keyword">import</span> java.io.IOException;  </span><br><span class="line"><span class="keyword">import</span> java.text.SimpleDateFormat;  </span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;  </span><br><span class="line"><span class="keyword">import</span> java.util.Date;  </span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;  </span><br><span class="line"><span class="keyword">import</span> java.util.Random;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;  </span><br><span class="line"><span class="keyword">import</span> org.apache.commons.fileupload.servlet.ServletFileUpload;  </span><br><span class="line"><span class="keyword">import</span> org.apache.struts2.ServletActionContext;  </span><br><span class="line"><span class="keyword">import</span> org.apache.struts2.dispatcher.multipart.MultiPartRequestWrapper;  </span><br><span class="line"><span class="keyword">import</span> org.json.simple.JSONObject;  </span><br><span class="line"><span class="keyword">import</span> org.maxsoft.tools.FileTools;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> com.opensymphony.xwork2.ActionContext;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UploadJsonAction</span> </span>&#123;  </span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">uploadJson</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">	<span class="comment">//标注  最大文件大小  </span></span><br><span class="line">        <span class="keyword">long</span> maxSize = <span class="number">1024</span>*<span class="number">1024</span>*<span class="number">2</span>;  </span><br><span class="line">        <span class="comment">//获取Struts2中的多媒体请求包装器对象  </span></span><br><span class="line">        MultiPartRequestWrapper requestWrapper = (MultiPartRequestWrapper) ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);  </span><br><span class="line">        <span class="comment">/** </span></span><br><span class="line"><span class="comment">         * 通过imgFile获取kindeditor文件上传组件中的文件组以及文件名组 </span></span><br><span class="line"><span class="comment">         * imgFile是通过分析requestWrapper而拿到的。如下： </span></span><br><span class="line"><span class="comment">         * Enumeration attributeNames = requestWrapper.getFileParameterNames(); </span></span><br><span class="line"><span class="comment">         * System.out.println(attributeNames.nextElement()); </span></span><br><span class="line"><span class="comment">         */</span>  </span><br><span class="line">        <span class="comment">//文件名字符串数组  </span></span><br><span class="line">        String[] fileNames = requestWrapper.getFileNames(<span class="string">"imgFile"</span>);  </span><br><span class="line">        <span class="comment">//文件数组  </span></span><br><span class="line">        File[] files = requestWrapper.getFiles(<span class="string">"imgFile"</span>);  </span><br><span class="line">        <span class="comment">// 自定义文件上传工具  </span></span><br><span class="line">        FileTools fileTools = <span class="keyword">new</span> FileTools();  </span><br><span class="line">	<span class="comment">// 获取请求对象  </span></span><br><span class="line">        HttpServletRequest request = (HttpServletRequest) ActionContext.getContext().get(ServletActionContext.HTTP_REQUEST);  </span><br><span class="line">        <span class="comment">// 获取响应对象  </span></span><br><span class="line">        HttpServletResponse response = (HttpServletResponse) ActionContext.getContext().get(ServletActionContext.HTTP_RESPONSE);  </span><br><span class="line">        <span class="comment">// 文件保存目录路径  </span></span><br><span class="line">        String savePath = ServletActionContext.getServletContext().getRealPath(<span class="string">"/"</span>)+ <span class="string">"attached\\"</span>;  </span><br><span class="line">        <span class="comment">// 文件保存目录URL  </span></span><br><span class="line">        String saveUrl = ServletActionContext.getServletContext().getContextPath() + <span class="string">"/attached/"</span>;  </span><br><span class="line">        <span class="comment">// 定义允许上传的文件扩展名  </span></span><br><span class="line">        HashMap&lt;String, String&gt; extMap = <span class="keyword">new</span> HashMap&lt;String, String&gt;();  </span><br><span class="line">        extMap.put(<span class="string">"image"</span>, <span class="string">"gif,jpg,jpeg,png,bmp"</span>);  </span><br><span class="line">        extMap.put(<span class="string">"flash"</span>, <span class="string">"swf,flv"</span>);  </span><br><span class="line">        extMap.put(<span class="string">"media"</span>, <span class="string">"swf,flv,mp3,wav,wma,wmv,mid,avi,mpg,asf,rm,rmvb"</span>);  </span><br><span class="line">        extMap.put(<span class="string">"file"</span>, <span class="string">"doc,docx,xls,xlsx,ppt,htm,html,txt,zip,rar,gz,bz2"</span>);  </span><br><span class="line">        response.setContentType(<span class="string">"text/html; charset=UTF-8"</span>);  </span><br><span class="line">        <span class="keyword">if</span> (!ServletFileUpload.isMultipartContent(request)) &#123;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                response.getWriter().println(getError(<span class="string">"请选择文件。"</span>));  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                System.err.println(e.getMessage());  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">// 检查目录  </span></span><br><span class="line">        File uploadDir = <span class="keyword">new</span> File(savePath);  </span><br><span class="line">        <span class="keyword">if</span> (!uploadDir.isDirectory()) &#123;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                response.getWriter().println(getError(<span class="string">"上传目录不存在。"</span>));  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                System.err.println(e.getMessage());  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">// 检查目录写权限  </span></span><br><span class="line">        <span class="keyword">if</span> (!uploadDir.canWrite()) &#123;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                response.getWriter().println(getError(<span class="string">"上传目录没有写权限。"</span>));  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                System.err.println(e.getMessage());  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        String dirName = request.getParameter(<span class="string">"dir"</span>);  </span><br><span class="line">        <span class="keyword">if</span> (dirName == <span class="keyword">null</span>) &#123;  </span><br><span class="line">            dirName = <span class="string">"image"</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">if</span> (!extMap.containsKey(dirName)) &#123;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                response.getWriter().println(getError(<span class="string">"目录名不正确。"</span>));  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                System.err.println(e.getMessage());  </span><br><span class="line">            &#125;  </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="comment">// 创建文件夹  </span></span><br><span class="line">        savePath += dirName + <span class="string">"/"</span>;  </span><br><span class="line">        saveUrl += dirName + <span class="string">"/"</span>;  </span><br><span class="line">        File saveDirFile = <span class="keyword">new</span> File(savePath);  </span><br><span class="line">        <span class="keyword">if</span> (!saveDirFile.exists()) &#123;  </span><br><span class="line">            saveDirFile.mkdirs();  </span><br><span class="line">        &#125;  </span><br><span class="line">        SimpleDateFormat sdf = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyyMMdd"</span>);  </span><br><span class="line">        String ymd = sdf.format(<span class="keyword">new</span> Date());  </span><br><span class="line">        savePath += ymd + <span class="string">"/"</span>;  </span><br><span class="line">        saveUrl += ymd + <span class="string">"/"</span>;  </span><br><span class="line">        File dirFile = <span class="keyword">new</span> File(savePath);  </span><br><span class="line">        <span class="keyword">if</span> (!dirFile.exists()) &#123;  </span><br><span class="line">            dirFile.mkdirs();  </span><br><span class="line">        &#125;  </span><br><span class="line">	<span class="comment">//标注 </span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; files.length; i++) &#123;  </span><br><span class="line">            String fileName = fileNames[i];  </span><br><span class="line">            <span class="keyword">if</span>(fileTools.getSize(files[i]) &gt; maxSize)&#123;  </span><br><span class="line">                <span class="keyword">try</span> &#123;  </span><br><span class="line">                    response.getWriter().println(getError(<span class="string">"上传文件大小超过限制(&lt;2MB)。"</span>));  </span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                    System.err.println(e.getMessage());  </span><br><span class="line">                &#125;  </span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">            &#125;  </span><br><span class="line">	    <span class="comment">// 检查扩展名  </span></span><br><span class="line">            String fileExt = fileName.substring(fileName.lastIndexOf(<span class="string">"."</span>) + <span class="number">1</span>).toLowerCase();  </span><br><span class="line">            <span class="keyword">if</span> (!Arrays.&lt;String&gt; asList(extMap.get(dirName).split(<span class="string">","</span>)).contains(fileExt)) &#123;  </span><br><span class="line">                <span class="keyword">try</span> &#123;  </span><br><span class="line">                    response.getWriter().println(getError(<span class="string">"上传文件扩展名是不允许的扩展名。\n只允许"</span>+ extMap.get(dirName) + <span class="string">"格式。"</span>));  </span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                    System.err.println(e.getMessage());  </span><br><span class="line">                &#125;  </span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">            &#125;  </span><br><span class="line">            SimpleDateFormat df = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyyMMddHHmmss"</span>);  </span><br><span class="line">            String newFileName = df.format(<span class="keyword">new</span> Date()) + <span class="string">"_"</span>+ <span class="keyword">new</span> Random().nextInt(<span class="number">1000</span>) + <span class="string">"."</span> + fileExt;  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">		<span class="comment">//标注 生成新的文件的路径  </span></span><br><span class="line">                String path = (savePath + <span class="string">"/"</span> + newFileName);  </span><br><span class="line">                <span class="comment">// 判断文件是否上传成功  </span></span><br><span class="line">                <span class="keyword">boolean</span> uploadFile = fileTools.uploadFile(files[i], path);  </span><br><span class="line">                <span class="keyword">if</span> (!uploadFile) &#123;  </span><br><span class="line">                    response.getWriter().println(getError(<span class="string">"上传文件失败。"</span>));  </span><br><span class="line">                &#125;  </span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;  </span><br><span class="line">                <span class="keyword">try</span> &#123;  </span><br><span class="line">                    response.getWriter().print(getError(<span class="string">"上传文件失败。"</span>));  </span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e1) &#123;  </span><br><span class="line">                    e1.printStackTrace();  </span><br><span class="line">                &#125;  </span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">            &#125;  </span><br><span class="line">            JSONObject obj = <span class="keyword">new</span> JSONObject();  </span><br><span class="line">            obj.put(<span class="string">"error"</span>, <span class="number">0</span>);  </span><br><span class="line">            obj.put(<span class="string">"url"</span>, saveUrl + newFileName);  </span><br><span class="line">            <span class="keyword">try</span> &#123;  </span><br><span class="line">                response.getWriter().println(obj.toJSONString());  </span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </span><br><span class="line">                System.err.println(e.getMessage());  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">//输出信息  </span></span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">getError</span><span class="params">(String message)</span> </span>&#123;  </span><br><span class="line">        JSONObject obj = <span class="keyword">new</span> JSONObject();  </span><br><span class="line">        obj.put(<span class="string">"error"</span>, <span class="number">1</span>);  </span><br><span class="line">        obj.put(<span class="string">"message"</span>, message);  </span><br><span class="line">        <span class="keyword">return</span> obj.toJSONString();  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码中重写的地方就是在Action中获取页面中kindeditor上传的文件这一块，原来的写法在action中获取不到文件，具体的原因是在action中将request转为了MultiPartRequestWrapper， 因此commons-fileupload这个包中的FileItem就不能使用了。于是就重写了这一块内容。具体思路是：首先从MultiPartRequestWrapper中获取文件名组和文件组，然后自己编写上传文件的工具类实现上传文件。（代码中增加 //标注 的地方）</p>
+<p>6、配置struts文件中的action和平常的一样，值得注意的是在action中不用返回结果，因为我们在action输出了json格式的数据，无需返回结果。</p>
+<p>7、将kindeditor编辑器放到页面中代码如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">"java"</span> contentType=<span class="string">"text/html; charset=UTF-8"</span> pageEncoding=<span class="string">"UTF-8"</span>%&gt;  </span><br><span class="line">&lt;%@ taglib prefix=<span class="string">"s"</span> uri=<span class="string">"/struts-tags"</span> %&gt;  </span><br><span class="line">&lt;!doctype html&gt;  </span><br><span class="line">&lt;html&gt;  </span><br><span class="line">&lt;head&gt;  </span><br><span class="line">    &lt;meta charset=<span class="string">"utf-8"</span> /&gt;  </span><br><span class="line">    &lt;title&gt;KindEditor JSP&lt;/title&gt;  </span><br><span class="line">    &lt;link rel=<span class="string">"stylesheet"</span> href=<span class="string">"kindeditor/themes/default/default.css"</span> /&gt;  </span><br><span class="line">    &lt;link rel=<span class="string">"stylesheet"</span> href=<span class="string">"kindeditor/plugins/code/prettify.css"</span> /&gt;  </span><br><span class="line">    &lt;script charset="utf-8" src="kindeditor/kindeditor.js"&gt;&lt;/script&gt;  </span><br><span class="line">    &lt;script charset="utf-8" src="kindeditor/lang/zh_CN.js"&gt;&lt;/script&gt;  </span><br><span class="line">    &lt;script charset="utf-8" src="kindeditor/plugins/code/prettify.js"&gt;&lt;/script&gt;  </span><br><span class="line">    &lt;script&gt;  </span><br><span class="line">        KindEditor.ready(function(K) &#123;  </span><br><span class="line">            <span class="keyword">var</span> editor1 = K.create(<span class="string">'textarea[name="content1"]'</span>, &#123;  </span><br><span class="line">                cssPath : <span class="string">'kindeditor/plugins/code/prettify.css'</span>,  </span><br><span class="line">                uploadJson : <span class="string">'uploadJsonAction.action'</span>,  </span><br><span class="line">                afterCreate : function() &#123;  </span><br><span class="line">                    <span class="keyword">var</span> self = <span class="keyword">this</span>;  </span><br><span class="line">                    K.ctrl(document, <span class="number">13</span>, function() &#123;  </span><br><span class="line">                        self.sync();  </span><br><span class="line">                        document.forms[<span class="string">'example'</span>].submit();  </span><br><span class="line">                    &#125;);  </span><br><span class="line">                    K.ctrl(self.edit.doc, <span class="number">13</span>, function() &#123;  </span><br><span class="line">                        self.sync();  </span><br><span class="line">                        document.forms[<span class="string">'example'</span>].submit();  </span><br><span class="line">                    &#125;);  </span><br><span class="line">                &#125;  </span><br><span class="line">            &#125;);  </span><br><span class="line">            prettyPrint();  </span><br><span class="line">        &#125;);  </span><br><span class="line">    &lt;/script&gt;  </span><br><span class="line">&lt;/head&gt;  </span><br><span class="line">&lt;body&gt;  </span><br><span class="line">    &lt;form name=<span class="string">"example"</span> method=<span class="string">"post"</span> action=<span class="string">"showText.action"</span> enctype=<span class="string">"multipart/form-data"</span>&gt;  </span><br><span class="line">        &lt;textarea name="content1" cols="100" rows="8" style="width:700px;height:200px;visibility:hidden;"&gt;&lt;/textarea&gt;  </span><br><span class="line">        &lt;br /&gt;  </span><br><span class="line">        &lt;input type=<span class="string">"submit"</span> name=<span class="string">"button"</span> value=<span class="string">"提交内容"</span> /&gt; (提交快捷键: Ctrl + Enter)  </span><br><span class="line">    &lt;/form&gt;  </span><br><span class="line">&lt;/body&gt;  </span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>8、其中的文件管理由于项目中没有用到就没有去理会。这是我的测试文件结构图：<br><img src="http://img.blog.csdn.net/20131110112018093?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF4MTI2MzEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"><br>测试效果图：<br><img src="http://img.blog.csdn.net/20131110112427515?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvbWF4MTI2MzEz/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast"><br>图中化红色框的是用到的类，其他类暂时都没有用。</p>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>  &lt;注意其中的 import org.maxsoft.tools.FileTools; 是笔者简单实现了一个上传文件的工具类，功能如下：<br>  1、计算文件大小；<br>  2、上传文件到指定的目录</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Struts2-0/" rel="tag"># Struts2.0</a>
+              <a href="/tags/Kindeditor/" rel="tag"># Kindeditor</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2013/11/23/J2EE%E4%B9%8BJSP%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" rel="next" title="J2EE之JSP技术学习总结">
+      J2EE之JSP技术学习总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简述"><span class="nav-number">1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#详细过程"><span class="nav-number">2.</span> <span class="nav-text">详细过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注意"><span class="nav-number">2.1.</span> <span class="nav-text">注意</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">318k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:49</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2013/11/10/struts2%E6%95%B4%E5%90%88kindeditor(4.1.8)%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

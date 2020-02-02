@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Kaptcha 简介&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Kaptcha 是由 Google 公司 Jon Scott Stevens 开发的一款基于 SimpleCaptcha 的开源验证码生成组件。其简单易用的特性赢得了广大Web开发者的青睐。Google开源代码官方地址： Kaptcha  Spring MVC 整合 Kaptcha 过程第一步">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring MVC 整合Kaptcha生成图片验证码">
+<meta property="og:url" content="http://yoursite.com/2016/08/13/Spring%20MVC%20%E6%95%B4%E5%90%88Kaptcha%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="Kaptcha 简介&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Kaptcha 是由 Google 公司 Jon Scott Stevens 开发的一款基于 SimpleCaptcha 的开源验证码生成组件。其简单易用的特性赢得了广大Web开发者的青睐。Google开源代码官方地址： Kaptcha  Spring MVC 整合 Kaptcha 过程第一步">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/kaptcha_effect.gif">
+<meta property="article:published_time" content="2016-08-13T04:25:31.000Z">
+<meta property="article:modified_time" content="2020-02-02T03:27:58.271Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="Kaptcha">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/kaptcha_effect.gif">
+
+<link rel="canonical" href="http://yoursite.com/2016/08/13/Spring%20MVC%20%E6%95%B4%E5%90%88Kaptcha%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Spring MVC 整合Kaptcha生成图片验证码 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/08/13/Spring%20MVC%20%E6%95%B4%E5%90%88Kaptcha%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring MVC 整合Kaptcha生成图片验证码
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2016-08-13 12:25:31" itemprop="dateCreated datePublished" datetime="2016-08-13T12:25:31+08:00">2016-08-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb第三方框架</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Kaptcha-简介"><a href="#Kaptcha-简介" class="headerlink" title="Kaptcha 简介"></a>Kaptcha 简介</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Kaptcha 是由 Google 公司 Jon Scott Stevens 开发的一款基于 SimpleCaptcha 的开源验证码生成组件。其简单易用的特性赢得了广大Web开发者的青睐。<br>Google开源代码官方地址：<a href="https://code.google.com/archive/p/kaptcha/" target="_blank" rel="noopener"> Kaptcha </a></p>
+<h2 id="Spring-MVC-整合-Kaptcha-过程"><a href="#Spring-MVC-整合-Kaptcha-过程" class="headerlink" title="Spring MVC 整合 Kaptcha 过程"></a>Spring MVC 整合 Kaptcha 过程</h2><h3 id="第一步：在Maven配置文件-pom-xml-中增加-Kaptcha-依赖"><a href="#第一步：在Maven配置文件-pom-xml-中增加-Kaptcha-依赖" class="headerlink" title="第一步：在Maven配置文件( pom.xml )中增加 Kaptcha 依赖"></a>第一步：在Maven配置文件( pom.xml )中增加 Kaptcha 依赖</h3><p>代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">&lt;!-- 省略其他代码 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- 省略其他代码 --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>m_not_found<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>kaptcha-2.3.2.jar<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">scope</span>&gt;</span>system<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">systemPath</span>&gt;</span>$&#123;basedir&#125;/res/lib/kaptcha-2.3.2.jar<span class="tag">&lt;/<span class="name">systemPath</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">optional</span>&gt;</span>true<span class="tag">&lt;/<span class="name">optional</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>由于 Maven 远程仓库无法正确的下载 Kaptcha 的jar文件，所以就上述这种本地依赖的方式增加了。</p>
+<h3 id="第二步：在-Spring-的配置文件-spring-xml-中注入-Kaptcha-的图片验证码生成类"><a href="#第二步：在-Spring-的配置文件-spring-xml-中注入-Kaptcha-的图片验证码生成类" class="headerlink" title="第二步：在 Spring 的配置文件( spring.xml )中注入 Kaptcha 的图片验证码生成类"></a>第二步：在 Spring 的配置文件( spring.xml )中注入 Kaptcha 的图片验证码生成类</h3><p>代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:aop</span>=<span class="string">"http://www.springframework.org/schema/aop"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:task</span>=<span class="string">"http://www.springframework.org/schema/task"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">&lt;!-- 省略其他代码 --&gt;</span></span><br><span class="line"></span><br><span class="line">	<span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"producer"</span> <span class="attr">class</span>=<span class="string">"com.google.code.kaptcha.impl.DefaultKaptcha"</span>&gt;</span>  </span><br><span class="line">		<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"config"</span>&gt;</span>  </span><br><span class="line">		    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">class</span>=<span class="string">"com.google.code.kaptcha.util.Config"</span>&gt;</span>  </span><br><span class="line">			<span class="tag">&lt;<span class="name">constructor-arg</span>&gt;</span>  </span><br><span class="line">			    <span class="tag">&lt;<span class="name">props</span>&gt;</span>  </span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.textproducer.char.string"</span>&gt;</span>1234567890<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.border"</span>&gt;</span>no<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.border.color"</span>&gt;</span>0,0,0<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.border.thickness"</span>&gt;</span>0<span class="tag">&lt;/<span class="name">prop</span>&gt;</span>  </span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.textproducer.font.color"</span>&gt;</span>blue<span class="tag">&lt;/<span class="name">prop</span>&gt;</span>  </span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.image.width"</span>&gt;</span>30<span class="tag">&lt;/<span class="name">prop</span>&gt;</span>  </span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.image.height"</span>&gt;</span>14<span class="tag">&lt;/<span class="name">prop</span>&gt;</span>  </span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.textproducer.font.size"</span>&gt;</span>11<span class="tag">&lt;/<span class="name">prop</span>&gt;</span>  </span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.session.key"</span>&gt;</span>code<span class="tag">&lt;/<span class="name">prop</span>&gt;</span>  </span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.textproducer.char.length"</span>&gt;</span>4<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.textproducer.font.names"</span>&gt;</span>宋体<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.background.clear.from"</span>&gt;</span>white<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.background.clear.to"</span>&gt;</span>white<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.noise.impl"</span>&gt;</span>com.google.code.kaptcha.impl.NoNoise<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">prop</span> <span class="attr">key</span>=<span class="string">"kaptcha.obscurificator.impl"</span>&gt;</span>com.maxsoft.code.kaptcha.impl.StandardImg<span class="tag">&lt;/<span class="name">prop</span>&gt;</span></span><br><span class="line">			    <span class="tag">&lt;/<span class="name">props</span>&gt;</span>  </span><br><span class="line">			<span class="tag">&lt;/<span class="name">constructor-arg</span>&gt;</span>  </span><br><span class="line">		    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span>  </span><br><span class="line">		<span class="tag">&lt;/<span class="name">property</span>&gt;</span> </span><br><span class="line">	<span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在以上配置文件中存在 com.maxsoft.code.kaptcha.impl.StandardImg 类，该类主要是实现验证的图片风格类型，在本次示例中验证码为标准的字体类型，具体的实现代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.awt.Graphics2D;</span><br><span class="line"><span class="keyword">import</span> java.awt.image.BufferedImage;</span><br><span class="line"><span class="keyword">import</span> com.google.code.kaptcha.GimpyEngine;</span><br><span class="line"><span class="keyword">import</span> com.google.code.kaptcha.util.Configurable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@desc</span> 简化图形验证码的生成过程，尽最大可能使用最少的资源</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> MaxSoft</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2016-08-12</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StandardImg</span> <span class="keyword">extends</span> <span class="title">Configurable</span> <span class="keyword">implements</span> <span class="title">GimpyEngine</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> BufferedImage <span class="title">getDistortedImage</span><span class="params">(BufferedImage baseImage)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//开始生成图片缓冲对象，并缓冲原始图片</span></span><br><span class="line">		BufferedImage bufferedImage = <span class="keyword">new</span> BufferedImage(baseImage.getWidth(), baseImage.getHeight(),BufferedImage.TYPE_INT_ARGB);</span><br><span class="line">		<span class="comment">//进行2D图形绘画</span></span><br><span class="line">		Graphics2D graph = (Graphics2D) bufferedImage.getGraphics();</span><br><span class="line">		graph.drawImage(baseImage, <span class="number">0</span>, <span class="number">0</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);<span class="comment">//只画图片不做任何修饰</span></span><br><span class="line">		graph.dispose();</span><br><span class="line">		<span class="keyword">return</span> bufferedImage;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第三步：编写调用验证码生成逻辑并响应请求"><a href="#第三步：编写调用验证码生成逻辑并响应请求" class="headerlink" title="第三步：编写调用验证码生成逻辑并响应请求"></a>第三步：编写调用验证码生成逻辑并响应请求</h3><p>代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Controller</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/kaptcha"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">KaptchaController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	Logger logger = Logger.getLogger(KaptchaController<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> Producer producer;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> HttpSession session;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@RequestMapping</span>(<span class="string">"/code"</span>)</span><br><span class="line">	<span class="function"><span class="keyword">public</span> ModelAndView <span class="title">kaptcha</span><span class="params">(HttpServletResponse response)</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">		ServletOutputStream out = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">try</span>&#123;</span><br><span class="line">			String key = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);</span><br><span class="line">			logger.info(<span class="string">"Kpatcha-----------&gt;"</span> + key);</span><br><span class="line">			response.setDateHeader(<span class="string">"Expires"</span>, <span class="number">0</span>); <span class="comment">// 设置过期时间值 </span></span><br><span class="line">			response.setHeader(<span class="string">"Cache-Control"</span>, <span class="string">"no-store, no-cache, must-revalidate"</span>);  </span><br><span class="line">			response.addHeader(<span class="string">"Cache-Control"</span>, <span class="string">"post-check=0, pre-check=0"</span>);    </span><br><span class="line">			response.setHeader(<span class="string">"Pragma"</span>, <span class="string">"no-cache"</span>); </span><br><span class="line">			response.setContentType(<span class="string">"image/jpeg"</span>);  </span><br><span class="line">			String text = producer.createText(); </span><br><span class="line">			session.setAttribute(Constants.KAPTCHA_SESSION_KEY, text); </span><br><span class="line">			producer.createImage(text);</span><br><span class="line">			BufferedImage bi = producer.createImage(text);  </span><br><span class="line">			out = response.getOutputStream();</span><br><span class="line">			ImageIO.write(bi, <span class="string">"jpg"</span>, out);</span><br><span class="line">		&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">			<span class="keyword">if</span>(out != <span class="keyword">null</span>)&#123;</span><br><span class="line">				out.flush();</span><br><span class="line">				out.close();</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				response.flushBuffer();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> BusinessException(e);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第四步：在登录页面中使用验证码"><a href="#第四步：在登录页面中使用验证码" class="headerlink" title="第四步：在登录页面中使用验证码"></a>第四步：在登录页面中使用验证码</h3><p>代码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">cellpadding</span>=<span class="string">"0"</span> <span class="attr">cellspacing</span>=<span class="string">"0"</span> <span class="attr">border</span>=<span class="string">"0"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">"checkcode"</span> <span class="attr">name</span>=<span class="string">"checkcode"</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">class</span>=<span class="string">"txt_code"</span> <span class="attr">value</span>=<span class="string">"验证码"</span> <span class="attr">onfocus</span>=<span class="string">"this.style.color='#000';if(this.value=='验证码')&#123;this.value='';&#125;"</span> <span class="attr">onblur</span>=<span class="string">"if(this.value=='')&#123;this.value='验证码';this.style.color='#c7c7c7';&#125;"</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">"checkcodeimg"</span>&gt;</span><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"kaptcha/image"</span> <span class="attr">id</span>=<span class="string">"kaptchaimage"</span> <span class="attr">width</span>=<span class="string">"100px"</span> <span class="attr">height</span>=<span class="string">"34"</span>/&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">'refreshcheckcode'</span> <span class="attr">onclick</span>=<span class="string">"App.loginReloadKaptchaImage(this);"</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上述代码中App.loginReloadKaptchaImage()方法的主要功能是实现动态刷新图标的功能。即点击图片开始转动图标，待验证码加载完成图标转动停止；<br>实现代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> App = <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> Login = <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>)</span>&#123;</span><br><span class="line">		<span class="keyword">return</span> &#123;</span><br><span class="line">			<span class="comment">// 省略其他逻辑代码</span></span><br><span class="line">			reloadkaptchaimage : <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>)</span>&#123;</span><br><span class="line">			    $(obj).removeClass(<span class="string">'refreshcheckcode'</span>).addClass(<span class="string">'refreshcheckcode-click'</span>);</span><br><span class="line">			    <span class="keyword">var</span> kaptchaimage = <span class="built_in">document</span>.getElementById(<span class="string">'kaptchaimage'</span>);</span><br><span class="line">			    $(<span class="string">"#kaptchaimage"</span>).attr(<span class="string">"src"</span>, <span class="string">"kaptcha/image?"</span> + <span class="built_in">Math</span>.floor(<span class="built_in">Math</span>.random()*<span class="number">100</span>) ).fadeIn(<span class="number">1200</span>);</span><br><span class="line">			    <span class="keyword">if</span> (kaptchaimage.complete) &#123;</span><br><span class="line">					$(obj).removeClass(<span class="string">'refreshcheckcode-click'</span>).addClass(<span class="string">'refreshcheckcode'</span>);</span><br><span class="line">			    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				kaptchaimage.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">					$(obj).removeClass(<span class="string">'refreshcheckcode-click'</span>).addClass(<span class="string">'refreshcheckcode'</span>);</span><br><span class="line">			        &#125;;</span><br><span class="line">			    &#125;;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;(); </span><br><span class="line">	<span class="keyword">return</span> &#123;</span><br><span class="line">		loginReloadKaptchaImage:<span class="function"><span class="keyword">function</span>(<span class="params">obj</span>)</span>&#123;</span><br><span class="line">			Login.reloadkaptchaimage(obj);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 省略其他代码</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+<h3 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h3><p>以上效果图如下所示：<img src='/uploads/kaptcha_effect.gif' /></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kaptcha/" rel="tag"># Kaptcha</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/" rel="prev" title="Spring整合Ehcache过程">
+      <i class="fa fa-chevron-left"></i> Spring整合Ehcache过程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/08/14/jsonp%E7%9A%84%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B/" rel="next" title="jsonp的使用过程">
+      jsonp的使用过程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kaptcha-简介"><span class="nav-number">1.</span> <span class="nav-text">Kaptcha 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-MVC-整合-Kaptcha-过程"><span class="nav-number">2.</span> <span class="nav-text">Spring MVC 整合 Kaptcha 过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一步：在Maven配置文件-pom-xml-中增加-Kaptcha-依赖"><span class="nav-number">2.1.</span> <span class="nav-text">第一步：在Maven配置文件( pom.xml )中增加 Kaptcha 依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二步：在-Spring-的配置文件-spring-xml-中注入-Kaptcha-的图片验证码生成类"><span class="nav-number">2.2.</span> <span class="nav-text">第二步：在 Spring 的配置文件( spring.xml )中注入 Kaptcha 的图片验证码生成类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三步：编写调用验证码生成逻辑并响应请求"><span class="nav-number">2.3.</span> <span class="nav-text">第三步：编写调用验证码生成逻辑并响应请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第四步：在登录页面中使用验证码"><span class="nav-number">2.4.</span> <span class="nav-text">第四步：在登录页面中使用验证码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效果"><span class="nav-number">2.5.</span> <span class="nav-text">效果</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">318k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:49</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2016/08/13/Spring%20MVC%20%E6%95%B4%E5%90%88Kaptcha%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

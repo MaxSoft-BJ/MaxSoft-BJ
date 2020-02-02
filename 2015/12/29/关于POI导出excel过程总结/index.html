@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="随笔今天在维护项目过程中拿到一份关于导出员工薪酬数据的需求，要求使用Excel。查阅了之前导出的功能，都是使用服务器存储模板，然后按照指定路径读取并将查询到的数据在写入到模板中，过程稍稍微有些繁琐（同时后期维护的话也要修改模板）就直接使用POI创建Excel了。大致在开发之前整理了一下必要的信息： 1：创建要使用的Excel对象 2：创建导出文档分三个部分（标题，列标题，数据主体） 标题：使用标题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于POI导出excel过程总结">
+<meta property="og:url" content="http://yoursite.com/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="随笔今天在维护项目过程中拿到一份关于导出员工薪酬数据的需求，要求使用Excel。查阅了之前导出的功能，都是使用服务器存储模板，然后按照指定路径读取并将查询到的数据在写入到模板中，过程稍稍微有些繁琐（同时后期维护的话也要修改模板）就直接使用POI创建Excel了。大致在开发之前整理了一下必要的信息： 1：创建要使用的Excel对象 2：创建导出文档分三个部分（标题，列标题，数据主体） 标题：使用标题">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-12-29T07:22:42.000Z">
+<meta property="article:modified_time" content="2018-03-12T03:42:18.000Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="POI">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>关于POI导出excel过程总结 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          关于POI导出excel过程总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2015-12-29 15:22:42" itemprop="dateCreated datePublished" datetime="2015-12-29T15:22:42+08:00">2015-12-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb第三方框架</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="随笔"><a href="#随笔" class="headerlink" title="随笔"></a>随笔</h2><p>今天在维护项目过程中拿到一份关于导出员工薪酬数据的需求，要求使用Excel。查阅了之前导出的功能，都是使用服务器存储模板，然后按照指定路径读取并将查询到的数据在写入到模板中，过程稍稍微有些繁琐（同时后期维护的话也要修改模板）就直接使用POI创建Excel了。<br>大致在开发之前整理了一下必要的信息：</p>
+<p>1：创建要使用的Excel对象</p>
+<p>2：创建导出文档分三个部分（标题，列标题，数据主体）</p>
+<p>标题：使用标题的样式以及命名规则<br>列标题：使用列标题的样式以及命名规则<br>数据主体：使用数据主体的样式以及命名规则</p>
+<p>具体的逻辑如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">HSSFWorkbook workbook = <span class="keyword">new</span> HSSFWorkbook();<span class="comment">//创建Excel主体  </span></span><br><span class="line">Sheet sheet = workbook.createSheet(sheet_name);<span class="comment">//创建工作空间  </span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">	sheet.setColumnWidth(i, title_names[i].getBytes().length * <span class="number">256</span> + offset * <span class="number">256</span>);<span class="comment">//设置每列的宽度  </span></span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//开始创建表头标题样式  </span></span><br><span class="line">CellStyle cellStyle_title_row = workbook.createCellStyle();  </span><br><span class="line">Font font_title_row = workbook.createFont();  </span><br><span class="line">font_title_row.setFontHeightInPoints(height_title_row_font_size); <span class="comment">//字体大小  </span></span><br><span class="line">font_title_row.setFontName(<span class="string">"宋体"</span>);  </span><br><span class="line">font_title_row.setBoldweight(Font.BOLDWEIGHT_BOLD); <span class="comment">//粗体  </span></span><br><span class="line">font_title_row.setColor(HSSFColor.BLACK.index);    <span class="comment">//黑字  </span></span><br><span class="line">cellStyle_title_row.setAlignment(HSSFCellStyle.ALIGN_CENTER); <span class="comment">// 居中  </span></span><br><span class="line">cellStyle_title_row.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);<span class="comment">// 垂直居中  </span></span><br><span class="line">cellStyle_title_row.setFillForegroundColor(IndexedColors.YELLOW.getIndex());  </span><br><span class="line">cellStyle_title_row.setFillPattern(CellStyle.SOLID_FOREGROUND);  </span><br><span class="line">cellStyle_title_row.setFont(font_title_row);  </span><br><span class="line">cellStyle_title_row.setBorderBottom(height_title_row_border_size); <span class="comment">//设置边框线宽度  </span></span><br><span class="line">cellStyle_title_row.setBorderRight(height_title_row_border_size);  </span><br><span class="line">cellStyle_title_row.setBottomBorderColor(IndexedColors.BLACK.getIndex());<span class="comment">//设置边框线颜色  </span></span><br><span class="line"><span class="comment">//开始创建并表体标题样式  </span></span><br><span class="line">CellStyle cellStyle_title_body = workbook.createCellStyle();  </span><br><span class="line">Font font_title_body = workbook.createFont();  </span><br><span class="line">font_title_body.setFontHeightInPoints(height_title_body_font_size); <span class="comment">//字体大小  </span></span><br><span class="line">font_title_body.setFontName(<span class="string">"宋体"</span>);  </span><br><span class="line">font_title_body.setBoldweight(Font.BOLDWEIGHT_BOLD); <span class="comment">//粗体  </span></span><br><span class="line">font_title_body.setColor(HSSFColor.BLACK.index);    <span class="comment">//黑字  </span></span><br><span class="line">cellStyle_title_body.setAlignment(HSSFCellStyle.ALIGN_CENTER);  </span><br><span class="line">cellStyle_title_body.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);<span class="comment">// 垂直居中  </span></span><br><span class="line">cellStyle_title_body.setFont(font_title_body);  </span><br><span class="line">cellStyle_title_body.setBorderBottom(height_title_body_border_size); <span class="comment">//设置边框线宽度  </span></span><br><span class="line">cellStyle_title_body.setBorderRight(height_title_body_border_size);  </span><br><span class="line">cellStyle_title_body.setBottomBorderColor(IndexedColors.BLACK.getIndex());<span class="comment">//设置边框线颜色  </span></span><br><span class="line"><span class="comment">//开始创建表体标题并设置其样式  </span></span><br><span class="line">Row row_0 = sheet.createRow(<span class="number">0</span>);<span class="comment">//表体标题  </span></span><br><span class="line">row_0.setHeightInPoints(height_title_body);  </span><br><span class="line">sheet.addMergedRegion(<span class="keyword">new</span> CellRangeAddress(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, title_names.length-<span class="number">1</span>)); <span class="comment">//合并单元格  </span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">        Cell cell = row_0.createCell(i);  </span><br><span class="line">        <span class="keyword">if</span>(i==<span class="number">0</span>)&#123;  </span><br><span class="line">            cell.setCellValue(body_title_name);  </span><br><span class="line">        &#125;  </span><br><span class="line">        cell.setCellStyle(cellStyle_title_body);  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//开始创建表头标题并设置其样式  </span></span><br><span class="line">Row row_1 = sheet.createRow(<span class="number">1</span>);<span class="comment">//表头标题  </span></span><br><span class="line">row_1.setHeightInPoints(height_title_row);  </span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">    Cell cell = row_1.createCell(i);  </span><br><span class="line">    cell.setCellValue(title_names[i]);  </span><br><span class="line">    cell.setCellStyle(cellStyle_title_row);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//开始查询数据  </span></span><br><span class="line">HttpSession session = request.getSession();  </span><br><span class="line">StringBuffer sbsql = <span class="keyword">this</span>.getPsnCostSql(vo, session);  </span><br><span class="line">List&lt;PsnCostBVo&gt; list = comDao.queryBySQL(sbsql.toString(), PsnCostBVo<span class="class">.<span class="keyword">class</span>)</span>;  </span><br><span class="line">  </span><br><span class="line">HSSFSheet sheet = workbook.getSheetAt(<span class="number">0</span>);  </span><br><span class="line">HSSFDataFormat format= workbook.createDataFormat();  </span><br><span class="line">CellStyle cellstyle_money = workbook.createCellStyle();  </span><br><span class="line">cellstyle_money.setDataFormat(format.getFormat(<span class="string">"#,##0.00"</span>));<span class="comment">//金额格式  </span></span><br><span class="line">CellStyle cellstyle_text = workbook.createCellStyle();  </span><br><span class="line">cellstyle_text.setDataFormat(format.getFormat(<span class="string">"@"</span>));<span class="comment">//文本格式  </span></span><br><span class="line">sheet.createRow(<span class="number">2</span>);  </span><br><span class="line">Map&lt;String, Object&gt; map = <span class="keyword">null</span>;  </span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;list.size();i++)&#123;  </span><br><span class="line">    map= Constant.ConvertObjToMap(list.get(i));  </span><br><span class="line">    HSSFRow row = sheet.createRow(i+<span class="number">2</span>);  </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;title_names.length;j++)&#123;  </span><br><span class="line">        HSSFCell cell = row.createCell(j);  </span><br><span class="line">        <span class="keyword">if</span> (j==<span class="number">6</span>)&#123;  </span><br><span class="line">            cell.setCellStyle(cellstyle_text);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_STRING);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue(((String)map.get(title_fileds[j])).equals(<span class="string">"0"</span>) ? <span class="string">"已发放"</span>:<span class="string">"未发放"</span>);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(j&lt;<span class="number">7</span>)&#123;  </span><br><span class="line">            cell.setCellStyle(cellstyle_text);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_STRING);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue((String)map.get(title_fileds[j]));  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            &lt;span style="white-space:pre"&gt;        &lt;/span&gt;cell.setCellStyle(cellstyle_money);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue((Double)map.get(title_fileds[j]));  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据格式总结"><a href="#数据格式总结" class="headerlink" title="数据格式总结"></a>数据格式总结</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cellstyle.setDataFormat(format.getFormat(<span class="string">"￥#,##0.00"</span>)); <span class="comment">//金额格式</span></span><br><span class="line">cellstyle.setDataFormat(format.getFormat(<span class="string">"@"</span>)); <span class="comment">//文本格式  </span></span><br><span class="line">cellStyle.setDataFormat(format.getFormat(<span class="string">"yyyy年m月d日"</span>));</span><br><span class="line">cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00"</span>)); <span class="comment">//两位小数格式  </span></span><br><span class="line">cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00%"</span>)); <span class="comment">//百分比格式  </span></span><br><span class="line">cellStyle.setDataFormat( HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00E+00"</span>)); <span class="comment">//科学计数法格式  </span></span><br><span class="line"><span class="comment">//这里与上面有所不同，用的是HSSFDataFormat.getBuiltinFormat()方法，因为0.00是Excel内嵌的格式，Excel内嵌格式列表大家可以在Excel文件中查看。  </span></span><br><span class="line">cellStyle.setDataFormat(format.getFormat(<span class="string">"[DbNum2][$-804]0"</span>)); <span class="comment">//中文大写格式</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/POI/" rel="tag"># POI</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/08/14/ThreadLocal%20%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8E%9F%E7%90%86/" rel="prev" title="ThreadLocal 的使用原理">
+      <i class="fa fa-chevron-left"></i> ThreadLocal 的使用原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/03/18/Quartz%E4%B8%AD%E5%85%B3%E4%BA%8EcronExpression%E7%9A%84%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B/" rel="next" title="Quartz中关于cronExpression的使用过程">
+      Quartz中关于cronExpression的使用过程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#随笔"><span class="nav-number">1.</span> <span class="nav-text">随笔</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据格式总结"><span class="nav-number">2.</span> <span class="nav-text">数据格式总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">318k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:49</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

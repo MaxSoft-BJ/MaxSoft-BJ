@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;最近在项目中使用 Ehcache 作为了系统的缓冲插件，关于Ehcache请移步「 关于Ehcache 」。在这里只记录其在本次项目中的使用的过程。 当前项目使用 Spring 以及 Maven 所以主要介绍 Spring 整合 Ehcache 的过程。 1&amp;sdot;&amp;nbsp;&amp;nbsp;首先在Maven配置文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring整合Ehcache过程">
+<meta property="og:url" content="http://yoursite.com/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;最近在项目中使用 Ehcache 作为了系统的缓冲插件，关于Ehcache请移步「 关于Ehcache 」。在这里只记录其在本次项目中的使用的过程。 当前项目使用 Spring 以及 Maven 所以主要介绍 Spring 整合 Ehcache 的过程。 1&amp;sdot;&amp;nbsp;&amp;nbsp;首先在Maven配置文">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-08-12T08:05:31.000Z">
+<meta property="article:modified_time" content="2018-03-12T03:43:00.000Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="ehcache">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Spring整合Ehcache过程 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring整合Ehcache过程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2016-08-12 16:05:31" itemprop="dateCreated datePublished" datetime="2016-08-12T16:05:31+08:00">2016-08-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb第三方框架</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最近在项目中使用 Ehcache 作为了系统的缓冲插件，关于Ehcache请移步「 <a href="http://www.ehcache.org/about/" target="_blank" rel="noopener">关于Ehcache</a> 」。在这里只记录其在本次项目中的使用的过程。</p>
+<p>当前项目使用 Spring 以及 Maven 所以主要介绍 Spring 整合 Ehcache 的过程。</p>
+<p>1&sdot;&nbsp;&nbsp;首先在Maven配置文件pom.xml中新增关于 Ehcache 的依赖包：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">	...</span><br><span class="line">	<span class="comment">&lt;!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.ehcache<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ehcache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">	...</span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2&sdot;&nbsp;&nbsp;新增 ehcache.xml 配置文件，并将其放入到对应的项目资源目录中（例如：/WEB-INF/conf/cache/）。<br>配置文件内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ehcache</span> <span class="attr">updateCheck</span>=<span class="string">"false"</span> <span class="attr">name</span>=<span class="string">"yonyou-brotel-ehcache"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">diskStore</span> <span class="attr">path</span>=<span class="string">"java.io.tmpdir"</span>/&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- DefaultCache setting. --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 定义缓存策略  </span></span><br><span class="line"><span class="comment">        eternal="false"                 // 元素是否永恒,如果是就永不过期(必须设置)  </span></span><br><span class="line"><span class="comment">        maxEntriesLocalHeap="1000"      // 堆内存中最大缓存对象数,0没有限制(必须设置)  </span></span><br><span class="line"><span class="comment">        overflowToDisk="false"          // 当缓存达到maxElementsInMemory值是,是否允许溢出到磁盘(必须设置)  </span></span><br><span class="line"><span class="comment">        diskPersistent="false"          // 磁盘缓存在VM重新启动时是否保持(默认为false)  </span></span><br><span class="line"><span class="comment">        timeToIdleSeconds="0"           // 导致元素过期的访问间隔(秒为单位). 当eternal为false时，这个属性才有效，0表示可以永远空闲,默认为0  </span></span><br><span class="line"><span class="comment">        timeToLiveSeconds="600"         // 元素在缓存里存在的时间(秒为单位). 0 表示永远存在不过期  </span></span><br><span class="line"><span class="comment">        memoryStoreEvictionPolicy="LFU" // 当达到maxElementsInMemory时,如何强制进行驱逐默认使用"最近使用(LRU)"策略,其它还有先入先出FIFO,最少使用LFU,较少使用LRU  </span></span><br><span class="line"><span class="comment">    --&gt;</span>  </span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">cache</span> <span class="attr">name</span>=<span class="string">"login_times_cache"</span> <span class="attr">eternal</span>=<span class="string">"false"</span> <span class="attr">maxEntriesLocalHeap</span>=<span class="string">"0"</span> <span class="attr">overflowToDisk</span>=<span class="string">"false"</span> <span class="attr">timeToIdleSeconds</span>=<span class="string">"1800"</span> <span class="attr">timeToLiveSeconds</span>=<span class="string">"1800"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">ehcache</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>3&sdot;&nbsp;&nbsp;在Spring的配置文件（applicationContext.xml）中引入 ehcache.xml ，并注入缓冲管理实例，代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:aop</span>=<span class="string">"http://www.springframework.org/schema/aop"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:tx</span>=<span class="string">"http://www.springframework.org/schema/tx"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:mvc</span>=<span class="string">"http://www.springframework.org/schema/mvc"</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:p</span>=<span class="string">"http://www.springframework.org/schema/p"</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:jaxws</span>=<span class="string">"http://cxf.apache.org/jaxws"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:simple</span>=<span class="string">"http://cxf.apache.org/simple"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://cxf.apache.org/simple http://cxf.apache.org/schemas/simple.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"ehcache_manager_factory"</span> <span class="attr">class</span>=<span class="string">"org.springframework.cache.ehcache.EhCacheManagerFactoryBean"</span> <span class="attr">p:shared</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"/WEB-INF/conf/cache/ehcache.xml"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"spring_cache_manager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.cache.ehcache.EhCacheCacheManager"</span>&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"cacheManager"</span> <span class="attr">ref</span>=<span class="string">"ehcache_manager_factory"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>4&sdot;&nbsp;&nbsp;以上代码就是全部的配置过程，接下来我们就可以使用缓冲组件来存储数据了，示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> EhCacheCacheManager manager;</span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> HttpServletRequest request;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/checkuser"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Map&lt;String, String&gt; <span class="title">checkUser</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	Map&lt;String, String&gt; msgMap = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">	String userCode = request.getParameter(<span class="string">"userCode"</span>);</span><br><span class="line">	Cache cache = manager.getCache(<span class="string">"login_times_cache"</span>);</span><br><span class="line">	String ip = MethodUtil.getRemoteHost(request);</span><br><span class="line">	String key = ip+userCode;</span><br><span class="line">	ValueWrapper value = cache.get(key);</span><br><span class="line">	<span class="keyword">int</span> times = value==<span class="keyword">null</span>?<span class="number">0</span>:(Integer)value.get();</span><br><span class="line">	<span class="keyword">if</span>(times&gt;<span class="number">4</span>)&#123;</span><br><span class="line">		msgMap.put(<span class="string">"status"</span>, <span class="string">"false"</span>);</span><br><span class="line">		msgMap.put(<span class="string">"errormsg"</span>, <span class="string">"登陆错误次数超出5次，账户已被锁定！请稍后再试！"</span>);</span><br><span class="line">		<span class="keyword">return</span> msgMap;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(校验失败)&#123;</span><br><span class="line">		countTimesInfo(msgMap,cache,keytimes);</span><br><span class="line">		<span class="keyword">return</span> msgMap;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//省略其他校验...</span></span><br><span class="line">	cache.evict(key); <span class="comment">//通过前面所有的校验，移除连续登陆错误次数缓存信息</span></span><br><span class="line">	<span class="keyword">return</span> msgMap;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">countTimesInfo</span><span class="params">(Map&lt;String, String&gt; msgMap, Cache cache,String key, <span class="keyword">int</span> times)</span> </span>&#123;</span><br><span class="line">	msgMap.put(<span class="string">"errormsg"</span>, <span class="string">"账户或密码错误！第"</span> + (times+<span class="number">1</span>) + <span class="string">"次；【5次后，账户将被锁定】"</span>);</span><br><span class="line">	cache.put(key,times+<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://maven.apache.org/guides/index.html" target="_blank" rel="noopener">Maven</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ehcache/" rel="tag"># ehcache</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/" rel="prev" title="Java 集合类操作优化经验总结">
+      <i class="fa fa-chevron-left"></i> Java 集合类操作优化经验总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/08/13/Spring%20MVC%20%E6%95%B4%E5%90%88Kaptcha%E7%94%9F%E6%88%90%E5%9B%BE%E7%89%87%E9%AA%8C%E8%AF%81%E7%A0%81/" rel="next" title="Spring MVC 整合Kaptcha生成图片验证码">
+      Spring MVC 整合Kaptcha生成图片验证码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">318k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:49</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

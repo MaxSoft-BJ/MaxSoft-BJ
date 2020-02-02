@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="SpringMVC组件之MultipartResolverMultipartResolver是一个文件上传相关的解析器，当我们的Web容器启动的时候SpringMVC的会在DispatchServlet中先初始化这个解析器（整个生命周期只初始化一次），初始化源码如下： 123456789101112131415&#x2F;&#x2F; 省略部分代码public static final String MULTIPAR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC组件之MultipartResolver—Spring系列学习笔记">
+<meta property="og:url" content="http://yoursite.com/2014/03/20/SpringMVC%E7%BB%84%E4%BB%B6%E4%B9%8BMultipartResolver/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="SpringMVC组件之MultipartResolverMultipartResolver是一个文件上传相关的解析器，当我们的Web容器启动的时候SpringMVC的会在DispatchServlet中先初始化这个解析器（整个生命周期只初始化一次），初始化源码如下： 123456789101112131415&#x2F;&#x2F; 省略部分代码public static final String MULTIPAR">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-03-20T09:02:19.000Z">
+<meta property="article:modified_time" content="2018-02-05T23:25:32.000Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="SpringMVC">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2014/03/20/SpringMVC%E7%BB%84%E4%BB%B6%E4%B9%8BMultipartResolver/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>SpringMVC组件之MultipartResolver—Spring系列学习笔记 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2014/03/20/SpringMVC%E7%BB%84%E4%BB%B6%E4%B9%8BMultipartResolver/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringMVC组件之MultipartResolver—Spring系列学习笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2014-03-20 17:02:19" itemprop="dateCreated datePublished" datetime="2014-03-20T17:02:19+08:00">2014-03-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring%E7%B3%BB%E5%88%97/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring系列</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="SpringMVC组件之MultipartResolver"><a href="#SpringMVC组件之MultipartResolver" class="headerlink" title="SpringMVC组件之MultipartResolver"></a>SpringMVC组件之MultipartResolver</h2><p>MultipartResolver是一个文件上传相关的解析器，当我们的Web容器启动的时候SpringMVC的会在DispatchServlet中先初始化这个解析器（整个生命周期只初始化一次），初始化源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 省略部分代码</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String MULTIPART_RESOLVER_BEAN_NAME = <span class="string">"multipartResolver"</span>;</span><br><span class="line"><span class="keyword">private</span> MultipartResolver multipartResolver;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initMultipartResolver</span><span class="params">(ApplicationContext context)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">// 这里是在容器中来获取MultipartResolver的实例</span></span><br><span class="line">		<span class="keyword">this</span>.multipartResolver = context.getBean(MULTIPART_RESOLVER_BEAN_NAME, MultipartResolver<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">		<span class="comment">// 省略部分代码</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (NoSuchBeanDefinitionException ex) &#123;</span><br><span class="line">		<span class="keyword">this</span>.multipartResolver = <span class="keyword">null</span>;</span><br><span class="line">		<span class="comment">// 省略部分代码</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 省略部分代码</span></span><br></pre></td></tr></table></figure>
+<p>通过以上源码我们看到在DispatchServlet中的初始化过程。<br>当我们每次对Web容器发起满足SpringMVC的映射地址规则的时候，都会在DispatchServlet中进行文件上传解析的检查，过程代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doDispatch</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">	<span class="comment">// 省略其他代码</span></span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		processedRequest = checkMultipart(request);</span><br><span class="line">		multipartRequestParsed = processedRequest != request;</span><br><span class="line">	<span class="comment">// 省略其他代码</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="comment">// 省略部分代码</span></span><br><span class="line">		<span class="keyword">if</span> (multipartRequestParsed) &#123;</span><br><span class="line">			<span class="comment">//清除文件上传相关的临时资源</span></span><br><span class="line">			cleanupMultipart(processedRequest);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//这个是整个文件上传的检查方法</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> HttpServletRequest <span class="title">checkMultipart</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> MultipartException </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="keyword">this</span>.multipartResolver != <span class="keyword">null</span> &amp;&amp; <span class="keyword">this</span>.multipartResolver.isMultipart(request)) &#123;</span><br><span class="line">		<span class="keyword">if</span> (request <span class="keyword">instanceof</span> MultipartHttpServletRequest) &#123;</span><br><span class="line">			logger.debug(<span class="string">"Request is already a MultipartHttpServletRequest - if not in a forward, "</span> +</span><br><span class="line">					<span class="string">"this typically results from an additional MultipartFilter in web.xml"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">this</span>.multipartResolver.resolveMultipart(request);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// If not returned before: return original request.</span></span><br><span class="line">	<span class="keyword">return</span> request;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 这个是文件上传后清除相关的临时资源</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">cleanupMultipart</span><span class="params">(HttpServletRequest servletRequest)</span> </span>&#123;</span><br><span class="line">	MultipartHttpServletRequest req = WebUtils.getNativeRequest(servletRequest, MultipartHttpServletRequest<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">	<span class="keyword">if</span> (req != <span class="keyword">null</span>) &#123;</span><br><span class="line">		<span class="keyword">this</span>.multipartResolver.cleanupMultipart(req);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就是MultipartResolver在DispatchServlet中的使用过程，接下来我们一起看MultipartResolver的真面目，&gt;&amp;&lt;……</p>
+<h3 id="MultipartResolver的功能分析"><a href="#MultipartResolver的功能分析" class="headerlink" title="MultipartResolver的功能分析"></a>MultipartResolver的功能分析</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MultipartResolver</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">boolean</span> <span class="title">isMultipart</span><span class="params">(HttpServletRequest request)</span></span>;</span><br><span class="line">	<span class="function">MultipartHttpServletRequest <span class="title">resolveMultipart</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> MultipartException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">cleanupMultipart</span><span class="params">(MultipartHttpServletRequest request)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过源码可以看到MultipartResolver是一个接口，其中提供了三个方法供子类来实现。</p>
+<ol>
+<li>isMultipart(…)是用来检查我们当前的请求是否是MultipartHttpServletRequest</li>
+<li>resolveMultipart(…)就是最核心的方法，及解析器。</li>
+<li>cleanupMultipart(…)就是清除文件上传相关的临时资源。</li>
+</ol>
+<p>通过开发环境我们可以看到具体实现了MultipartResolver接口的类有如下几个类：</p>
+<h4 id="CommonsMultipartResolver"><a href="#CommonsMultipartResolver" class="headerlink" title="CommonsMultipartResolver"></a>CommonsMultipartResolver</h4><h5 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CommonsMultipartResolver</span> <span class="keyword">extends</span> <span class="title">CommonsFileUploadSupport</span> <span class="keyword">implements</span> <span class="title">MultipartResolver</span>, <span class="title">ServletContextAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> resolveLazily = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">CommonsMultipartResolver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">CommonsMultipartResolver</span><span class="params">(ServletContext servletContext)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>();</span><br><span class="line">		setServletContext(servletContext);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setResolveLazily</span><span class="params">(<span class="keyword">boolean</span> resolveLazily)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.resolveLazily = resolveLazily;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> FileUpload <span class="title">newFileUpload</span><span class="params">(FileItemFactory fileItemFactory)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ServletFileUpload(fileItemFactory);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setServletContext</span><span class="params">(ServletContext servletContext)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (!isUploadTempDirSpecified()) &#123;</span><br><span class="line">			getFileItemFactory().setRepository(WebUtils.getTempDir(servletContext));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isMultipart</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> (request != <span class="keyword">null</span> &amp;&amp; ServletFileUpload.isMultipartContent(request));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> MultipartHttpServletRequest <span class="title">resolveMultipart</span><span class="params">(<span class="keyword">final</span> HttpServletRequest request)</span> <span class="keyword">throws</span> MultipartException </span>&#123;</span><br><span class="line">		Assert.notNull(request, <span class="string">"Request must not be null"</span>);</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">this</span>.resolveLazily) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> DefaultMultipartHttpServletRequest(request) &#123;</span><br><span class="line">				<span class="meta">@Override</span></span><br><span class="line">				<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initializeMultipart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">					MultipartParsingResult parsingResult = parseRequest(request);</span><br><span class="line">					setMultipartFiles(parsingResult.getMultipartFiles());</span><br><span class="line">					setMultipartParameters(parsingResult.getMultipartParameters());</span><br><span class="line">					setMultipartParameterContentTypes(parsingResult.getMultipartParameterContentTypes());</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			MultipartParsingResult parsingResult = parseRequest(request);</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">new</span> DefaultMultipartHttpServletRequest(request, parsingResult.getMultipartFiles(),</span><br><span class="line">					parsingResult.getMultipartParameters(), parsingResult.getMultipartParameterContentTypes());</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">protected</span> MultipartParsingResult <span class="title">parseRequest</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> MultipartException </span>&#123;</span><br><span class="line">		String encoding = determineEncoding(request);</span><br><span class="line">		FileUpload fileUpload = prepareFileUpload(encoding);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			List&lt;FileItem&gt; fileItems = ((ServletFileUpload) fileUpload).parseRequest(request);</span><br><span class="line">			<span class="keyword">return</span> parseFileItems(fileItems, encoding);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (FileUploadBase.SizeLimitExceededException ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> MaxUploadSizeExceededException(fileUpload.getSizeMax(), ex);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (FileUploadException ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> MultipartException(<span class="string">"Could not parse multipart servlet request"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">protected</span> String <span class="title">determineEncoding</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</span><br><span class="line">		String encoding = request.getCharacterEncoding();</span><br><span class="line">		<span class="keyword">if</span> (encoding == <span class="keyword">null</span>) &#123;</span><br><span class="line">			encoding = getDefaultEncoding();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> encoding;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cleanupMultipart</span><span class="params">(MultipartHttpServletRequest request)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (request != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				cleanupFileItems(request.getMultiFileMap());</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">				logger.warn(<span class="string">"Failed to perform multipart cleanup for servlet request"</span>, ex);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过上述的源码分析在使用CommonsMultipartResolver解析器的时候是需要其他的jar包的支持（commons-fileupload.jar 和 common-io.jar）;</p>
+<h5 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 定义文件上传解析器 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"multipartResolver"</span> <span class="attr">class</span>=<span class="string">"org.springframework.web.multipart.commons.CommonsMultipartResolver"</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 设定默认编码 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"defaultEncoding"</span> <span class="attr">value</span>=<span class="string">"UTF-8"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 设定文件上传的最大值为2MB，2*1024*1024 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxUploadSize"</span> <span class="attr">value</span>=<span class="string">"2097152"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 设定文件上传时写入内存的最大值，如果小于这个参数不会生成临时文件，默认为10240 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"maxInMemorySize"</span> <span class="attr">value</span>=<span class="string">"10240"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 设置上传文件的临时路径 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"uploadTempDir"</span> <span class="attr">value</span>=<span class="string">"fileUpload/maxsoft-temp"</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 是否延迟文件解析 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"resolveLazily"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h5 id="表单的代码"><a href="#表单的代码" class="headerlink" title="表单的代码"></a>表单的代码</h5><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=<span class="string">"maxsoft/upload"</span> method=<span class="string">"post"</span> enctype=<span class="string">"multipart/form-data"</span>&gt;</span><br><span class="line">     &lt;input type=<span class="string">"maxsoft_file"</span> name=<span class="string">"maxsoft_file"</span>&gt;</span><br><span class="line">     &lt;input type=<span class="string">"submit"</span> value=<span class="string">"提交"</span>&gt;</span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+<p>注意：在上传文件的表单中一定要设置表单类型 enctype=”multipart/form-data”，否则服务器不会执行文件上传逻辑。</p>
+<h5 id="服务端逻辑"><a href="#服务端逻辑" class="headerlink" title="服务端逻辑"></a>服务端逻辑</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">HttpServletRequest request;</span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line">HttpSession session;</span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/upload"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> ModelAndView <span class="title">upload</span><span class="params">(@RequestParam(value = <span class="string">"maxsoft_file"</span>, required = <span class="keyword">false</span>)</span> MultipartFile maxsoft_file) </span>&#123;</span><br><span class="line">    <span class="comment">// 非空校验</span></span><br><span class="line">    <span class="keyword">if</span>(!maxsoft_file.isEmpty()) &#123;</span><br><span class="line">        <span class="comment">// 定义文件路径</span></span><br><span class="line">        String path = request.getServletContext().getRealPath(<span class="string">"/"</span>);</span><br><span class="line">        <span class="comment">// 定义文件名称</span></span><br><span class="line">        String name = String.valueOf(<span class="keyword">new</span> Date().getTime()+<span class="string">"_"</span> + maxsoft_file.getOriginalFilename());</span><br><span class="line">        File destFile = <span class="keyword">new</span> File(path,name);</span><br><span class="line">        <span class="comment">// 存储文件文件</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            maxsoft_file.transferTo(destFile);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalStateException | IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;        </span><br><span class="line">    ModelAndView mv = <span class="keyword">new</span> ModelAndView();</span><br><span class="line">    mv.setViewName(<span class="string">"maxsoft/main"</span>);</span><br><span class="line">    <span class="keyword">return</span> mv;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="StandardServletMultipartResolver"><a href="#StandardServletMultipartResolver" class="headerlink" title="StandardServletMultipartResolver"></a>StandardServletMultipartResolver</h4><h5 id="源码分析-1"><a href="#源码分析-1" class="headerlink" title="源码分析"></a>源码分析</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StandardServletMultipartResolver</span> <span class="keyword">implements</span> <span class="title">MultipartResolver</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isMultipart</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 检查请求对象的方法类型</span></span><br><span class="line">		<span class="keyword">if</span> (!<span class="string">"post"</span>.equals(request.getMethod().toLowerCase())) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		String contentType = request.getContentType();</span><br><span class="line">		<span class="keyword">return</span> (contentType != <span class="keyword">null</span> &amp;&amp; contentType.toLowerCase().startsWith(<span class="string">"multipart/"</span>));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> MultipartHttpServletRequest <span class="title">resolveMultipart</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> MultipartException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> StandardMultipartHttpServletRequest(request);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cleanupMultipart</span><span class="params">(MultipartHttpServletRequest request)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">for</span> (Part part : request.getParts()) &#123;</span><br><span class="line">				<span class="keyword">if</span> (request.getFile(part.getName()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">					part.delete();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">			LogFactory.getLog(getClass()).warn(<span class="string">"Failed to perform cleanup of multipart items"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过以上源码分析可以看出在StandardServletMultipartResolver解析器中不需要任何其他的jar包，只要容器的Servlet版本为高版本（3.0+）的ServletAPI即可运行，笔者使用了Tomcat7.0。</p>
+<h5 id="配置文件-1"><a href="#配置文件-1" class="headerlink" title="配置文件"></a>配置文件</h5><p>首先我们在Spring容器中将该解析器注入其中，过程如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"multipartResolver"</span> <span class="attr">class</span>=<span class="string">"org.springframework.web.multipart.support.StandardServletMultipartResolver"</span>&gt;</span><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>web.xml上传文件属性属性配置</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">servlet</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-name</span>&gt;</span>springmvc<span class="tag">&lt;/<span class="name">servlet-name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">servlet-class</span>&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="tag">&lt;/<span class="name">servlet-class</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">init-param</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">param-name</span>&gt;</span>contextConfigLocation<span class="tag">&lt;/<span class="name">param-name</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">param-value</span>&gt;</span>classpath:spring-mvc.xml<span class="tag">&lt;/<span class="name">param-value</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;/<span class="name">init-param</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">load-on-startup</span>&gt;</span>1<span class="tag">&lt;/<span class="name">load-on-startup</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">multipart-config</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 存储文件的临时目录 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">location</span>&gt;</span>d:/<span class="tag">&lt;/<span class="name">location</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 文件大小限制2MB --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">max-file-size</span>&gt;</span>2097152<span class="tag">&lt;/<span class="name">max-file-size</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 上传文件整个请求对象大小限制 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">max-request-size</span>&gt;</span>4194304<span class="tag">&lt;/<span class="name">max-request-size</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">multipart-config</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">servlet</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h5 id="表单代码-amp-服务端逻辑"><a href="#表单代码-amp-服务端逻辑" class="headerlink" title="表单代码 &amp; 服务端逻辑"></a>表单代码 &amp; 服务端逻辑</h5><p>表单代码和服务端逻辑基本和第一模一样，这里就不在赘述了。<br>在服务端接收文件的时候可以使用 MultipartHttpServletRequest , 也可以使用 MultipartFile，<br>当使用我们MultipartHttpServletRequest来接收文件数据时，只要在服务器获取这个对象的实例，通过其getFile(‘表单文件名’)或getFiles(‘表单文件名’),获取即可。<br>以下是解析文件的最核心的代码，器使用 servlet3.0 的 request.getParts() 方法获取上传文件，并将其封装到 MultipartFile 对象中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">StandardMultipartHttpServletRequest</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> MultipartException </span>&#123;</span><br><span class="line">	<span class="keyword">super</span>(request);</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		Collection&lt;Part&gt; parts = request.getParts();</span><br><span class="line">		MultiValueMap&lt;String, MultipartFile&gt; files = <span class="keyword">new</span> LinkedMultiValueMap&lt;String, MultipartFile&gt;(parts.size());</span><br><span class="line">		<span class="keyword">for</span> (Part part : parts) &#123;</span><br><span class="line">			String filename = extractFilename(part.getHeader(CONTENT_DISPOSITION));</span><br><span class="line">			<span class="keyword">if</span> (filename != <span class="keyword">null</span>) &#123;</span><br><span class="line">				files.add(part.getName(), <span class="keyword">new</span> StandardMultipartFile(part, filename));</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		setMultipartFiles(files);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> MultipartException(<span class="string">"Could not parse multipart servlet request"</span>, ex);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="相关源码"><a href="#相关源码" class="headerlink" title="相关源码"></a>相关源码</h5><h6 id="MultipartHttpServletRequest"><a href="#MultipartHttpServletRequest" class="headerlink" title="MultipartHttpServletRequest"></a>MultipartHttpServletRequest</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MultipartHttpServletRequest</span> <span class="keyword">extends</span> <span class="title">HttpServletRequest</span>, <span class="title">MultipartRequest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function">HttpMethod <span class="title">getRequestMethod</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">HttpHeaders <span class="title">getRequestHeaders</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">HttpHeaders <span class="title">getMultipartHeaders</span><span class="params">(String paramOrFileName)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="MultipartRequest"><a href="#MultipartRequest" class="headerlink" title="MultipartRequest"></a>MultipartRequest</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MultipartRequest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function">Iterator&lt;String&gt; <span class="title">getFileNames</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">MultipartFile <span class="title">getFile</span><span class="params">(String name)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">List&lt;MultipartFile&gt; <span class="title">getFiles</span><span class="params">(String name)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">Map&lt;String, MultipartFile&gt; <span class="title">getFileMap</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">MultiValueMap&lt;String, MultipartFile&gt; <span class="title">getMultiFileMap</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="function">String <span class="title">getMultipartContentType</span><span class="params">(String paramOrFileName)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>#####</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StandardMultipartHttpServletRequest</span> <span class="keyword">extends</span> <span class="title">AbstractMultipartHttpServletRequest</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String CONTENT_DISPOSITION = <span class="string">"content-disposition"</span>;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILENAME_KEY = <span class="string">"filename="</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">StandardMultipartHttpServletRequest</span><span class="params">(HttpServletRequest request)</span> <span class="keyword">throws</span> MultipartException </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>(request);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Collection&lt;Part&gt; parts = request.getParts();</span><br><span class="line">			MultiValueMap&lt;String, MultipartFile&gt; files = <span class="keyword">new</span> LinkedMultiValueMap&lt;String, MultipartFile&gt;(parts.size());</span><br><span class="line">			<span class="keyword">for</span> (Part part : parts) &#123;</span><br><span class="line">				String filename = extractFilename(part.getHeader(CONTENT_DISPOSITION));</span><br><span class="line">				<span class="keyword">if</span> (filename != <span class="keyword">null</span>) &#123;</span><br><span class="line">					files.add(part.getName(), <span class="keyword">new</span> StandardMultipartFile(part, filename));</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			setMultipartFiles(files);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> MultipartException(<span class="string">"Could not parse multipart servlet request"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> String <span class="title">extractFilename</span><span class="params">(String contentDisposition)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (contentDisposition == <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// <span class="doctag">TODO:</span> can only handle the typical case at the moment</span></span><br><span class="line">		<span class="keyword">int</span> startIndex = contentDisposition.indexOf(FILENAME_KEY);</span><br><span class="line">		<span class="keyword">if</span> (startIndex == -<span class="number">1</span>) &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		String filename = contentDisposition.substring(startIndex + FILENAME_KEY.length());</span><br><span class="line">		<span class="keyword">if</span> (filename.startsWith(<span class="string">"\""</span>)) &#123;</span><br><span class="line">			<span class="keyword">int</span> endIndex = filename.indexOf(<span class="string">"\""</span>, <span class="number">1</span>);</span><br><span class="line">			<span class="keyword">if</span> (endIndex != -<span class="number">1</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> filename.substring(<span class="number">1</span>, endIndex);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">int</span> endIndex = filename.indexOf(<span class="string">";"</span>);</span><br><span class="line">			<span class="keyword">if</span> (endIndex != -<span class="number">1</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> filename.substring(<span class="number">0</span>, endIndex);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> filename;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getMultipartContentType</span><span class="params">(String paramOrFileName)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Part part = getPart(paramOrFileName);</span><br><span class="line">			<span class="keyword">return</span> (part != <span class="keyword">null</span> ? part.getContentType() : <span class="keyword">null</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> MultipartException(<span class="string">"Could not access multipart servlet request"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> HttpHeaders <span class="title">getMultipartHeaders</span><span class="params">(String paramOrFileName)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Part part = getPart(paramOrFileName);</span><br><span class="line">			<span class="keyword">if</span> (part != <span class="keyword">null</span>) &#123;</span><br><span class="line">				HttpHeaders headers = <span class="keyword">new</span> HttpHeaders();</span><br><span class="line">				<span class="keyword">for</span> (String headerName : part.getHeaderNames()) &#123;</span><br><span class="line">					headers.put(headerName, <span class="keyword">new</span> ArrayList&lt;String&gt;(part.getHeaders(headerName)));</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">return</span> headers;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> MultipartException(<span class="string">"Could not access multipart servlet request"</span>, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">StandardMultipartFile</span> <span class="keyword">implements</span> <span class="title">MultipartFile</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 省略部分代码</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html" target="_blank" rel="noopener">Spring MVC</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+              <a href="/tags/SpringMVC/" rel="tag"># SpringMVC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2014/03/18/SpringMVC%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%E6%A6%82%E8%BF%B0/" rel="prev" title="SpringMVC的工作原理概述—Spring系列学习笔记">
+      <i class="fa fa-chevron-left"></i> SpringMVC的工作原理概述—Spring系列学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2014/03/22/SpringMVC%E7%BB%84%E4%BB%B6%E4%B9%8BLocaleResolver/" rel="next" title="SpringMVC组件之LocaleResolver—Spring系列学习笔记">
+      SpringMVC组件之LocaleResolver—Spring系列学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringMVC组件之MultipartResolver"><span class="nav-number">1.</span> <span class="nav-text">SpringMVC组件之MultipartResolver</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MultipartResolver的功能分析"><span class="nav-number">1.1.</span> <span class="nav-text">MultipartResolver的功能分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#CommonsMultipartResolver"><span class="nav-number">1.1.1.</span> <span class="nav-text">CommonsMultipartResolver</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#源码分析"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置文件"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#表单的代码"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">表单的代码</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#服务端逻辑"><span class="nav-number">1.1.1.4.</span> <span class="nav-text">服务端逻辑</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#StandardServletMultipartResolver"><span class="nav-number">1.1.2.</span> <span class="nav-text">StandardServletMultipartResolver</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#源码分析-1"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置文件-1"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#表单代码-amp-服务端逻辑"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">表单代码 &amp; 服务端逻辑</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#相关源码"><span class="nav-number">1.1.2.4.</span> <span class="nav-text">相关源码</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#MultipartHttpServletRequest"><span class="nav-number">1.1.2.4.1.</span> <span class="nav-text">MultipartHttpServletRequest</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#MultipartRequest"><span class="nav-number">1.1.2.4.2.</span> <span class="nav-text">MultipartRequest</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">318k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:49</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2014/03/20/SpringMVC%E7%BB%84%E4%BB%B6%E4%B9%8BMultipartResolver/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

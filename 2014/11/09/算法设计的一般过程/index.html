@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 收拾书架的时候看到了大学时学习的「算法设计与分析」，重新学习了一下算法设计的一般过程这个章节，感觉还是比较适用 V。 算法设计的一般过程&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;算法问题的解决方案，这个解决问题的方案本身并不是问题的答案，而是能获得答案的指令序列。不言">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法设计的一般过程">
+<meta property="og:url" content="http://yoursite.com/2014/11/09/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%B8%80%E8%88%AC%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="前言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 收拾书架的时候看到了大学时学习的「算法设计与分析」，重新学习了一下算法设计的一般过程这个章节，感觉还是比较适用 V。 算法设计的一般过程&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;算法问题的解决方案，这个解决问题的方案本身并不是问题的答案，而是能获得答案的指令序列。不言">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/uploads/2014-11-09-01.png">
+<meta property="article:published_time" content="2014-11-09T12:15:11.000Z">
+<meta property="article:modified_time" content="2020-02-02T03:27:58.423Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/uploads/2014-11-09-01.png">
+
+<link rel="canonical" href="http://yoursite.com/2014/11/09/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%B8%80%E8%88%AC%E8%BF%87%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>算法设计的一般过程 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2014/11/09/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%B8%80%E8%88%AC%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法设计的一般过程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2014-11-09 20:15:11" itemprop="dateCreated datePublished" datetime="2014-11-09T20:15:11+08:00">2014-11-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 收拾书架的时候看到了大学时学习的「算法设计与分析」，重新学习了一下算法设计的一般过程这个章节，感觉还是比较适用 <del>V</del>。</p>
+<h2 id="算法设计的一般过程"><a href="#算法设计的一般过程" class="headerlink" title="算法设计的一般过程"></a>算法设计的一般过程</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;算法问题的解决方案，这个解决问题的方案本身并不是问题的答案，而是能获得答案的指令序列。不言而喻，由于实际问题千奇百怪，问题求解的方法千变万化，所以，算法的设计过程是一个灵活的充满智慧的过程，它要求设计人员根据实际情况具体问题具体分析。可以肯定的是，发明（或发现）算法是一个非常有创造性和值的付出精力的过程。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在设计算法时，遵循下列步骤可以在一定程度上指导算法的设计。</p>
+<h3 id="理解问题"><a href="#理解问题" class="headerlink" title="理解问题"></a>理解问题</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在面对一个算法任务时，算法设计者往往不能准确的理解要求他做的是什么，对算法希望实现什么只有一个大致的想法就匆忙的落笔写算法，其后果往往是写出的算法漏洞百出。在设计算法时需要做的第一件事情是完全理解要解决的问题，仔细阅读问题的描述，手工处理一些小的用例。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;对设计算法来说，这是一项重要的技能：准确的理解算法的输入是什么？要求算法做的是什么？即明确算法的入口和出口，这是设计算法的切入点。</p>
+<h3 id="预测所有可能的输入"><a href="#预测所有可能的输入" class="headerlink" title="预测所有可能的输入"></a>预测所有可能的输入</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;算法的输入确定了该算法所解决问题的一个实例。一般而言，对于问题 P. 总有其相对应的实例集 I. 则算法 A 若是问题 P. 的算法，意味着把 P. 的任意一个实例 input ∈I. 作为算法 A. 的输入，都能得到问题 P. 的输出。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;预测算法所有可能的输入。包括合法的输入和非法的输出。事实上，无法保证一个算法（或程序）永远不会遇到一个错误的输入，一个对大部分输入都运行正确而只有一个输入不行的算法，就像一颗等待爆炸的炸弹。这绝不是危言耸听，有大量这种引起灾难性后果的案例。例如，许多年以前，整个 AT&amp;T 的长途电话网崩溃，造成了几十亿美元的直接损失。原因只是一段程序设计者认为他的代码能一直传送正确的参数值，可是有一天，一个不应该有的值作为参数传递了，导致了整个北美电话系统的崩溃。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如果养成习惯——首先考虑问题和他的数据，然后列举出算法必须处理的所有特殊情况，那么可以更快速的成功构造算法。</p>
+<h3 id="在精确解和近似解间做选择"><a href="#在精确解和近似解间做选择" class="headerlink" title="在精确解和近似解间做选择"></a>在精确解和近似解间做选择</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;计算机科学的研究目标是用计算机来求解人类所面临的各种问题。但是，有些问题无法求得精确解，例如求平方根、解非线性方程、求定积分等，有些问题由于其固有的复杂性，求精确解需要花费太多的时间，其中最著名的要算旅行商问题（即 TSP 问题，是指旅行家要旅行 n 个城市，要求经理各个城市且仅经历一次，并要求所走的路程最短），此时，只能求出近似解。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;有时需要根据问题以及问题所受的资源限制，在精确解和近似解间做选择。</p>
+<h3 id="确定适当的数据结构"><a href="#确定适当的数据结构" class="headerlink" title="确定适当的数据结构"></a>确定适当的数据结构</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在结构化的程序设计时代，著名的计算机学者沃斯（Wirth）提出了“算法 + 数据结构 = 程序”的观点，断言了算法和数据结构是构成计算机程序的重要基础。在面向对象的程序设计时代，数据结构对于算法设计和分析任然是至关重要的。本书所讨论的很多算法设计技术都是基于精心设计的数据结构。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;确定数据结构通常包括对问题实例的数据进行组织和重构，以及完成算法所设计的辅助数据结构，在很多情况下，数据结构的设计直接影响基于该结构之上设计的算法的时间性能。</p>
+<h3 id="算法设计技术"><a href="#算法设计技术" class="headerlink" title="算法设计技术"></a>算法设计技术</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;现在，设计算法的必要条件都已经具备了，如何设计一个算法来解决一个特定的问题呢？这正是本书讨论的主题。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;算法设计技术（algorithm design technique, 也称算法设计策略）是设计算法的一般性方法，可用于解决不同计算领域的多种问题。本书讨论的算法设计技术已经被证明是对算法设计非常有用的通用技术，包括蛮力法、分治法、减治法、动态规划法、贪心法、回溯法，分支限界法、概率算法、近似算法等。这些算法设计技术构成了一组强有力的工具，在为新问题（即没有令人满意的已知算法可以解决的问题）设计算法时，可以运用这些技术设计出新的算法。算法设计技术作为问题求解的一般性策略，在解决计算机领域以外的问题时，也能发挥相当大的作用，读者在日后的学习和工作中将会发现学习算法设计技术的好处。</p>
+<h3 id="描述算法"><a href="#描述算法" class="headerlink" title="描述算法"></a>描述算法</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在构思和设计了一个算法之后，必须清楚准确的将所设计的求解步骤记录下载，即描述算法。描述算法的常用方法有自然语言，流程图，程序设计语言和伪代码等，其中伪代码是比较合适的描述算法的方法。</p>
+<h3 id="跟踪算法"><a href="#跟踪算法" class="headerlink" title="跟踪算法"></a>跟踪算法</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;逻辑错误无法由计算机检测出来，因为计算机只会执行程序，而不会理解动机。经验和研究都表明，发现算法（或程序）中的逻辑错误的重要方法就是系统地跟踪算法。跟踪必须要用“心和手”来进行，跟踪者要像计算机一样，用一组输入值来执行该算法，并且这组输入值要最大可能的暴露算法中的错误。即使有十年经验的高级软件工程师，也经常使用该方法查找算法中的逻辑错误。</p>
+<h3 id="分析算法的效率"><a href="#分析算法的效率" class="headerlink" title="分析算法的效率"></a>分析算法的效率</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;算法有俩种效率：时间效率和空间效率，时间效率显示了算法运行的有多快，空间效率则显示了算法需要多少额外的存储空间，相比而言，我们更加关注算法的时间效率。事实上，计算机所有应用问题，包括计算机自身的发展，都是围绕着“时间——速度”这样一个中心进行的。一般来说，一个好的算法首先应该是比同类算法的时间效率高，算法的时间效率用时间复杂度性来度量。</p>
+<h3 id="根据算法编写代码"><a href="#根据算法编写代码" class="headerlink" title="根据算法编写代码"></a>根据算法编写代码</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;现代计算机技术还不能讲伪代码形式的算法直接“输入”进计算机中，而需要把算法转变为特定的程序设计语言编写的程序，算法中的一条指令可能对应实际程序中的多条指令。在把算法转变为程序的过程中，虽然现代编译器提供了代码优化功能，但仍需要一些标准的技巧，比如，在循环之外计算循环中的不变式、合并公共子表达式、用开销低的操作替代开销高的操作等。一般来说，这样的优化对算法速度的影响是一个常数因子，可能会使程序提高10% ~ 50% 的速度。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;算法设计的一般过程如 图 1. 所示。需要强调的是，一个好的算法是反复努力和重新修正的结果，所以，即使幸运的得到了一个貌似完美的算法，也应该尝试的改进它，那么，什么时候应该停止这种改进呢？设计算法是一种工程行为，需要在资源有限的情况下，在互斥的目标之间进行权衡。设计者的时间显然也是一种资源，在实际应用中，常常是项目进度表迫使我们停止改进算法。<br><img src="/uploads/2014-11-09-01.png" title="图 1. 算法设计的一般过程" /></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2014/08/29/Tomcat%E9%85%8D%E7%BD%AE%E6%80%BB%E7%BB%93/" rel="prev" title="Tomcat配置总结">
+      <i class="fa fa-chevron-left"></i> Tomcat配置总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2014/11/13/LRU%E7%AE%97%E6%B3%95/" rel="next" title="LRU算法">
+      LRU算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法设计的一般过程"><span class="nav-number">2.</span> <span class="nav-text">算法设计的一般过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#理解问题"><span class="nav-number">2.1.</span> <span class="nav-text">理解问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预测所有可能的输入"><span class="nav-number">2.2.</span> <span class="nav-text">预测所有可能的输入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在精确解和近似解间做选择"><span class="nav-number">2.3.</span> <span class="nav-text">在精确解和近似解间做选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定适当的数据结构"><span class="nav-number">2.4.</span> <span class="nav-text">确定适当的数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#算法设计技术"><span class="nav-number">2.5.</span> <span class="nav-text">算法设计技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描述算法"><span class="nav-number">2.6.</span> <span class="nav-text">描述算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跟踪算法"><span class="nav-number">2.7.</span> <span class="nav-text">跟踪算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析算法的效率"><span class="nav-number">2.8.</span> <span class="nav-text">分析算法的效率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#根据算法编写代码"><span class="nav-number">2.9.</span> <span class="nav-text">根据算法编写代码</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">318k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:49</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2014/11/09/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%B8%80%E8%88%AC%E8%BF%87%E7%A8%8B/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

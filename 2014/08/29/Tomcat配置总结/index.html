@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="Tomcat 简介&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Tomcat是Apache 软件基金会（Apache Software Foundation）的一个核心项目，主要由Apache组织、Sun 公司开发而成。在Tomcat中最新的Servlet 和JSP规范总是能得到很好的体现，主要原因大概就是Tomcat的发展历程有Sun的提倡和参与建立。由于T">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tomcat配置总结">
+<meta property="og:url" content="http://yoursite.com/2014/08/29/Tomcat%E9%85%8D%E7%BD%AE%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="Tomcat 简介&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Tomcat是Apache 软件基金会（Apache Software Foundation）的一个核心项目，主要由Apache组织、Sun 公司开发而成。在Tomcat中最新的Servlet 和JSP规范总是能得到很好的体现，主要原因大概就是Tomcat的发展历程有Sun的提倡和参与建立。由于T">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2014-08-29T07:20:31.000Z">
+<meta property="article:modified_time" content="2018-01-28T10:53:24.000Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="Tomcat">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2014/08/29/Tomcat%E9%85%8D%E7%BD%AE%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Tomcat配置总结 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2014/08/29/Tomcat%E9%85%8D%E7%BD%AE%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tomcat配置总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2014-08-29 15:20:31" itemprop="dateCreated datePublished" datetime="2014-08-29T15:20:31+08:00">2014-08-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">Web容器</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Tomcat-简介"><a href="#Tomcat-简介" class="headerlink" title="Tomcat 简介"></a>Tomcat 简介</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tomcat是Apache 软件基金会（Apache Software Foundation）的一个核心项目，主要由Apache组织、Sun 公司开发而成。在Tomcat中最新的Servlet 和JSP规范总是能得到很好的体现，主要原因大概就是Tomcat的发展历程有Sun的提倡和参与建立。由于Tomcat性能相对较稳定，技术也相对比较新且免费开源；是当前相对比较流行的Web容器。</p>
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tomcat 的配置文件是一个格式化的XML文档，所有配置信息都在conf/server.xml文件中。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version='1.0' encoding='utf-8'?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">Server</span> <span class="attr">port</span>=<span class="string">"8085"</span> <span class="attr">shutdown</span>=<span class="string">"SHUTDOWN"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Listener</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.AprLifecycleListener"</span> <span class="attr">SSLEngine</span>=<span class="string">"on"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Listener</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.JasperListener"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Listener</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.JreMemoryLeakPreventionListener"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Listener</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">Listener</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.ThreadLocalLeakPreventionListener"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">GlobalNamingResources</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Resource</span> <span class="attr">name</span>=<span class="string">"UserDatabase"</span> <span class="attr">auth</span>=<span class="string">"Container"</span>  <span class="attr">type</span>=<span class="string">"org.apache.catalina.UserDatabase"</span> </span></span><br><span class="line"><span class="tag">		<span class="attr">description</span>=<span class="string">"User database that can be updated and saved"</span></span></span><br><span class="line"><span class="tag">		<span class="attr">factory</span>=<span class="string">"org.apache.catalina.users.MemoryUserDatabaseFactory"</span>  <span class="attr">pathname</span>=<span class="string">"conf/tomcat-users.xml"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">GlobalNamingResources</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">Service</span> <span class="attr">name</span>=<span class="string">"Catalina"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Connector</span> <span class="attr">port</span>=<span class="string">"8080"</span> <span class="attr">protocol</span>=<span class="string">"HTTP/1.1"</span> <span class="attr">maxPostSize</span>=<span class="string">"5120000"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">connectionTimeout</span>=<span class="string">"20000"</span></span></span><br><span class="line"><span class="tag">               <span class="attr">redirectPort</span>=<span class="string">"8443"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">Connector</span> <span class="attr">port</span>=<span class="string">"8089"</span> <span class="attr">protocol</span>=<span class="string">"AJP/1.3"</span> <span class="attr">redirectPort</span>=<span class="string">"8443"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Engine</span> <span class="attr">name</span>=<span class="string">"Catalina"</span> <span class="attr">defaultHost</span>=<span class="string">"localhost"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">Realm</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.realm.LockOutRealm"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Realm</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.realm.UserDatabaseRealm"</span> <span class="attr">resourceName</span>=<span class="string">"UserDatabase"</span>/&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Realm</span>&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="tag">&lt;<span class="name">Host</span> <span class="attr">name</span>=<span class="string">"localhost"</span>  <span class="attr">appBase</span>=<span class="string">"webapps"</span>  <span class="attr">unpackWARs</span>=<span class="string">"true"</span> <span class="attr">autoDeploy</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Valve</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.valves.AccessLogValve"</span> <span class="attr">directory</span>=<span class="string">"logs"</span>  <span class="attr">prefix</span>=<span class="string">"localhost_access_log."</span> <span class="attr">suffix</span>=<span class="string">".txt"</span> <span class="attr">pattern</span>=<span class="string">"%h %l %u %t <span class="symbol">&amp;quot;</span>%r<span class="symbol">&amp;quot;</span> %s %b"</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">Host</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">Engine</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">Service</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>以下简单介绍几个常用的配置标签以及属性。</p>
+<h3 id="Server标签"><a href="#Server标签" class="headerlink" title="Server标签"></a>Server标签</h3><p><font color=red><b>Server</b></font>标签代表了整个Catalina servlet容器。 因此，它必须是conf/server.xml配置文件中的单个根标签。 其属性代表了整个servlet容器所具有的特性。<br>基本属性如下：<br>&nbsp;&nbsp;1&gt; <font color=red><b>className</b></font> ：值为Java实现类的名称。 这个类必须实现org.apache.catalina.Server接口。 如果没有指定类名，则使用标准实现类名称（Server的标准实现是org.apache.catalina.core.StandardServer）。<br>&nbsp;&nbsp;2&gt; <font color=red><b>address</b></font> ：值为服务器等待关机命令的TCP / IP地址。 如果没有指定地址，则使用localhost地址。<br>&nbsp;&nbsp;3&gt; <font color=red><b>port</b></font> ：值为服务器等待关机命令的TCP / IP端口号。 设置值为-1则，禁用关闭端口。<br>&nbsp;&nbsp;4&gt; <font color=red><b>shutdown</b></font> ：值为通过TCP / IP连接接收到指定端口号的命令字符串来关闭Tomcat</p>
+<p>配置示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Server</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.StandardServer"</span> <span class="attr">address</span>=<span class="string">"192.168.0.8"</span> <span class="attr">port</span>=<span class="string">"8008"</span> <span class="attr">shundown</span>=<span class="string">"-1"</span>&gt;</span></span><br><span class="line">	... // 其他配置</span><br><span class="line"><span class="tag">&lt;/<span class="name">Server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Service标签"><a href="#Service标签" class="headerlink" title="Service标签"></a>Service标签</h3><p><font color=red><b>Service</b></font>标签表示一个或多个连接器组件的组合，这些组件共享一个用于处理传入请求的引擎组件。 一个或多个Service标签可以嵌套在Server标签中。<br>基本属性如下：<br>&nbsp;&nbsp;1&gt; <font color=red><b>className</b></font> ：值为Java实现类的名称。 这个类必须实现org.apache.catalina.Service接口。 如果没有指定类名，则使用标准实现（Service的标准实现是org.apache.catalina.core.StandardService）。<br>&nbsp;&nbsp;2&gt; <font color=red><b>name</b></font> ：值为服务的显示名称，如果您使用标准Catalina组件，将包含在日志消息中。 与特定服务器关联的每个服务的名称必须是唯一的。</p>
+<p>配置示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Server</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.StandardServer"</span> <span class="attr">address</span>=<span class="string">"192.168.0.8"</span> <span class="attr">port</span>=<span class="string">"8008"</span> <span class="attr">shundown</span>=<span class="string">"-1"</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;Service name="Catalina" className="org.apache.catalina.core.StandardService"&gt; &lt;/Service&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Service</span> <span class="attr">name</span>=<span class="string">"MaxSoft"</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.MaxSoftService"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Service</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Executor标签"><a href="#Executor标签" class="headerlink" title="Executor标签"></a>Executor标签</h3><p><font color=red><b>Executor</b></font>表示可以在Tomcat中的组件之间共享的线程池。 虽然每个连接器都可以创建了一个线程池，但是我们也可以在多个连接器之间共享一个线程池。执行线程的执行者必须实现org.apache.catalina.Executor接口。执行程序是Service标签的嵌套标签。 为了让连接器获取它，Executor标签必须配置在server.xml中的Connector标签之前<br>基本属性如下：<br>&nbsp;&nbsp;1&gt; <font color=red><b>className</b></font> ：值为Java实现类名，该类必须实现org.apache.catalina.Executor接口。 该接口确保对象可以通过其名称属性进行引用，并实现生命周期，以便可以使用容器启动和停止该对象。 (className的默认值是org.apache.catalina.core.StandardThreadExecutor)<br>&nbsp;&nbsp;2&gt; <font color=red><b>name</b></font> ：值为用于在server.xml中的其他位置引用此池的名称。 该名称是必填项，并且是全局唯一的。</p>
+<p>默认的实现类（org.apache.catalina.core.StandardThreadExecutor）支持如下属性：<br>&nbsp;&nbsp;1&gt; <font color=red><b>threadPriority</b></font> ：(Integer)线程优先级，默认为5(Thread.NORM_PRIORITY常量的值)<br>&nbsp;&nbsp;2&gt; <font color=red><b>daemon</b></font> ：(Boolean)线程是否为守护线程，默认是true<br>&nbsp;&nbsp;3&gt; <font color=red><b>namePrefix</b></font> ：(String)线程的名称前缀。格式(namePrefix + threadNumber)<br>&nbsp;&nbsp;4&gt; <font color=red><b>maxThreads</b></font> ：(Integer)线程池中活动线程的最大数量，默认值为200<br>&nbsp;&nbsp;5&gt; <font color=red><b>minSpareThreads</b></font> ：(Integer)始终保持活动状态的线程的最小数量，默认值为25<br>&nbsp;&nbsp;6&gt; <font color=red><b>maxIdleTime</b></font> ：(Integer)空闲线程关闭之前的毫秒数，默认值是60000ms<br>&nbsp;&nbsp;7&gt; <font color=red><b>maxQueueSize</b></font> ：(Integer)排队等待执行的最大可运行任务数。 默认值是Integer.MAX_VALUE<br>&nbsp;&nbsp;8&gt; <font color=red><b>prestartminSpareThreads</b></font> ：(Boolean)启动Executor时是否启动minSpareThreads，默认是false<br>&nbsp;&nbsp;9&gt; <font color=red><b>threadRenewalDelay</b></font> ：(Long)如果配置了ThreadLocalLeakPreventionListener，它会通知这个执行者关于停止的上下文。 上下文停止后，池中的线程将被更新。 为了避免同时更新所有的线程，这个选项设置了更新任何2个线程之间的延迟。 该值以毫秒为单位，默认值为1000毫秒。 如果值是负数，线程不会被更新。</p>
+<p>配置示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Server</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.StandardServer"</span> <span class="attr">address</span>=<span class="string">"192.168.0.8"</span> <span class="attr">port</span>=<span class="string">"8008"</span> <span class="attr">shundown</span>=<span class="string">"-1"</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;Service name="Catalina" className="org.apache.catalina.core.StandardService"&gt; &lt;/Service&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Service</span> <span class="attr">name</span>=<span class="string">"MaxSoft"</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.MaxSoftService"</span>&gt;</span></span><br><span class="line">		...</span><br><span class="line">		<span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"maxsoftThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"maxsoft-exec-"</span>  <span class="attr">maxThreads</span>=<span class="string">"100"</span> <span class="attr">minSpareThreads</span>=<span class="string">"2"</span>/&gt;</span></span><br><span class="line">		...</span><br><span class="line">	<span class="tag">&lt;/<span class="name">Service</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="Connector标签之HTTP协议"><a href="#Connector标签之HTTP协议" class="headerlink" title="Connector标签之HTTP协议"></a>Connector标签之HTTP协议</h3><p><font color=red><b>HTTP</b></font>连接器标签表示支持HTTP / 1.1协议的连接器组件。 它使Catalina除了能够执行servlet和JSP页面外，还可以作为独立的Web服务器。 此组件的特定实例将监听服务器上特定TCP端口号的连接。 一个或多个这样的连接器可以配置为单个服务的一部分，每个连接器都可以转发给关联的引擎执行请求处理并创建响应。<br>连接器的所有实现都支持以下属性：<br>&nbsp;&nbsp;1&gt; <font color=red><b>allowTrace</b></font>：用于启用或禁用TRACE方法，默认值为false<br>&nbsp;&nbsp;2&gt; <font color=red><b>asyncTimeout</b></font>：异步请求的默认超时时间(毫秒)，默认值为10000ms<br>&nbsp;&nbsp;3&gt; <font color=red><b>enableLookups</b></font>：配置是否需要调用request.getRemoteHost()来执行DNS查找并返回远程客户端的实际主机名。默认值为false(以字符串形式返回IP地址)<br>&nbsp;&nbsp;4&gt; <font color=red><b>maxHeaderCount</b></font>：容器允许的最大请求头数，默认值100<br>&nbsp;&nbsp;5&gt; <font color=red><b>maxParameterCount</b></font>：参数和值对（GET和POST）的最大数量将由容器自动解析，如果超出此限制的参数和值对将被忽略。 小于0的值意味着没有限制。 默认值为10000<br>&nbsp;&nbsp;6&gt; <font color=red><b>maxPostSize</b></font>：将由容器FORM URL参数分析处理的POST的最大字节数。 通过将此属性设置为小于零的值可以禁用限制。 默认值为2097152（2MB）。<br>&nbsp;&nbsp;7&gt; <font color=red><b>maxSavePostSize</b></font>：在FORM或CLIENT-CERT身份验证期间，容器将保存/缓存的POST的最大数据（单位KB）。 对于这两种身份验证，POST都将在用户通过身份验证之前保存/缓存。 对于CLIENT-CERT认证，POST在SSL握手期间被缓冲，并且在请求被处理时清空缓冲器。 对于FORM认证，当用户被重定向到登录表单时，POST被保存，并保留到用户成功认证或与认证请求关联的会话过期。 可以通过将此属性设置为-1来禁用限制。 将该属性设置为零将禁用在验证过程中保存POST数据。 默认值为4096（4kb）。<br>&nbsp;&nbsp;8&gt; <font color=red><b>parseBodyMethods</b></font>：一个用逗号分隔的HTTP方法列表，为其请求参数将被解析为与POST相同的请求参数。 这对于希望支持PUT请求的POST风格语义的RESTful应用程序非常有用。 注意，除POST之外的任何设置都会导致Tomcat的行为违背了servlet规范的意图。 根据HTTP规范，这里特别禁止HTTP方法TRACE。 默认值POST<br>&nbsp;&nbsp;9&gt; <font color=red><b>port</b></font>：TCP端口号，如果设置为0，则Tomcat将随机选择一个空闲端口用于该连接器。<br>&nbsp;&nbsp;10&gt; <font color=red><b>protocol</b></font>：设置协议类别，默认是HTTP/1.1。它使用自动切换机制来选择阻塞的基于Java的连接器或基于APR /本机的连接器。如果PATH（Windows）或LD_LIBRARY_PATH（在大多数unix系统上）环境变量包含Tomcat本机库，则将使用APR /本机连接器。如果找不到本地库，将使用阻塞的基于Java的连接器。请注意，APR /本机连接器具有与Java连接器不同的HTTPS设置。<br>为了使用明确的协议而不是依靠上述的自动切换机制，可以使用以下值：<br>org.apache.coyote.http11.Http11Protocol - 阻止Java连接器<br>org.apache.coyote.http11.Http11NioProtocol - 非阻塞的Java连接器<br>org.apache.coyote.http11.Http11AprProtocol - APR /本地连接器。<br>&nbsp;&nbsp;11&gt; <font color=red><b>proxyName</b></font>：代理服务器名称。如果在代理配置中使用该连接器，则配置该属性是要指定要调用request.getServerName()时要返回的服务器名称。<br>&nbsp;&nbsp;12&gt; <font color=red><b>proxyPort</b></font>：代理服务端口。如果在代理配置中使用该连接器，则配置该属性是要指定要调用request.getServerPort()时要返回的服务器端口号。<br>&nbsp;&nbsp;13&gt; <font color=red><b>redirectPort</b></font>：重定向端口。如果该连接器支持非SSL请求，并且收到匹配的<security-constraint>需要SSL传输的请求，Catalina将自动将请求重定向到此处指定的端口号。<br>&nbsp;&nbsp;14&gt; <font color=red><b>scheme</b></font>：协议名称。可以通过调用request.getScheme()返回协议的名称。 默认值是HTTP。<br>&nbsp;&nbsp;15&gt; <font color=red><b>secure</b></font>：是否加密。如果您希望调用request.isSecure（）以对此连接器接收到的请求返回true，请将此属性设置为true。 您可能希望在SSL连接器或从SSL加速器接收数据的非SSL连接器（如加密卡，SSL设备甚至Web服务器）上使用此连接器。 默认值是false。<br>&nbsp;&nbsp;16&gt; <font color=red><b>URIEncoding</b></font>：设置用于解码URI字节的字符编码，在％xx解码URL之后。 默认值是ISO-8859-1。<br>&nbsp;&nbsp;17&gt; <font color=red><b>useBodyEncodingForURI</b></font>：这指定了contentType中指定的编码是否应该用于URI查询参数，而不是使用URIEncoding。 此设置用于与Tomcat 4.1.x兼容，其中contentType中指定的编码或使用Request.setCharacterEncoding方法显式设置的编码也用于URL中的参数。 默认值是false。<br>&nbsp;&nbsp;18&gt; <font color=red><b>useIPVHosts</b></font>：将此属性设置为true可使Tomcat使用收到请求的IP地址来确定发送请求的主机。 默认值是false。<br>&nbsp;&nbsp;19&gt; <font color=red><b>xpoweredBy</b></font>：将此属性设置为true，以使Tomcat通过使用规范中建议的头部进行对Servlet规范的支持。 默认值是false。</p>
+<p>配置示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Server</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.StandardServer"</span> <span class="attr">address</span>=<span class="string">"192.168.0.8"</span> <span class="attr">port</span>=<span class="string">"8008"</span> <span class="attr">shundown</span>=<span class="string">"-1"</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;Service name="Catalina" className="org.apache.catalina.core.StandardService"&gt; &lt;/Service&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Service</span> <span class="attr">name</span>=<span class="string">"MaxSoft"</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.MaxSoftService"</span>&gt;</span></span><br><span class="line">		...</span><br><span class="line">		<span class="tag">&lt;<span class="name">Executor</span> <span class="attr">name</span>=<span class="string">"maxsoftThreadPool"</span> <span class="attr">namePrefix</span>=<span class="string">"maxsoft-exec-"</span>  <span class="attr">maxThreads</span>=<span class="string">"100"</span> <span class="attr">minSpareThreads</span>=<span class="string">"2"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">		<span class="tag">&lt;<span class="name">Connector</span> <span class="attr">port</span>=<span class="string">"8080"</span> <span class="attr">protocol</span>=<span class="string">"HTTP/1.1"</span> <span class="attr">maxPostSize</span>=<span class="string">"5120000"</span>  <span class="attr">connectionTimeout</span>=<span class="string">"20000"</span> <span class="attr">redirectPort</span>=<span class="string">"8443"</span>/&gt;</span></span><br><span class="line">		...</span><br><span class="line">	<span class="tag">&lt;/<span class="name">Service</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>标准HTTP连接器（BIO，NIO和APR / native）除了上面列出的常见连接器属性外，还支持以下属性：<br>详情移步：<a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html#Standard_Implementation" target="_blank" rel="noopener">标准HTTP连接器属性</a></p>
+<p>除了上面列出的通用连接器和HTTP属性外，BIO和NIO实现还支持以下Java TCP套接字属性：<br>详情移步：<a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html#Java_TCP_socket_attributes" target="_blank" rel="noopener">BIO和NIO实现支持属性</a></p>
+<p>以下属性是特定于BIO连接器的：<br>详情移步：<a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html#BIO_specific_configuration" target="_blank" rel="noopener">特定于BIO连接器属性</a></p>
+<p>以下属性是特定于NIO连接器的：<br>详情移步：<a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html#NIO_specific_configuration" target="_blank" rel="noopener">特定于NIO连接器属性</a></p>
+<p>以下属性是特定于APR /本机连接器:<br>详情移步：<a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html#APR/native_specific_configuration" target="_blank" rel="noopener">特定于APR /本机连接器属性</a></p>
+<p>详情移步：<a href="http://tomcat.apache.org/tomcat-7.0-doc/config/http.html" target="_blank" rel="noopener">HTTP连接器</a></p>
+<h3 id="Connector标签之AJP协议"><a href="#Connector标签之AJP协议" class="headerlink" title="Connector标签之AJP协议"></a>Connector标签之AJP协议</h3><p><font color=red><b>AJP</b></font>连接器标签表示一个连接器组件，通过AJP协议与Web连接器进行通信。 这适用于将Tomcat无形集成到现有（或新的）Apache安装中的情况，并希望Apache处理Web应用程序中包含的静态内容和/或使用Apache的SSL处理。该连接器在与引擎的jvmRoute属性结合使用时支持负载平衡。<br>其配置属性基本和HTTP类似，详情可以移步：<a href="http://tomcat.apache.org/tomcat-7.0-doc/config/ajp.html" target="_blank" rel="noopener">AJP连接器</a></p>
+<h3 id="Engine标签"><a href="#Engine标签" class="headerlink" title="Engine标签"></a>Engine标签</h3><p><font color=red><b>Engine</b></font>标签表示与特定的Catalina服务相关联的整个请求处理机器。 它接收并处理来自一个或多个连接器的所有请求，并将完成的响应返回给连接器，以便最终传输回客户端。一个引擎标签必须嵌套在一个Service标签内，跟随与这个Service相关的所有对应的Connector标签。</p>
+<p>引擎的所有实现都支持以下属性：<br>&nbsp;&nbsp;1&gt; <font color=red><b>backgroundProcessorDelay</b></font>：该值表示调用该引擎上的backgroundProcess方法与其子容器（包括所有主机和上下文）之间的延迟（以秒为单位）。 如果子容器的延迟值不是负数（这意味着他们正在使用自己的处理线程），子容器将不会被调用。 将其设置为正值将导致线程产生。 等待指定的时间后，线程将调用该引擎及其所有子容器上的backgroundProcess方法。 默认值为10，表示延迟10秒。<br>&nbsp;&nbsp;2&gt; <font color=red><b>className</b></font>：值为Java实现类的名称。 这个类必须实现org.apache.catalina.Engine接口。默认是为标准实现类（Engine的标准实现是org.apache.catalina.core.StandardEngine）。<br>&nbsp;&nbsp;3&gt; <font color=red><b>defaultHost</b></font>：默认主机名，用于标识将处理指向该服务器上主机名称但未在此配置文件中配置的请求的主机。 这个名字必须匹配其中一个嵌套的主机元素的名字属性。<br>&nbsp;&nbsp;4&gt; <font color=red><b>jvmRoute</b></font>：必须在负载平衡场景中使用的标识符才能启用会话共享。 该标识符必须在参与群集的所有Tomcat服务器中唯一，它将被附加到生成的会话标识符中，因此允许前端代理始终将特定会话转发到同一个Tomcat实例。注意，jvmRoute也可以使用jvmRoute系统属性进行设置。 在<Engine>属性中设置的jvmRoute将覆盖任何jvmRoute系统属性。<br>&nbsp;&nbsp;5&gt; <font color=red><b>name</b></font>：该引擎的逻辑名称，用于日志和错误消息。 在同一服务器中使用多个服务标签时，每个引擎必须分配一个唯一的名称。<br>&nbsp;&nbsp;6&gt; <font color=red><b>startStopThreads</b></font>：该引擎将用于并行启动子主机标签的线程数，默认值是1。</p>
+<p>配置示例如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Server</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.StandardServer"</span> <span class="attr">address</span>=<span class="string">"192.168.0.8"</span> <span class="attr">port</span>=<span class="string">"8008"</span> <span class="attr">shundown</span>=<span class="string">"-1"</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!--&lt;Service name="Catalina" className="org.apache.catalina.core.StandardService"&gt; &lt;/Service&gt;--&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">Service</span> <span class="attr">name</span>=<span class="string">"MaxSoft"</span> <span class="attr">className</span>=<span class="string">"org.apache.catalina.core.MaxSoftService"</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">Engine</span> <span class="attr">name</span>=<span class="string">"MaxSoft"</span> <span class="attr">defaultHost</span>=<span class="string">"localhost"</span>&gt;</span></span><br><span class="line">		... </span><br><span class="line">	  <span class="tag">&lt;/<span class="name">Engine</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Service</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">Server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/engine.html" target="_blank" rel="noopener">详细配置</a></p>
+<h3 id="Host标签"><a href="#Host标签" class="headerlink" title="Host标签"></a>Host标签</h3><p>Host标签表示一个虚拟主机，它是一个服务器的网络名称（如“<a href="http://www.maxsoft.org”）与运行Tomcat的特定服务器的关联。" target="_blank" rel="noopener">www.maxsoft.org”）与运行Tomcat的特定服务器的关联。</a></p>
+<p>主机的所有实现都支持以下属性：</p>
+<p>&nbsp;&nbsp;1&gt; <font color=red><b>appBase</b></font>：该虚拟主机的应用程序根目录，默认值是webapps<br>&nbsp;&nbsp;2&gt; <font color=red><b>xmlBase</b></font>：该虚拟主机的XML的根目录，默认值是conf / <engine_name> / <host_name>的值。<br>&nbsp;&nbsp;3&gt; <font color=red><b>createDirs</b></font>：默认值是true。Tomcat尝试在启动阶段创建由属性appBase和xmlBase定义的目录。<br>&nbsp;&nbsp;4&gt; <font color=red><b>autoDeploy</b></font>：该值指示Tomcat是否应在Tomcat运行时定期检查新的或更新的Web应用程序。 默认值为true。<br>&nbsp;&nbsp;4&gt; <font color=red><b>backgroundProcessorDelay</b></font>：该值表示在该主机上调用backgroundProcess方法与其子容器（包括所有上下文）之间的延迟（以秒为单位）。默认值为-1<br>&nbsp;&nbsp;5&gt; <font color=red><b>className</b></font>：该值为Java实现类的名称，这个类必须实现org.apache.catalina.Host接口。默认值标准实现（org.apache.catalina.core.StandardHost）<br>&nbsp;&nbsp;6&gt; <font color=red><b>deployIgnore</b></font>：用于定义在设置autoDeploy和deployOnStartup时要忽略的路径<br>&nbsp;&nbsp;7&gt; <font color=red><b>deployOnStartup</b></font>：该值指示在Tomcat启动时是否应自动部署此主机的Web应用程序。默认为true<br>&nbsp;&nbsp;8&gt; <font color=red><b>failCtxIfServletStartFails</b></font>：每个子上下文可以覆盖这个属性，默认值为false<br>&nbsp;&nbsp;9&gt; <font color=red><b>name</b></font>：虚拟主机的网络名称。<br>&nbsp;&nbsp;10&gt; <font color=red><b>startStopThreads</b></font>：该主机将用于并行启动子上下文元素的线程数。默认值为1<br>&nbsp;&nbsp;11&gt; <font color=red><b>undeployOldVersions</b></font>：该值作为自动部署过程的一部分的Tomcat是否将检查使用并行部署部署的旧的，未使用的Web应用程序版本，如果找到，则将其删除。 该值仅适用于autoDeploy为true的情况，默认值false。</p>
+<p><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/host.html" target="_blank" rel="noopener">详细配置</a></p>
+<p>More info: <a href="http://tomcat.apache.org/" target="_blank" rel="noopener">Tomcat Home</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Tomcat/" rel="tag"># Tomcat</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2014/08/10/%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90%20Java%20IO%20%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6/" rel="prev" title="深入分析 Java I/O 的工作机制">
+      <i class="fa fa-chevron-left"></i> 深入分析 Java I/O 的工作机制
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2014/11/09/%E7%AE%97%E6%B3%95%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%B8%80%E8%88%AC%E8%BF%87%E7%A8%8B/" rel="next" title="算法设计的一般过程">
+      算法设计的一般过程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tomcat-简介"><span class="nav-number">1.</span> <span class="nav-text">Tomcat 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置文件"><span class="nav-number">2.</span> <span class="nav-text">配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Server标签"><span class="nav-number">2.1.</span> <span class="nav-text">Server标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Service标签"><span class="nav-number">2.2.</span> <span class="nav-text">Service标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Executor标签"><span class="nav-number">2.3.</span> <span class="nav-text">Executor标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connector标签之HTTP协议"><span class="nav-number">2.4.</span> <span class="nav-text">Connector标签之HTTP协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connector标签之AJP协议"><span class="nav-number">2.5.</span> <span class="nav-text">Connector标签之AJP协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Engine标签"><span class="nav-number">2.6.</span> <span class="nav-text">Engine标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Host标签"><span class="nav-number">2.7.</span> <span class="nav-text">Host标签</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">318k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:49</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2014/08/29/Tomcat%E9%85%8D%E7%BD%AE%E6%80%BB%E7%BB%93/',]
+      });
+      });
+  </script>
+
+</body>
+</html>
