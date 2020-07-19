@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('http://yoursite.com').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","width":250,"display":"post","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":true,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":true,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":15},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="序言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Mocha 是一个 JavaScript 域优秀的单元测试框架，可以在Node.js或者浏览器环境下运行。Mocha让异步测试变得简单而有趣，它支持灵活的、精确的测试报告，可以把未捕获异常映射到特定的测试用例中。执行下面的命令添加为当前工程的依赖： 1yarn add --save-dev mocha  测试方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mocha测试框架学习笔记">
+<meta property="og:url" content="http://yoursite.com/2020/07/19/Mocha%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="MaxSoft">
+<meta property="og:description" content="序言&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Mocha 是一个 JavaScript 域优秀的单元测试框架，可以在Node.js或者浏览器环境下运行。Mocha让异步测试变得简单而有趣，它支持灵活的、精确的测试报告，可以把未捕获异常映射到特定的测试用例中。执行下面的命令添加为当前工程的依赖： 1yarn add --save-dev mocha  测试方">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-19T02:25:10.000Z">
+<meta property="article:modified_time" content="2020-07-19T09:38:59.847Z">
+<meta property="article:author" content="maxsoft">
+<meta property="article:tag" content="转载">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="Node">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/07/19/Mocha%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>Mocha测试框架学习笔记 | MaxSoft</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">MaxSoft</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">「路漫漫其修远兮，吾将上下而求索」</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/19/Mocha%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mocha测试框架学习笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2020-07-19 10:25:10" itemprop="dateCreated datePublished" datetime="2020-07-19T10:25:10+08:00">2020-07-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mocha 是一个 JavaScript 域优秀的单元测试框架，可以在Node.js或者浏览器环境下运行。Mocha让异步测试变得简单而有趣，它支持灵活的、精确的测试报告，可以把未捕获异常映射到特定的测试用例中。<br>执行下面的命令添加为当前工程的依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add --save-dev mocha</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试方式"><a href="#测试方式" class="headerlink" title="测试方式"></a>测试方式</h2><p>流行的单元测是风格包括：  </p>
+<ol>
+<li>TDD (Test Driven Development) 测试驱动开发。关注所有功能是否正确实现，每个功能点都具备对应的测试用例</li>
+<li>BDD (Behavior Driven Development) 行为驱动开发。关注应用程序的整体行为是否正确<br>mocha使用基于JavaScript的DSL语言扩展，对两种测试风格进行支持。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TDD 方式的用例主要使用 suite、 test 来组织测试代码。 suite 表示一个测试套件，可以形成多层级的结构，具体到一个测试用例时，使用test。TDD 风格提供了 setup 、 teardown 两个钩子方法，分别在进入/退出 suite 时执行。<br>代码示例：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">suite(<span class="string">'Test Driven Development Demo'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    suiteSetup(<span class="string">'#suiteSetup'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  suiteSetup[进入测试用用例[suite]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    suiteTeardown(<span class="string">'#suiteTeardown'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  suiteTeardown[退出测试用用例[suite]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    setup(<span class="string">'#setup'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    setup[进入测试用例[test]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    teardown(<span class="string">'#teardown'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    teardown[退出测试用例[test]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    test(<span class="string">'#isObject(obj)'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">done</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> obj = &#123;<span class="attr">name</span>: <span class="string">'MaxSoft'</span>, <span class="attr">age</span>: <span class="number">29</span>&#125;</span><br><span class="line">        <span class="keyword">const</span> isObj = CommonType.isObject(obj)</span><br><span class="line">        assert.strictEqual(isObj, <span class="literal">true</span>)</span><br><span class="line">        <span class="keyword">let</span> obj_1 = <span class="string">''</span></span><br><span class="line">        <span class="keyword">const</span> isObj_1 = CommonType.isObject(obj_1)</span><br><span class="line">        assert.strictEqual(isObj_1, <span class="literal">false</span>)</span><br><span class="line">        done()</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BDD 方式的用例主要使用 describe、 it 来组织厕所代码。 describe 表示一个测试套件，可以形成多层级的结构，具体到一个测试用例时，使用 it。 BDD 风格提供了 before  、 after 、 beforeEach 、 afterEach 四个钩子方法，用于测试用例的准备、清理工作。前两个方法分别在进入/退出 describe 时执行，后两个方法则在每一个测试用例执行前/后执行。<br>代码示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'Behavior Driven Development Demo'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    before(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  before[进入测试用用例[describe]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    after(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  after[退出测试用用例[describe]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    beforeEach(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    beforeEach[进入测试用例[it]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    afterEach(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    afterEach[退出测试用例[it]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    describe(<span class="string">'#isObject'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        it(<span class="string">'(obj)'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">done</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">let</span> obj = &#123;<span class="attr">name</span>: <span class="string">'MaxSoft'</span>, <span class="attr">age</span>: <span class="number">29</span>&#125;</span><br><span class="line">            <span class="keyword">const</span> isObj = CommonType.isObject(obj)</span><br><span class="line">            assert.strictEqual(isObj, <span class="literal">true</span>)</span><br><span class="line">            <span class="keyword">let</span> obj_1 = <span class="string">''</span></span><br><span class="line">            <span class="keyword">const</span> isObj_1 = CommonType.isObject(obj_1)</span><br><span class="line">            assert.strictEqual(isObj_1, <span class="literal">false</span>)</span><br><span class="line">            done()</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="断言库"><a href="#断言库" class="headerlink" title="断言库"></a>断言库</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mocha 支持与多个断言库配合，除了 Node.js 自带的 assert 模块以外，我们还可以使用 should.js、 better-assert 等库。</p>
+<h3 id="SHOULD"><a href="#SHOULD" class="headerlink" title="SHOULD"></a>SHOULD</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;该断言库扩展了 Object.prototype 对象，为其添加了一个不可枚举的 getter ，这样你就可以使用任意对象的 should 属性来进行断言操作了。 should.js 支持现代浏览器以及IE8+版本。<br>执行下面的命令添加为当前工程的依赖：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add should --save-dev</span><br></pre></td></tr></table></figure>
+<h4 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将should作为属性使用</span></span><br><span class="line"><span class="keyword">const</span> should = <span class="built_in">require</span>(<span class="string">'should'</span>);</span><br><span class="line">(<span class="number">5</span>).should.be.exactly(<span class="number">5</span>).and.be.a.Number();</span><br><span class="line"><span class="comment">// 将should作为函数使用</span></span><br><span class="line"><span class="keyword">const</span> should = <span class="built_in">require</span>(<span class="string">'should/as-function'</span>);</span><br><span class="line">should(<span class="number">10</span>).be.exactly(<span class="number">5</span>).and.be.a.Number();</span><br></pre></td></tr></table></figure>
+<h4 id="Should-js-API"><a href="#Should-js-API" class="headerlink" title="Should.js API"></a><a href="http://shouldjs.github.io/" target="_blank" rel="noopener">Should.js API</a></h4><h2 id="异步代码"><a href="#异步代码" class="headerlink" title="异步代码"></a>异步代码</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;对异步代码进行单元测试非常简单，你只需要为 it 提供带有一个入参的回调函数，在其中执行异步操作即可。当异步操作执行完毕，你需要调用 Mocha 为前述回调传递的 done，通知 Mocha 异步操作已经完毕：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">describe( <span class="string">'User'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    describe( <span class="string">'#save()'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        it( <span class="string">'should save without error'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"> done </span>) </span>&#123;</span><br><span class="line">            <span class="keyword">const</span> user = <span class="keyword">new</span> User( <span class="string">'Luna'</span> );</span><br><span class="line">            user.save( done );</span><br><span class="line">        &#125; );</span><br><span class="line">    &#125; );</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<p>对于返回Promise的函数，可以这样断言  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// find必须返回Promise</span></span><br><span class="line"><span class="comment">// eventually创建一个在Promise.then中执行的断言</span></span><br><span class="line"><span class="keyword">return</span> db.find(&#123; <span class="attr">type</span>: <span class="string">'User'</span> &#125;).should.eventually.have.length(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;由于箭头函数使用词法的 this 绑定，导致它没有办法正常访问 Mocha 的上下文，因此不推荐使用。</p>
+<h2 id="钩子方法"><a href="#钩子方法" class="headerlink" title="钩子方法"></a>钩子方法</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;前面已经介绍过钩子，需要了解的是，钩子也可以是异步的：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">beforeEach( <span class="function"><span class="keyword">function</span> (<span class="params"> done </span>) </span>&#123;</span><br><span class="line">    db.clear( <span class="function"><span class="keyword">function</span> (<span class="params"> err </span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ( err ) <span class="keyword">return</span> done( err );</span><br><span class="line">        db.save( [ tobi, loki, jane ], done );</span><br><span class="line">    &#125; );</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<p>钩子方法可以定义在任何describe的外部，称为根级别钩子， 这种钩子会在任意用例的前后执行。</p>
+<h2 id="重试"><a href="#重试" class="headerlink" title="重试"></a>重试</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们可以指定让失败的测试重复指定的次数，通常用于端到端测试，在单元测试中一般不使用。  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">describe( <span class="string">'retries'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 最多重复所有测试用例4次</span></span><br><span class="line">    <span class="keyword">this</span>.retries( <span class="number">4</span> );</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<h2 id="测试耗时"><a href="#测试耗时" class="headerlink" title="测试耗时"></a>测试耗时</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;很多报告方式支持显式测试消耗的时间，连同标记一个用例“执行缓慢”。是否缓慢的阈值在测试套件中指定：   </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">describe( <span class="string">'retries'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 10秒被认为执行缓慢</span></span><br><span class="line">     <span class="keyword">this</span>.slow(<span class="number">10000</span>);</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<h2 id="超时控制"><a href="#超时控制" class="headerlink" title="超时控制"></a>超时控制</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们可以在测试套件、测试用例级别设置测试用例执行的超时时间，内部嵌套的套件、用例会继承该设置：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'a suite of tests'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.timeout( <span class="number">500</span> );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在钩子中也可以进行超时控制，调用 this.timeout(0)  可以禁用超时控制。</p>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mocha提供了一个命令行工具，调用格式为： </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mocha [debug] [options] [files]</span><br></pre></td></tr></table></figure>
+<h2 id="鸣谢-GreenMemory"><a href="#鸣谢-GreenMemory" class="headerlink" title="鸣谢 GreenMemory"></a>鸣谢 <a href="https://blog.gmem.cc/mocha-study-note" target="_blank" rel="noopener">GreenMemory</a></h2><p>非常感谢 GreenMemory 的分享。 详情可以查看 GreenMemory 博主的博客~</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%BD%AC%E8%BD%BD/" rel="tag"># 转载</a>
+              <a href="/tags/JavaScript/" rel="tag"># JavaScript</a>
+              <a href="/tags/Node/" rel="tag"># Node</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/27/hello-world/" rel="prev" title="Hello World MaxSoft 2020-01-20 PM 11:00">
+      <i class="fa fa-chevron-left"></i> Hello World MaxSoft 2020-01-20 PM 11:00
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#序言"><span class="nav-number">1.</span> <span class="nav-text">序言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试方式"><span class="nav-number">2.</span> <span class="nav-text">测试方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#断言库"><span class="nav-number">3.</span> <span class="nav-text">断言库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SHOULD"><span class="nav-number">3.1.</span> <span class="nav-text">SHOULD</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#用法"><span class="nav-number">3.1.1.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Should-js-API"><span class="nav-number">3.1.2.</span> <span class="nav-text">Should.js API</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步代码"><span class="nav-number">4.</span> <span class="nav-text">异步代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#箭头函数"><span class="nav-number">5.</span> <span class="nav-text">箭头函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#钩子方法"><span class="nav-number">6.</span> <span class="nav-text">钩子方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重试"><span class="nav-number">7.</span> <span class="nav-text">重试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试耗时"><span class="nav-number">8.</span> <span class="nav-text">测试耗时</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#超时控制"><span class="nav-number">9.</span> <span class="nav-text">超时控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#命令"><span class="nav-number">10.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#鸣谢-GreenMemory"><span class="nav-number">11.</span> <span class="nav-text">鸣谢 GreenMemory</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="maxsoft"
+      src="/images/apple-touch-icon-next.png">
+  <p class="site-author-name" itemprop="name">maxsoft</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/maxsoft-bj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;maxsoft-bj" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zylwlh810@163.com" title="E-Mail → mailto:zylwlh810@163.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">maxsoft</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">327k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">4:57</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout: 3000,
+        priority: true,
+        ignores: [uri => uri.includes('#'),uri => uri == 'http://yoursite.com/2020/07/19/Mocha%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/',]
+      });
+      });
+  </script>
+
+</body>
+</html>

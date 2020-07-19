@@ -185,6 +185,122 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/19/Mocha%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/07/19/Mocha%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Mocha测试框架学习笔记</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2020-07-19 10:25:10" itemprop="dateCreated datePublished" datetime="2020-07-19T10:25:10+08:00">2020-07-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mocha 是一个 JavaScript 域优秀的单元测试框架，可以在Node.js或者浏览器环境下运行。Mocha让异步测试变得简单而有趣，它支持灵活的、精确的测试报告，可以把未捕获异常映射到特定的测试用例中。<br>执行下面的命令添加为当前工程的依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add --save-dev mocha</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试方式"><a href="#测试方式" class="headerlink" title="测试方式"></a>测试方式</h2><p>流行的单元测是风格包括：  </p>
+<ol>
+<li>TDD (Test Driven Development) 测试驱动开发。关注所有功能是否正确实现，每个功能点都具备对应的测试用例</li>
+<li>BDD (Behavior Driven Development) 行为驱动开发。关注应用程序的整体行为是否正确<br>mocha使用基于JavaScript的DSL语言扩展，对两种测试风格进行支持。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TDD 方式的用例主要使用 suite、 test 来组织测试代码。 suite 表示一个测试套件，可以形成多层级的结构，具体到一个测试用例时，使用test。TDD 风格提供了 setup 、 teardown 两个钩子方法，分别在进入/退出 suite 时执行。<br>代码示例：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">suite(<span class="string">'Test Driven Development Demo'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    suiteSetup(<span class="string">'#suiteSetup'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  suiteSetup[进入测试用用例[suite]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    suiteTeardown(<span class="string">'#suiteTeardown'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  suiteTeardown[退出测试用用例[suite]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    setup(<span class="string">'#setup'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    setup[进入测试用例[test]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    teardown(<span class="string">'#teardown'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    teardown[退出测试用例[test]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    test(<span class="string">'#isObject(obj)'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">done</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> obj = &#123;<span class="attr">name</span>: <span class="string">'MaxSoft'</span>, <span class="attr">age</span>: <span class="number">29</span>&#125;</span><br><span class="line">        <span class="keyword">const</span> isObj = CommonType.isObject(obj)</span><br><span class="line">        assert.strictEqual(isObj, <span class="literal">true</span>)</span><br><span class="line">        <span class="keyword">let</span> obj_1 = <span class="string">''</span></span><br><span class="line">        <span class="keyword">const</span> isObj_1 = CommonType.isObject(obj_1)</span><br><span class="line">        assert.strictEqual(isObj_1, <span class="literal">false</span>)</span><br><span class="line">        done()</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BDD 方式的用例主要使用 describe、 it 来组织厕所代码。 describe 表示一个测试套件，可以形成多层级的结构，具体到一个测试用例时，使用 it。 BDD 风格提供了 before  、 after 、 beforeEach 、 afterEach 四个钩子方法，用于测试用例的准备、清理工作。前两个方法分别在进入/退出 describe 时执行，后两个方法则在每一个测试用例执行前/后执行。<br>代码示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'Behavior Driven Development Demo'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    before(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  before[进入测试用用例[describe]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    after(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'  after[退出测试用用例[describe]]\n'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    beforeEach(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    beforeEach[进入测试用例[it]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    afterEach(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'    afterEach[退出测试用例[it]前执行]'</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">    describe(<span class="string">'#isObject'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        it(<span class="string">'(obj)'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">done</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">let</span> obj = &#123;<span class="attr">name</span>: <span class="string">'MaxSoft'</span>, <span class="attr">age</span>: <span class="number">29</span>&#125;</span><br><span class="line">            <span class="keyword">const</span> isObj = CommonType.isObject(obj)</span><br><span class="line">            assert.strictEqual(isObj, <span class="literal">true</span>)</span><br><span class="line">            <span class="keyword">let</span> obj_1 = <span class="string">''</span></span><br><span class="line">            <span class="keyword">const</span> isObj_1 = CommonType.isObject(obj_1)</span><br><span class="line">            assert.strictEqual(isObj_1, <span class="literal">false</span>)</span><br><span class="line">            done()</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="断言库"><a href="#断言库" class="headerlink" title="断言库"></a>断言库</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mocha 支持与多个断言库配合，除了 Node.js 自带的 assert 模块以外，我们还可以使用 should.js、 better-assert 等库。</p>
+<h3 id="SHOULD"><a href="#SHOULD" class="headerlink" title="SHOULD"></a>SHOULD</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;该断言库扩展了 Object.prototype 对象，为其添加了一个不可枚举的 getter ，这样你就可以使用任意对象的 should 属性来进行断言操作了。 should.js 支持现代浏览器以及IE8+版本。<br>执行下面的命令添加为当前工程的依赖：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add should --save-dev</span><br></pre></td></tr></table></figure>
+<h4 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将should作为属性使用</span></span><br><span class="line"><span class="keyword">const</span> should = <span class="built_in">require</span>(<span class="string">'should'</span>);</span><br><span class="line">(<span class="number">5</span>).should.be.exactly(<span class="number">5</span>).and.be.a.Number();</span><br><span class="line"><span class="comment">// 将should作为函数使用</span></span><br><span class="line"><span class="keyword">const</span> should = <span class="built_in">require</span>(<span class="string">'should/as-function'</span>);</span><br><span class="line">should(<span class="number">10</span>).be.exactly(<span class="number">5</span>).and.be.a.Number();</span><br></pre></td></tr></table></figure>
+<h4 id="Should-js-API"><a href="#Should-js-API" class="headerlink" title="Should.js API"></a><a href="http://shouldjs.github.io/" target="_blank" rel="noopener">Should.js API</a></h4><h2 id="异步代码"><a href="#异步代码" class="headerlink" title="异步代码"></a>异步代码</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;对异步代码进行单元测试非常简单，你只需要为 it 提供带有一个入参的回调函数，在其中执行异步操作即可。当异步操作执行完毕，你需要调用 Mocha 为前述回调传递的 done，通知 Mocha 异步操作已经完毕：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">describe( <span class="string">'User'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    describe( <span class="string">'#save()'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        it( <span class="string">'should save without error'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"> done </span>) </span>&#123;</span><br><span class="line">            <span class="keyword">const</span> user = <span class="keyword">new</span> User( <span class="string">'Luna'</span> );</span><br><span class="line">            user.save( done );</span><br><span class="line">        &#125; );</span><br><span class="line">    &#125; );</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<p>对于返回Promise的函数，可以这样断言  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// find必须返回Promise</span></span><br><span class="line"><span class="comment">// eventually创建一个在Promise.then中执行的断言</span></span><br><span class="line"><span class="keyword">return</span> db.find(&#123; <span class="attr">type</span>: <span class="string">'User'</span> &#125;).should.eventually.have.length(<span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;由于箭头函数使用词法的 this 绑定，导致它没有办法正常访问 Mocha 的上下文，因此不推荐使用。</p>
+<h2 id="钩子方法"><a href="#钩子方法" class="headerlink" title="钩子方法"></a>钩子方法</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;前面已经介绍过钩子，需要了解的是，钩子也可以是异步的：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">beforeEach( <span class="function"><span class="keyword">function</span> (<span class="params"> done </span>) </span>&#123;</span><br><span class="line">    db.clear( <span class="function"><span class="keyword">function</span> (<span class="params"> err </span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ( err ) <span class="keyword">return</span> done( err );</span><br><span class="line">        db.save( [ tobi, loki, jane ], done );</span><br><span class="line">    &#125; );</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<p>钩子方法可以定义在任何describe的外部，称为根级别钩子， 这种钩子会在任意用例的前后执行。</p>
+<h2 id="重试"><a href="#重试" class="headerlink" title="重试"></a>重试</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们可以指定让失败的测试重复指定的次数，通常用于端到端测试，在单元测试中一般不使用。  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">describe( <span class="string">'retries'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 最多重复所有测试用例4次</span></span><br><span class="line">    <span class="keyword">this</span>.retries( <span class="number">4</span> );</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<h2 id="测试耗时"><a href="#测试耗时" class="headerlink" title="测试耗时"></a>测试耗时</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;很多报告方式支持显式测试消耗的时间，连同标记一个用例“执行缓慢”。是否缓慢的阈值在测试套件中指定：   </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">describe( <span class="string">'retries'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 10秒被认为执行缓慢</span></span><br><span class="line">     <span class="keyword">this</span>.slow(<span class="number">10000</span>);</span><br><span class="line">&#125; );</span><br></pre></td></tr></table></figure>
+<h2 id="超时控制"><a href="#超时控制" class="headerlink" title="超时控制"></a>超时控制</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们可以在测试套件、测试用例级别设置测试用例执行的超时时间，内部嵌套的套件、用例会继承该设置：  </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">describe(<span class="string">'a suite of tests'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.timeout( <span class="number">500</span> );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在钩子中也可以进行超时控制，调用 this.timeout(0)  可以禁用超时控制。</p>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mocha提供了一个命令行工具，调用格式为： </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mocha [debug] [options] [files]</span><br></pre></td></tr></table></figure>
+<h2 id="鸣谢-GreenMemory"><a href="#鸣谢-GreenMemory" class="headerlink" title="鸣谢 GreenMemory"></a>鸣谢 <a href="https://blog.gmem.cc/mocha-study-note" target="_blank" rel="noopener">GreenMemory</a></h2><p>非常感谢 GreenMemory 的分享。 详情可以查看 GreenMemory 博主的博客~</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/27/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -250,6 +366,200 @@
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/02/Redis%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%20/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/03/02/Redis%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80%20/" class="post-title-link" itemprop="url">Redis 学习笔记一</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2019-03-02 20:25:11" itemprop="dateCreated datePublished" datetime="2019-03-02T20:25:11+08:00">2019-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/NoSQL/" itemprop="url" rel="index">
+                    <span itemprop="name">NoSQL</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>272</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最近项目中用到了 Reids 做数据缓冲，虽然之前零星学习了一些相关的知识，但是总感觉使用起来还是不太得心应手，所以从今天开始再系统的学习一遍基于 2.9 版本的 Redis 设计与实现。便于日后的工作能够更加得心应手~</p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 主要包含动态字符串，链表，字典，跳跃表，整数集合，压缩列表等。</p>
+<h3 id="动态字符串"><a href="#动态字符串" class="headerlink" title="动态字符串"></a>动态字符串</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/02/CentOS%20%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%20Docker%20/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/05/02/CentOS%20%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%20Docker%20/" class="post-title-link" itemprop="url">CentOS 系统安装 Docker</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2018-05-02 09:21:40" itemprop="dateCreated datePublished" datetime="2018-05-02T09:21:40+08:00">2018-05-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 CentOS 上使用 Docker Engine-Community ， 首先需要我们来安装 Docker 到 CentOS 上。其次，如果我们将 CentOS-Extras 存储库禁用，则需要重新启用它（默认启用状态）。</p>
+<h2 id="安装环境清理"><a href="#安装环境清理" class="headerlink" title="安装环境清理"></a>安装环境清理</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如果已经安装了较旧的 Docker 版本（docker 或 docker-engine）。则需要卸载它们以及相关的依赖项。<br>操作如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum remove docker \</span><br><span class="line">                  docker-client \</span><br><span class="line">                  docker-client-latest \</span><br><span class="line">                  docker-common \</span><br><span class="line">                  docker-latest \</span><br><span class="line">                  docker-latest-logrotate \</span><br><span class="line">                  docker-logrotate \</span><br><span class="line">                  docker-engine</span><br></pre></td></tr></table></figure>
+<h2 id="开始安装"><a href="#开始安装" class="headerlink" title="开始安装"></a>开始安装</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;安装 Docker Engine-Community 主要有以下以下几种方式供选择：</p>
+<ol>
+<li>设置 Docker 的存储库并从中进行安装，以简化安装和升级任务（推荐）。</li>
+<li>下载并手动安装 RPM 软件包，并进行手动管理升级。 这种方式一般在无法访问互联网的情况下使用。</li>
+<li>使用自动脚本来安装 Docker，方便快捷。</li>
+</ol>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;这里使用存储库的安装方式进行安装。<br>首先在新主机上首次安装 Docker Engine-Community 之前，需要设置 Docker 存储库。 之后，我们就可以从存储库安装和更新 Docker 。<br>安装所需的软件包。 yum-utils 提供了 yum-config-manager 实用程序， devicemapper 存储驱动程序需要 device-mapper-persistent-data 和 lvm2</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install -y yum-utils \</span><br><span class="line">  device-mapper-persistent-data \</span><br><span class="line">  lvm2</span><br></pre></td></tr></table></figure>
+
+<p>设置稳定的存储库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum-config-manager \</span><br><span class="line">    --add-repo \</span><br><span class="line">    https://download.docker.com/linux/centos/docker-ce.repo</span><br></pre></td></tr></table></figure>
+
+<p>安装最新版本的 Docker Engine-Community 和 containerd ，或者转到下一步安装特定版本：   </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>安装特定版本的 Docker Engine-Community， 需要在存储库中列出可用版本，然后选择并安装：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum list docker-ce --showduplicates | sort -r</span><br><span class="line">docker-ce.x86_64  3:18.09.1-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64  3:18.09.0-3.el7                     docker-ce-stable</span><br><span class="line">docker-ce.x86_64  18.06.1.ce-3.el7                    docker-ce-stable</span><br><span class="line">docker-ce.x86_64  18.06.0.ce-3.el7                    docker-ce-stable</span><br></pre></td></tr></table></figure>
+<p>以上列出并排序您存储库中可用的版本（从高到低）。当然，返回的列表取决于启用的存储库，并且特定于我们的宿主 CentOS 版本（在此示例中由.el7后缀指示）。<br>安装执行版本：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum install docker-ce-&lt;VERSION_STRING&gt; docker-ce-cli-&lt;VERSION_STRING&gt; containerd.io</span><br></pre></td></tr></table></figure>
+<p>如果上述安装过程中出现了”Problem: package docker-ce-xxx requires containerd.io &gt;= xxxxx, but none of the providers can be insttalled …” 错误，则执行以下操作:  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo yum list containerd.io --showduplicates | sort -r</span><br></pre></td></tr></table></figure>
+<p>找出上述中高版本的 containerd.io 重新安装后，继续单独安装 docker-ce docker-ce-cli 即可。    </p>
+<h2 id="启动-Docker"><a href="#启动-Docker" class="headerlink" title="启动 Docker"></a>启动 Docker</h2><p>安装完毕，开始启动 Docker, 并且设置开机启动：  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker</span><br><span class="line">$ systemctl <span class="built_in">enable</span> docker</span><br></pre></td></tr></table></figure>
+<p>至此 Docker 安装完毕。</p>
 
       
     </div>
@@ -559,6 +869,192 @@
 
 <h2 id="虚引用（PhantomReference）"><a href="#虚引用（PhantomReference）" class="headerlink" title="虚引用（PhantomReference）"></a>虚引用（PhantomReference）</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color=red>虚引用（PhantomReference）</font> 和前面的软引用、弱引用不同，它并不影响对象的生命周期。在java中用 java.lang.ref.PhantomReference 类表示。如果一个对象与虚引用关联，则跟没有引用与之关联一样，在任何时候都可能被垃圾回收器回收。但是要注意的是，虚引用必须和引用队列关联使用，当垃圾回收器准备回收一个对象时，如果发现它还有虚引用，就会把这个虚引用加入到与之 关联的引用队列中。程序可以通过判断引用队列中是否已经加入了虚引用，来了解被引用的对象是否将要被垃圾回收。如果程序发现某个虚引用已经被加入到引用队列，那么就可以在所引用的对象的内存被回收之前采取必要的清除动作。<br>如下示例代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    ReferenceQueue&lt;Object&gt; queue = <span class="keyword">new</span> ReferenceQueue&lt;Object&gt;();  </span><br><span class="line">    PhantomReference&lt;Object&gt; phantom_refer = <span class="keyword">new</span> PhantomReference&lt;Object&gt;(<span class="keyword">new</span> Object(), queue);  </span><br><span class="line">    System.out.println(phantom_refer.get()==<span class="keyword">null</span>); <span class="comment">// 结果为 true </span></span><br><span class="line">    ReferenceQueue&lt;Object&gt; queue_1 = <span class="keyword">new</span> ReferenceQueue&lt;Object&gt;();</span><br><span class="line">    Object refer_obj = <span class="keyword">new</span> Object(); <span class="comment">// 这里存在强引用</span></span><br><span class="line">    PhantomReference&lt;Object&gt; phantom_refer_obj = <span class="keyword">new</span> PhantomReference&lt;Object&gt;(refer_obj, queue);</span><br><span class="line">    System.out.println(phantom_refer_obj.get()==<span class="keyword">null</span>); <span class="comment">// 结果为 true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/14/CentOS%20%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/07/14/CentOS%20%E8%BF%90%E7%BB%B4%E5%91%BD%E4%BB%A4%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">CentOS 运维命令笔记</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2017-07-14 22:02:42" itemprop="dateCreated datePublished" datetime="2017-07-14T22:02:42+08:00">2017-07-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>437</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="运维笔记"><a href="#运维笔记" class="headerlink" title="运维笔记"></a>运维笔记</h2><p>查看系统版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@admin ~]<span class="comment"># cat /etc/redhat-release</span></span><br></pre></td></tr></table></figure>
+<p>设置时区命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@admin ~]<span class="comment"># ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span></span><br></pre></td></tr></table></figure>
+<p>查看时区命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@admin ~]<span class="comment"># ll /etc/localtime</span></span><br></pre></td></tr></table></figure>
+<p>查看当前时间命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@admin ~]<span class="comment"># date</span></span><br></pre></td></tr></table></figure>
+<p>查看用户列表<br>cat /etc/passwd 可以查看所有用户的列表<br>w 可以查看当前活跃的用户列表<br>cat /etc/group 查看用户组<br>groups 查看当前登录用户的组内成员<br>groups gliethttp 查看gliethttp用户所在的组,以及组内成员<br>whoami 查看当前登录用户名<br>一个简明的layout命令  </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/passwd|grep -v nologin|grep -v halt|grep -v shutdown|awk -F<span class="string">":"</span> <span class="string">'&#123; print $1"|"$3"|"$4 &#125;'</span>|more</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/07/08/CentOS%20%E7%AC%94%E8%AE%B0%E6%9C%AC%E5%90%88%E7%9B%96%E4%B8%8D%E4%BC%91%E7%9C%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/07/08/CentOS%20%E7%AC%94%E8%AE%B0%E6%9C%AC%E5%90%88%E7%9B%96%E4%B8%8D%E4%BC%91%E7%9C%A0/" class="post-title-link" itemprop="url">CentOS 笔记本合盖不休眠</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2017-07-08 10:25:10" itemprop="dateCreated datePublished" datetime="2017-07-08T10:25:10+08:00">2017-07-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BF%90%E7%BB%B4/" itemprop="url" rel="index">
+                    <span itemprop="name">运维</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="序言"><a href="#序言" class="headerlink" title="序言"></a>序言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;今天翻出了上大学的戴尔成就1088笔记本，装上了 CentOS 学习一番，当做服务器来用，结果一合下屏幕就自动进入了休眠状态。上网查了资料，特此做一个记录。</p>
+<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 使用拥有管理员权限的账号进入目录， /etc/systemd/logind.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim  &#x2F;etc&#x2F;systemd&#x2F;logind.conf</span><br></pre></td></tr></table></figure>
+<p>结果内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">#  under the terms of the GNU Lesser General Public License as published by</span><br><span class="line">#  the Free Software Foundation; either version 2.1 of the License, or</span><br><span class="line">#  (at your option) any later version.</span><br><span class="line">#</span><br><span class="line"># Entries in this file show the compile time defaults.</span><br><span class="line"># You can change settings by editing this file.</span><br><span class="line"># Defaults can be restored by simply deleting this file.</span><br><span class="line">#</span><br><span class="line"># See logind.conf(5) for details.</span><br><span class="line"></span><br><span class="line">[Login]</span><br><span class="line">#NAutoVTs&#x3D;6</span><br><span class="line">#ReserveVT&#x3D;6</span><br><span class="line">#KillUserProcesses&#x3D;no</span><br><span class="line">#KillOnlyUsers&#x3D;</span><br><span class="line">#KillExcludeUsers&#x3D;root</span><br><span class="line">#InhibitDelayMaxSec&#x3D;5</span><br><span class="line">#HandlePowerKey&#x3D;poweroff</span><br><span class="line">#HandleSuspendKey&#x3D;suspend</span><br><span class="line">#HandleHibernateKey&#x3D;hibernate</span><br><span class="line">#HandleLidSwitch&#x3D;suspend</span><br><span class="line">#HandleLidSwitchExternalPower&#x3D;suspend</span><br><span class="line">#HandleLidSwitchDocked&#x3D;ignore</span><br><span class="line">#PowerKeyIgnoreInhibited&#x3D;no</span><br><span class="line">#SuspendKeyIgnoreInhibited&#x3D;no</span><br><span class="line">#HibernateKeyIgnoreInhibited&#x3D;no</span><br><span class="line">#LidSwitchIgnoreInhibited&#x3D;yes</span><br><span class="line">#HoldoffTimeoutSec&#x3D;30s</span><br><span class="line">#IdleAction&#x3D;ignore</span><br><span class="line">#IdleActionSec&#x3D;30min</span><br><span class="line">#RuntimeDirectorySize&#x3D;10%</span><br><span class="line">#RemoveIPC&#x3D;no</span><br><span class="line">#InhibitorsMax&#x3D;8192</span><br><span class="line">#SessionsMax&#x3D;8192</span><br></pre></td></tr></table></figure>
+<p>找到 #HandleLidSwitch=suspend 这一行，将其修改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HandleLidSwitch&#x3D;lock</span><br></pre></td></tr></table></figure>
+<h2 id="重启服务"><a href="#重启服务" class="headerlink" title="重启服务"></a>重启服务</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;执行如下命令，即可使我们刚才修改的配置生效。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart systemd-logind</span><br></pre></td></tr></table></figure>
+
+<h2 id="扩展学习"><a href="#扩展学习" class="headerlink" title="扩展学习"></a>扩展学习</h2><p>配置值说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">NAutoVTs 配置分配的虚拟终端（VT）数量，默认6个，取值为正整数</span><br><span class="line">ReserveVConfigures whether the processes of a user should be killed when the user logs out.T标识一个无条件保留用于autovt @ .service激活的虚拟终端（与NAutoVTs有关）</span><br><span class="line">KillUserProcesses 取值为布尔值，配置用户注销时是否结束该用户的进程，取0则进程不会被杀死</span><br><span class="line">KillOnlyUsers 设置进程被杀死的用户</span><br><span class="line">KillExcludeUsers 设置不被杀死进程的用户，如果没设置，默认root用户的进程不被杀死</span><br><span class="line">IdleAction 配置系统空闲时要采取的操作</span><br><span class="line">可选项：ignore&#x2F;poweroff&#x2F;reboot&#x2F;halt&#x2F;kexec&#x2F;suspend&#x2F;hibernate&#x2F;hybrid-sleep&#x2F;suspend-then-hibernate&#x2F;lock，默认为lock</span><br><span class="line">IdleActionSec 配置系统空闲多长时间后采取操作</span><br><span class="line">InhibitDelayMaxSec 指定系统关闭或睡眠请求延迟的最长时间，默认为5秒</span><br><span class="line">HandlePowerKey 为电源操作，默认关机，可选项如上，lock为屏幕锁定，并不会休眠</span><br><span class="line">HandleLidSwitch 如果不想合盖休眠，且不想屏幕锁定和休眠，设置为suspend</span><br><span class="line">HandleLidSwitchDocked 如果有扩展坞，即用来扩展笔记本电脑功能的底座，通过接口和插槽连接多种外部设备。可选项如上</span><br><span class="line">PowerKeyIgnoreInhibited、SuspendKeyIgnoreInhibited、HibernateKeyIgnoreInhibited、LidSwitchIgnoreInhibited：控制当触发电源和睡眠键以及盖子开关时systemd-logind采取的操作是否受到高级别抑制器锁定，低级别的inhibitor locks始终有效，无视此设置</span><br><span class="line">HoldoffTimeoutSec 指定系统启动或系统恢复后的超时，systemd将在响应盖子事件时暂停。</span><br><span class="line">RuntimeDirectorySize 为每个登录用户设置$ XDG_RUNTIME_DIR运行时目录的大小限制。</span><br><span class="line">InhibitorsMax 控制允许的最大并发inhibitor数量。 默认为8192（8K）。</span><br><span class="line">SessionsMax 控制要管理的最大并发用户会话数</span><br><span class="line">RemoveIPC 控制用户完全注销时是否应删除属于该用户的System V和POSIX IPC对象，取值为布尔</span><br></pre></td></tr></table></figure>
+
+
       
     </div>
 
@@ -1140,498 +1636,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">Spring整合Ehcache过程</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2016-08-12 16:05:31" itemprop="dateCreated datePublished" datetime="2016-08-12T16:05:31+08:00">2016-08-12</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaWeb第三方框架</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最近在项目中使用 Ehcache 作为了系统的缓冲插件，关于Ehcache请移步「 <a href="http://www.ehcache.org/about/" target="_blank" rel="noopener">关于Ehcache</a> 」。在这里只记录其在本次项目中的使用的过程。</p>
-<p>当前项目使用 Spring 以及 Maven 所以主要介绍 Spring 整合 Ehcache 的过程。</p>
-<p>1&sdot;&nbsp;&nbsp;首先在Maven配置文件pom.xml中新增关于 Ehcache 的依赖包：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">	...</span><br><span class="line">	<span class="comment">&lt;!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.ehcache<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ehcache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">	...</span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>2&sdot;&nbsp;&nbsp;新增 ehcache.xml 配置文件，并将其放入到对应的项目资源目录中（例如：/WEB-INF/conf/cache/）。<br>配置文件内容如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ehcache</span> <span class="attr">updateCheck</span>=<span class="string">"false"</span> <span class="attr">name</span>=<span class="string">"yonyou-brotel-ehcache"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">diskStore</span> <span class="attr">path</span>=<span class="string">"java.io.tmpdir"</span>/&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- DefaultCache setting. --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 定义缓存策略  </span></span><br><span class="line"><span class="comment">        eternal="false"                 // 元素是否永恒,如果是就永不过期(必须设置)  </span></span><br><span class="line"><span class="comment">        maxEntriesLocalHeap="1000"      // 堆内存中最大缓存对象数,0没有限制(必须设置)  </span></span><br><span class="line"><span class="comment">        overflowToDisk="false"          // 当缓存达到maxElementsInMemory值是,是否允许溢出到磁盘(必须设置)  </span></span><br><span class="line"><span class="comment">        diskPersistent="false"          // 磁盘缓存在VM重新启动时是否保持(默认为false)  </span></span><br><span class="line"><span class="comment">        timeToIdleSeconds="0"           // 导致元素过期的访问间隔(秒为单位). 当eternal为false时，这个属性才有效，0表示可以永远空闲,默认为0  </span></span><br><span class="line"><span class="comment">        timeToLiveSeconds="600"         // 元素在缓存里存在的时间(秒为单位). 0 表示永远存在不过期  </span></span><br><span class="line"><span class="comment">        memoryStoreEvictionPolicy="LFU" // 当达到maxElementsInMemory时,如何强制进行驱逐默认使用"最近使用(LRU)"策略,其它还有先入先出FIFO,最少使用LFU,较少使用LRU  </span></span><br><span class="line"><span class="comment">    --&gt;</span>  </span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">cache</span> <span class="attr">name</span>=<span class="string">"login_times_cache"</span> <span class="attr">eternal</span>=<span class="string">"false"</span> <span class="attr">maxEntriesLocalHeap</span>=<span class="string">"0"</span> <span class="attr">overflowToDisk</span>=<span class="string">"false"</span> <span class="attr">timeToIdleSeconds</span>=<span class="string">"1800"</span> <span class="attr">timeToLiveSeconds</span>=<span class="string">"1800"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">ehcache</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>3&sdot;&nbsp;&nbsp;在Spring的配置文件（applicationContext.xml）中引入 ehcache.xml ，并注入缓冲管理实例，代码如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:aop</span>=<span class="string">"http://www.springframework.org/schema/aop"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:tx</span>=<span class="string">"http://www.springframework.org/schema/tx"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:mvc</span>=<span class="string">"http://www.springframework.org/schema/mvc"</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:p</span>=<span class="string">"http://www.springframework.org/schema/p"</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:jaxws</span>=<span class="string">"http://cxf.apache.org/jaxws"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:simple</span>=<span class="string">"http://cxf.apache.org/simple"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://cxf.apache.org/simple http://cxf.apache.org/schemas/simple.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"ehcache_manager_factory"</span> <span class="attr">class</span>=<span class="string">"org.springframework.cache.ehcache.EhCacheManagerFactoryBean"</span> <span class="attr">p:shared</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"/WEB-INF/conf/cache/ehcache.xml"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"spring_cache_manager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.cache.ehcache.EhCacheCacheManager"</span>&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"cacheManager"</span> <span class="attr">ref</span>=<span class="string">"ehcache_manager_factory"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>4&sdot;&nbsp;&nbsp;以上代码就是全部的配置过程，接下来我们就可以使用缓冲组件来存储数据了，示例代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> EhCacheCacheManager manager;</span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> HttpServletRequest request;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/checkuser"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Map&lt;String, String&gt; <span class="title">checkUser</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	Map&lt;String, String&gt; msgMap = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">	String userCode = request.getParameter(<span class="string">"userCode"</span>);</span><br><span class="line">	Cache cache = manager.getCache(<span class="string">"login_times_cache"</span>);</span><br><span class="line">	String ip = MethodUtil.getRemoteHost(request);</span><br><span class="line">	String key = ip+userCode;</span><br><span class="line">	ValueWrapper value = cache.get(key);</span><br><span class="line">	<span class="keyword">int</span> times = value==<span class="keyword">null</span>?<span class="number">0</span>:(Integer)value.get();</span><br><span class="line">	<span class="keyword">if</span>(times&gt;<span class="number">4</span>)&#123;</span><br><span class="line">		msgMap.put(<span class="string">"status"</span>, <span class="string">"false"</span>);</span><br><span class="line">		msgMap.put(<span class="string">"errormsg"</span>, <span class="string">"登陆错误次数超出5次，账户已被锁定！请稍后再试！"</span>);</span><br><span class="line">		<span class="keyword">return</span> msgMap;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(校验失败)&#123;</span><br><span class="line">		countTimesInfo(msgMap,cache,keytimes);</span><br><span class="line">		<span class="keyword">return</span> msgMap;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//省略其他校验...</span></span><br><span class="line">	cache.evict(key); <span class="comment">//通过前面所有的校验，移除连续登陆错误次数缓存信息</span></span><br><span class="line">	<span class="keyword">return</span> msgMap;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">countTimesInfo</span><span class="params">(Map&lt;String, String&gt; msgMap, Cache cache,String key, <span class="keyword">int</span> times)</span> </span>&#123;</span><br><span class="line">	msgMap.put(<span class="string">"errormsg"</span>, <span class="string">"账户或密码错误！第"</span> + (times+<span class="number">1</span>) + <span class="string">"次；【5次后，账户将被锁定】"</span>);</span><br><span class="line">	cache.put(key,times+<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="http://maven.apache.org/guides/index.html" target="_blank" rel="noopener">Maven</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/" class="post-title-link" itemprop="url">Java 集合类操作优化经验总结</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2016-03-20 20:37:20" itemprop="dateCreated datePublished" datetime="2016-03-20T20:37:20+08:00">2016-03-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>16k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>15 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;毕业到现在已经有小俩年的时间了，在这俩年中一直都是围绕着 JavaWeb 相关的技术进行 JavaWeb 系统开发（Java，JSP，JavaScript，SQL 等）。学到的知识相对于学校中学习的知识要既丰富又有深度……<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本着站在巨人的肩膀上成长的想法，经常 Google 或 Baidu 一些有深度或相对丰富的技术博客来膜拜学习。今天看到了这位牛人对于Java 集合相关知识的总结，觉着是我的菜 +_+ ，很合胃口就转来了。转载自【<a href="https://www.ibm.com/developerworks/cn/java/j-lo-set-operation/index.html" target="_blank" rel="noopener"><font color=red>IBM Java technology</font></a>】</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在实际的项目开发中会有很多的对象，如何高效、方便地管理对象，成为影响程序性能与可维护性的重要环节。Java 提供了集合框架来解决此类问题，线性表、链表、哈希表等是常用的数据结构，在进行 Java 开发时，JDK 已经为我们提供了一系列相应的类来实现基本的数据结构，所有类都在 java.util 这个包里，图1. 描述了集合类的关系。<img src="/uploads/2016-03-20-001.png" title="图 1.集合类之间关系"/>本文讲的就是集合框架的使用经验总结，注意，本文所有代码基于 JDK7。</p>
-<h2 id="集合接口"><a href="#集合接口" class="headerlink" title="集合接口"></a>集合接口</h2><h3 id="Collection-接口"><a href="#Collection-接口" class="headerlink" title="Collection 接口"></a>Collection 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Collection 是最基本的集合接口，一个 Collection 代表一组 Object，即 Collection 的元素（Elements）。一些 Collection 允许相同的元素、支持对元素进行排序，另一些则不行。JDK 不提供直接继承自 Collection 的类，JDK 提供的类都是继承自 Collection 的子接口，如 List 和 Set。所有实现 Collection 接口的类都必须提供两个标准的构造函数，无参数的构造函数用于创建一个空的 Collection，有一个 Collection 参数的构造函数用于创建一个新的 Collection，这个新的 Collection 与传入的 Collection 有相同的元素，后一个构造函数允许用户复制一个 Collection。<br><font color=red>如何遍历 Collection 中的每一个元素？</font><br>不论 Collection 的实际类型如何，它都支持一个 iterator() 的方法，该方法返回一个迭代子，使用该迭代子即可逐一访问 Collection 中每一个元素。典型的用法如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Iterator it = collection.iterator(); <span class="comment">// 获得一个迭代子</span></span><br><span class="line"><span class="keyword">while</span>(it.hasNext())&#123;</span><br><span class="line">	Object obj = it.next(); <span class="comment">// 得到下一个元素</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Collection 接口派生的两个接口是 List 和 Set。<br>Collection 接口提供的主要方法：<br>1· boolean add(Object o) 添加对象到集合；<br>2· boolean remove(Object o) 删除指定的对象；<br>3· int size() 返回当前集合中元素的数量；<br>4· boolean contains(Object o) 查找集合中是否有指定的对象；<br>5· boolean isEmpty() 判断集合是否为空；<br>6· Iterator iterator() 返回一个迭代器；<br>7· boolean containsAll(Collection c) 查找集合中是否有集合 C 中的元素；<br>8· boolean addAll(Collection c) 将集合 C 中所有的元素添加给该集合；<br>9· void clear() 删除集合中所有元素；<br>10· void removeAll(Collection c) 从集合中删除 C 集合中也有的元素；<br>11· void retainAll(Collection c) 从集合中删除集合 C 中不包含的元素；</p>
-<h3 id="List-接口"><a href="#List-接口" class="headerlink" title="List 接口"></a>List 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List 是有序的 Collection，使用此接口能够精确的控制每个元素插入的位置。用户能够使用索引（元素在 List 中的位置，类似于数组下标）来访问 List 中的元素，这类似于 Java 的数组。和下文要提到的 Set 不同，List 允许有相同的元素。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;除了具有 Collection 接口必备的 iterator() 方法外，List 还提供一个 listIterator() 方法，返回一个 ListIterator 接口。和标准的 Iterator 接口相比，ListIterator 多了一些 add() 之类的方法，允许添加、删除、设定元素、向前或向后遍历等功能。实现 List 接口的常用类有 LinkedList，ArrayList，Vector 和 Stack 等。<br>List 接口提供的主要方法：<br>1· void add(int index,Object element) 在指定位置上添加一个对象；<br>2· boolean addAll(int index,Collection c) 将集合 C 的元素添加到指定的位置；<br>3· Object get(int index) 返回 List 中指定位置的元素；<br>4· int indexOf(Object o) 返回第一个出现元素 O 的位置；<br>5· Object removeint(int index) 删除指定位置的元素；<br>6· Object set(int index,Object element) 用元素 element 取代位置 index 上的元素, 返回被取代的元素；</p>
-<h3 id="Map-接口"><a href="#Map-接口" class="headerlink" title="Map 接口"></a>Map 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map 没有继承 Collection 接口。Map 提供 Key 到 Value 的映射，一个 Map 中不能包含相同的 Key，每个 Key 只能映射一个 Value。Map 接口提供 3 种集合的视图，Map 的内容可以被当作一组 Key 集合，一组 Value 集合，或者一组 Key-Value 映射。<br>Map 提供的主要方法：<br>1· boolean equals(Object o) 比较对象；<br>2· boolean remove(Object o) 删除一个对象；<br>3· put(Object key,Object value) 添加 key 和 value。</p>
-<h3 id="RandomAccess-接口"><a href="#RandomAccess-接口" class="headerlink" title="RandomAccess 接口"></a>RandomAccess 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RandomAccess 接口是一个标志接口，本身并没有提供任何方法，任务凡是通过调用 RandomAccess 接口的对象都可以认为是支持快速随机访问的对象。此接口的主要目的是标识那些可支持快速随机访问的 List 实现。任何一个基于数组的 List 实现都实现了 RaodomAccess 接口，而基于链表的实现则都没有。因为只有数组能够进行快速的随机访问，而对链表的随机访问需要进行链表的遍历。因此，此接口的好处是，可以在应用程序中知道正在处理的 List 对象是否可以进行快速随机访问，从而针对不同的 List 进行不同的操作，以提高程序的性能。</p>
-<h2 id="集合类介绍"><a href="#集合类介绍" class="headerlink" title="集合类介绍"></a>集合类介绍</h2><h3 id="LinkedList-类"><a href="#LinkedList-类" class="headerlink" title="LinkedList 类"></a>LinkedList 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedList 实现了 List 接口，允许 Null 元素。此外 LinkedList 提供额外的 Get、Remove、Insert 等方法在 LinkedList 的首部或尾部操作数据。这些操作使得 LinkedList 可被用作堆栈（Stack）、队列（Queue）或双向队列（Deque）。请注意 LinkedList 没有同步方法，它不是线程同步的，即如果多个线程同时访问一个 List，则必须自己实现访问同步。一种解决方法是在创建 List 时构造一个同步的 List，方法如：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List list = Collections.synchronizedList(<span class="keyword">new</span> LinkedList(...));</span><br></pre></td></tr></table></figure>
-<h3 id="ArrayList-类"><a href="#ArrayList-类" class="headerlink" title="ArrayList 类"></a>ArrayList 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 实现了可变大小的数组。它允许所有元素，包括 Null。Size、IsEmpty、Get、Set 等方法的运行时间为常数，但是 Add 方法开销为分摊的常数，添加 N 个元素需要 O(N) 的时间，其他的方法运行时间为线性。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;每个 ArrayList 实例都有一个容量（Capacity），用于存储元素的数组的大小，这个容量可随着不断添加新元素而自动增加。当需要插入大量元素时，在插入前可以调用 ensureCapacity 方法来增加 ArrayList 的容量以提高插入效率。和 LinkedList 一样，ArrayList 也是线程非同步的（unsynchronized）。<br>ArrayList 提供的主要方法：<br>1· Boolean add(Object o) 将指定元素添加到列表的末尾；<br>2· Boolean add(int index,Object element) 在列表中指定位置加入指定元素；<br>3· Boolean addAll(Collection c) 将指定集合添加到列表末尾；<br>4· Boolean addAll(int index,Collection c) 在列表中指定位置加入指定集合；<br>5· Boolean clear() 删除列表中所有元素；<br>6· Boolean clone() 返回该列表实例的一个拷贝；<br>7· Boolean contains(Object o) 判断列表中是否包含元素；<br>8· Boolean ensureCapacity(int m) 增加列表的容量，如果必须，该列表能够容纳 m 个元素；<br>9· Object get(int index) 返回列表中指定位置的元素；<br>10· Int indexOf(Object elem) 在列表中查找指定元素的下标；<br>11· Int size() 返回当前列表的元素个数；</p>
-<h3 id="Vector-类"><a href="#Vector-类" class="headerlink" title="Vector 类"></a>Vector 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vector 非常类似于 ArrayList，区别是 Vector 是线程同步的。由 Vector 创建的 Iterator，虽然和 ArrayList 创建的 Iterator 是同一接口，但是，因为 Vector 是同步的，当一个 Iterator 被创建而且正在被使用，另一个线程改变了 Vector 的状态（例如，添加或删除了一些元素），这时调用 Iterator 的方法时将抛出 ConcurrentModificationException，因此必须捕获该异常。</p>
-<h3 id="Stack-类"><a href="#Stack-类" class="headerlink" title="Stack 类"></a>Stack 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack 继承自 Vector，实现了一个后进先出的堆栈。Stack 提供 5 个额外的方法使得 Vector 得以被当作堆栈使用。除了基本的 Push 和 Pop 方法，还有 Peek 方法得到栈顶的元素，Empty 方法测试堆栈是否为空，Search 方法检测一个元素在堆栈中的位置。注意，Stack 刚创建后是空栈。</p>
-<h3 id="Set-类"><a href="#Set-类" class="headerlink" title="Set 类"></a>Set 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set 是一种不包含重复的元素的 Collection，即任意的两个元素 e1 和 e2 都有 e1.equals(e2)=false。Set 最多有一个 null 元素。很明显，Set 的构造函数有一个约束条件，传入的 Collection 参数不能包含重复的元素。请注意，必须小心操作可变对象（Mutable Object），如果一个 Set 中的可变元素改变了自身状态，这可能会导致一些问题。</p>
-<h3 id="Hashtable-类"><a href="#Hashtable-类" class="headerlink" title="Hashtable 类"></a>Hashtable 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hashtable 继承 Map 接口，实现了一个基于 Key-Value 映射的哈希表。任何非空（non-null）的对象都可作为 Key 或者 Value。添加数据使用 Put(Key，Value)，取出数据使用 Get(Key)，这两个基本操作的时间开销为常数。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hashtable 通过 Initial Capacity 和 Load Factor 两个参数调整性能。通常缺省的 Load Factor 0.75 较好地实现了时间和空间的均衡。增大 Load Factor 可以节省空间但相应的查找时间将增大，会影响像 Get 和 Put 这样的操作。使用 Hashtable 的简单示例，将 1、2、3 这三个数字放到 Hashtable 里面，他们的 Key 分别是”one”、”two”、”three”，代码如清单 2 所示。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Hashtable numbers = <span class="keyword">new</span> Hashtable();</span><br><span class="line">numbers.put(“one”, <span class="keyword">new</span> Integer(<span class="number">1</span>));</span><br><span class="line">numbers.put(“two”, <span class="keyword">new</span> Integer(<span class="number">2</span>));</span><br><span class="line">numbers.put(“three”, <span class="keyword">new</span> Integer(<span class="number">3</span>));</span><br></pre></td></tr></table></figure>
-<p>如果我们需要取出一个数，比如 2，可以用相应的 key 来取出，代码如清单 3 所示。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer n = (Integer)numbers.get(“two”); </span><br><span class="line">System.out.println(“two =”+ n);</span><br></pre></td></tr></table></figure>
-<p>由于作为 Key 的对象将通过计算其散列函数来确定与之对应的 Value 的位置，因此任何作为 key 的对象都必须实现 HashCode 和 Equals 方法。HashCode 和 Equals 方法继承自根类 Object，如果你用自定义的类当作 Key 的话，要相当小心，按照散列函数的定义，如果两个对象相同，即 obj1.equals(obj2)=true，则它们的 HashCode 必须相同，但如果两个对象不同，则它们的 HashCode 不一定不同，如果两个不同对象的 HashCode 相同，这种现象称为冲突，冲突会导致操作哈希表的时间开销增大，所以尽量定义好的 HashCode() 方法，能加快哈希表的操作。<br>如果相同的对象有不同的 HashCode，对哈希表的操作会出现意想不到的结果（期待的 Get 方法返回 Null），要避免这种问题，最好同时复写 Equals 方法和 HashCode 方法，而不要只写其中一个。</p>
-<h3 id="HashMap-类"><a href="#HashMap-类" class="headerlink" title="HashMap 类"></a>HashMap 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 和 Hashtable 类似，不同之处在于 HashMap 是线程非同步的，并且允许 Null，即 Null Value 和 Null Key。但是将 HashMap 视为 Collection 时（values() 方法可返回 Collection），其迭代子操作时间开销和 HashMap 的容量成比例。因此，如果迭代操作的性能相当重要的话，不要将 HashMap 的初始化容量设得过高，或者 Load Factor 参数设置过低。</p>
-<h3 id="WeakHashMap-类"><a href="#WeakHashMap-类" class="headerlink" title="WeakHashMap 类"></a>WeakHashMap 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 是一种改进的 HashMap，它对 Key 实行“弱引用”，如果一个 Key 不再被外部所引用，那么该 Key 可以被 GC 回收。</p>
-<h2 id="集合类实践"><a href="#集合类实践" class="headerlink" title="集合类实践"></a>集合类实践</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList、Vector、LinkedList 均来自 AbstractList 的实现，而 AbstractList 直接实现了 List 接口，并扩展自 AbstarctCollection。ArrayList 和 Vector 使用了数组实现，ArrayList 没有对任何一个方法提供线程同步，因此不是线程安全的，Vector 中绝大部分方法都做了线程同步，是一种线程安全的实现。LinkedList 使用了循环双向链表数据结构，由一系列表项连接而成，一个表项总是包含 3 个部分，元素内容、前驱表项和后驱表项。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当 ArrayList 对容量的需求超过当前数组的大小时，需要进行扩容。扩容过程中，会进行大量的数组复制操作，而数组复制时，最终将调用 System.arraycopy() 方法。LinkedList 由于使用了链表的结构，因此不需要维护容量的大小，然而每次的元素增加都需要新建一个 Entry 对象，并进行更多的赋值操作，在频繁的系统调用下，对性能会产生一定的影响，在不间断地生成新的对象还是占用了一定的资源。而因为数组的连续性，因此总是在尾端增加元素时，只有在空间不足时才产生数组扩容和数组复制。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 是基于数组实现的，而数组是一块连续的内存空间，如果在数组的任意位置插入元素，必然导致在该位置后的所有元素需要重新排列，因此其效率较差，尽可能将数据插入到尾部。LinkedList 不会因为插入数据导致性能下降。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 的每一次有效的元素删除操作后都要进行数组的重组，并且删除的元素位置越靠前，数组重组时的开销越大，要删除的元素位置越靠后，开销越小。LinkedList 要移除中间的数据需要便利完半个 List。<br> ArrayList 和 LinkedList 使用示例代码：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.LinkedList;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayListandLinkedList</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line"> <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"> ArrayList list = <span class="keyword">new</span> ArrayList();</span><br><span class="line"> Object obj = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5000000</span>;i++)&#123;</span><br><span class="line"> list.add(obj);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> LinkedList list1 = <span class="keyword">new</span> LinkedList();</span><br><span class="line"> Object obj1 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5000000</span>;i++)&#123;</span><br><span class="line"> list1.add(obj1);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> Object obj2 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</span><br><span class="line"> list.add(<span class="number">0</span>,obj2);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> Object obj3 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</span><br><span class="line"> list1.add(obj1);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> list.remove(<span class="number">0</span>);</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> list1.remove(<span class="number">250000</span>);</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br> 执行结果如下图：<img src="/uploads/2017-03-20-001.png" title="上述代码运行结果图">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 是将 Key 做 Hash 算法，然后将 Hash 值映射到内存地址，直接取得 Key 所对应的数据。在 HashMap 中，底层数据结构使用的是数组，所谓的内存地址即数组的下标索引。HashMap 的高性能需要保证以下几点：<br>1· Hash 算法必须是高效的；<br>2· Hash 值到内存地址 (数组索引) 的算法是快速的；<br>3· 根据内存地址 (数组索引) 可以直接取得对应的值。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 实际上是一个链表的数组。前面已经介绍过，基于 HashMap 的链表方式实现机制，只要 HashCode() 和 Hash() 方法实现得足够好，能够尽可能地减少冲突的产生，那么对 HashMap 的操作几乎等价于对数组的随机访问操作，具有很好的性能。但是，如果 HashCode() 或者 Hash() 方法实现较差，在大量冲突产生的情况下，HashMap 事实上就退化为几个链表，对 HashMap 的操作等价于遍历链表，此时性能很差。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 的一个功能缺点是它的无序性，被存入到 HashMap 中的元素，在遍历 HashMap 时，其输出是无序的。如果希望元素保持输入的顺序，可以使用 LinkedHashMap 替代。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedHashMap 继承自 HashMap，具有高效性，同时在 HashMap 的基础上，又在内部增加了一个链表，用以存放元素的顺序。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 通过 hash 算法可以最快速地进行 Put() 和 Get() 操作。TreeMap 则提供了一种完全不同的 Map 实现。从功能上讲，TreeMap 有着比 HashMap 更为强大的功能，它实现了 SortedMap 接口，这意味着它可以对元素进行排序。TreeMap 的性能略微低于 HashMap。如果在开发中需要对元素进行排序，那么使用 HashMap 便无法实现这种功能，使用 TreeMap 的迭代输出将会以元素顺序进行。LinkedHashMap 是基于元素进入集合的顺序或者被访问的先后顺序排序，TreeMap 则是基于元素的固有顺序 (由 Comparator 或者 Comparable 确定)。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedHashMap 是根据元素增加或者访问的先后顺序进行排序，而 TreeMap 则根据元素的 Key 进行排序。<br>清单 6 所示代码演示了使用 TreeMap 实现业务逻辑的排序，如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.TreeMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Student</span>&gt;</span>&#123;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> String name;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> score;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name,<span class="keyword">int</span> score)</span></span>&#123;</span><br><span class="line"><span class="keyword">this</span>.name = name;</span><br><span class="line"><span class="keyword">this</span>.score = score;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="comment">//告诉 TreeMap 如何排序</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Student o)</span> </span>&#123;</span><br><span class="line"><span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line"><span class="keyword">if</span>(o.score&lt;<span class="keyword">this</span>.score)&#123;</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;<span class="keyword">else</span> <span class="keyword">if</span>(o.score&gt;<span class="keyword">this</span>.score)&#123;</span><br><span class="line"><span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line">StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">sb.append(<span class="string">"name:"</span>);</span><br><span class="line">sb.append(name);</span><br><span class="line">sb.append(<span class="string">" "</span>);</span><br><span class="line">sb.append(<span class="string">"score:"</span>);</span><br><span class="line">sb.append(score);</span><br><span class="line"><span class="keyword">return</span> sb.toString();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">TreeMap map = <span class="keyword">new</span> TreeMap();</span><br><span class="line">Student s1 = <span class="keyword">new</span> Student(<span class="string">"1"</span>,<span class="number">100</span>);</span><br><span class="line">Student s2 = <span class="keyword">new</span> Student(<span class="string">"2"</span>,<span class="number">99</span>);</span><br><span class="line">Student s3 = <span class="keyword">new</span> Student(<span class="string">"3"</span>,<span class="number">97</span>);</span><br><span class="line">Student s4 = <span class="keyword">new</span> Student(<span class="string">"4"</span>,<span class="number">91</span>);</span><br><span class="line">map.put(s1, <span class="keyword">new</span> StudentDetailInfo(s1));</span><br><span class="line">map.put(s2, <span class="keyword">new</span> StudentDetailInfo(s2));</span><br><span class="line">map.put(s3, <span class="keyword">new</span> StudentDetailInfo(s3));</span><br><span class="line">map.put(s4, <span class="keyword">new</span> StudentDetailInfo(s4));</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数位于 S4 和 S2 之间的人</span></span><br><span class="line">Map map1=((TreeMap)map).subMap(s4, s2);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数比 s1 低的人</span></span><br><span class="line">map1=((TreeMap)map).headMap(s1);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数比 s1 高的人</span></span><br><span class="line">map1=((TreeMap)map).tailMap(s1);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudentDetailInfo</span></span>&#123;</span><br><span class="line">Student s;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">StudentDetailInfo</span><span class="params">(Student s)</span></span>&#123;</span><br><span class="line"><span class="keyword">this</span>.s = s;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> s.name + <span class="string">"'s detail information"</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上示例代码运行结果如下：<img src="/uploads/2017-03-20-002.png" title="上述示例代码运行结果图">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 特点是当除了自身有对 Key 的引用外，如果此 Key 没有其他引用，那么此 Map 会自动丢弃该值。如清单 8 所示代码声明了两个 Map 对象，一个是 HashMap，一个是 WeakHashMap，同时向两个 map 中放入 A、B 两个对象，当 HashMap 删除 A，并且 A、B 都指向 Null 时，WeakHashMap 中的 A 将自动被回收掉。出现这个状况的原因是，对于 A 对象而言，当 HashMap 删除并且将 A 指向 Null 后，除了 WeakHashMap 中还保存 A 外已经没有指向 A 的指针了，所以 WeakHashMap 会自动舍弃掉 a，而对于 B 对象虽然指向了 null，但 HashMap 中还有指向 B 的指针，所以 WeakHashMap 将会保留 B 对象。<br>WeakHashMap 示例代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.HashMap; </span><br><span class="line"><span class="keyword">import</span> java.util.Iterator; </span><br><span class="line"><span class="keyword">import</span> java.util.Map; </span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest</span> </span>&#123; </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123; </span><br><span class="line"> String a = <span class="keyword">new</span> String(<span class="string">"a"</span>); </span><br><span class="line"> String b = <span class="keyword">new</span> String(<span class="string">"b"</span>); </span><br><span class="line"> Map weakmap = <span class="keyword">new</span> WeakHashMap(); </span><br><span class="line"> Map map = <span class="keyword">new</span> HashMap(); </span><br><span class="line"> map.put(a, <span class="string">"aaa"</span>); </span><br><span class="line"> map.put(b, <span class="string">"bbb"</span>);</span><br><span class="line"> weakmap.put(a, <span class="string">"aaa"</span>); </span><br><span class="line"> weakmap.put(b, <span class="string">"bbb"</span>);</span><br><span class="line"> map.remove(a);</span><br><span class="line"> a=<span class="keyword">null</span>; </span><br><span class="line"> b=<span class="keyword">null</span>;</span><br><span class="line"> System.gc(); </span><br><span class="line"> Iterator i = map.entrySet().iterator(); </span><br><span class="line"> <span class="keyword">while</span> (i.hasNext()) &#123; </span><br><span class="line"> Map.Entry en = (Map.Entry)i.next(); </span><br><span class="line"> System.out.println(<span class="string">"map:"</span>+en.getKey()+<span class="string">":"</span>+en.getValue()); </span><br><span class="line"> &#125; </span><br><span class="line"> Iterator j = weakmap.entrySet().iterator(); </span><br><span class="line"> <span class="keyword">while</span> (j.hasNext()) &#123; </span><br><span class="line"> Map.Entry en = (Map.Entry)j.next(); </span><br><span class="line"> System.out.println(<span class="string">"weakmap:"</span>+en.getKey()+<span class="string">":"</span>+en.getValue()); </span><br><span class="line"> &#125; </span><br><span class="line"> &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述代码运行结果如下：<img src="/uploads/2017-03-20-003.png" title="WeakHashMap 示例运行结果图"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 主要通过 expungeStaleEntries 这个函数来实现移除其内部不用的条目，从而达到自动释放内存的目的。基本上只要对 WeakHashMap 的内容进行访问就会调用这个函数，从而达到清除其内部不再为外部引用的条目。但是如果预先生成了 WeakHashMap，而在 GC 以前又不曾访问该 WeakHashMap, 那不是就不能释放内存了吗？如下示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest1</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"> List&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt; maps = <span class="keyword">new</span> ArrayList&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt;();</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line"> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt; d = <span class="keyword">new</span> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;();</span><br><span class="line"> d.put(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>], <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>]);</span><br><span class="line"> maps.add(d);</span><br><span class="line"> System.gc();</span><br><span class="line"> System.err.println(i);</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>不改变任何 JVM 参数的情况运行清单 10 所示代码，由于 Java 默认内存是 64M，抛出内存溢出了错误。<br>上述示例运行结果如下：<img src="/uploads/2017-03-20-004.png" title="上述示例运行结果图"/>果不其然，WeakHashMap 这个时候并没有自动帮我们释放不用的内存。清单 12 所示代码不会出现内存溢出问题。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest2</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"> List&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt; maps = <span class="keyword">new</span> ArrayList&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt;();</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line"> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt; d = <span class="keyword">new</span> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;();</span><br><span class="line"> d.put(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>], <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>]);</span><br><span class="line"> maps.add(d);</span><br><span class="line"> System.gc();</span><br><span class="line"> System.err.println(i);</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line"> System.err.println(j + <span class="string">" size"</span> + maps.get(j).size());</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>运行结果发现这次测试输出正常, 不再出现内存溢出问题。<br>总的来说，WeakHashMap 并不是你什么也干它就能自动释放内部不用的对象的，而是在你访问它的内容的时候释放内部不用的对象。<br>WeakHashMap 实现弱引用，是因为它的 Entry&lt;K,V&gt;是继承自 WeakReference<K>的，<br>在 WeakHashMap$Entry&lt;K,V&gt;的类定义及构造函数里面如清单 13 所示：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">K</span>&gt; </span></span><br><span class="line"><span class="class"><span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="title">Entry</span>(<span class="title">K</span> <span class="title">key</span>, <span class="title">V</span> <span class="title">value</span>, <span class="title">ReferenceQueue</span>&lt;<span class="title">K</span>&gt; <span class="title">queue</span>,<span class="title">int</span> <span class="title">hash</span>, <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="title">next</span>) </span>&#123; </span><br><span class="line"><span class="keyword">super</span>(key, queue); </span><br><span class="line"><span class="keyword">this</span>.value = value; </span><br><span class="line"><span class="keyword">this</span>.hash = hash; </span><br><span class="line"><span class="keyword">this</span>.next = next; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请注意它构造父类的语句：“super(key, queue);”，传入的是 Key，因此 Key 才是进行弱引用的，Value 是直接强引用关联在 this.value 之中。在 System.gc() 时，Key 中的 Byte 数组进行了回收，而 Value 依然保持 (Value 被强关联到 Entry 上，Entry 又关联在 Map 中，Map 关联在 ArrayList 中)。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For 循环中每次都 New 一个新的 WeakHashMap，在 Put 操作后，虽然 GC 将 WeakReference 的 Key 中的 Byte 数组回收了，并将事件通知到了 ReferenceQueue，但后续却没有相应的动作去触发 WeakHashMap 去处理 ReferenceQueue，所以 WeakReference 包装 Key 依然存在于 WeakHashMap 中，其对应的 value 也当然存在。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;那 value 是何时被清除的呢? 对清单 10 和清单 11 两个示例程序进行分析可知，清单 11 的 maps.get(j).size() 触发了 Value 的回收，那又如何触发的呢？查看 WeakHashMap 源码可知,Size 方法调用了 expungeStaleEntries 方法，该方法对 JVM 要回收的的 Entry(Quene 中) 进行遍历，并将 Entry 的 Value 置空，回收了内存。所以效果是 Key 在 GC 的时候被清除，Value 在 Key 清除后访问 WeakHashMap 被清除。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 类是线程不同步的，可以使用 Collections.synchronizedMap 方法来构造同步的 WeakHashMap, 每个键对象间接地存储为一个弱引用的指示对象。因此，不管是在映射内还是在映射之外，只有在垃圾回收器清除某个键的弱引用之后，该键才会自动移除。需要注意的是，WeakHashMap 中的值对象由普通的强引用保持。因此应该小心谨慎，确保值对象不会直接或间接地强引用其自身的键，因为这会阻止键的丢弃。注意，值对象可以通过 WeakHashMap 本身间接引用其对应的键，这就是说，某个值对象可能强引用某个其他的键对象，而与该键对象相关联的值对象转而强引用第一个值对象的键。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;处理此问题的一种方法是，在插入前将值自身包装在 WeakReferences 中，如：m.put(key, new WeakReference(value))，然后，分别用 get 进行解包，该类所有“collection 视图方法”返回的迭代器均是快速失败的，在迭代器创建之后，如果从结构上对映射进行修改，除非通过迭代器自身的 Remove 或 Add 方法，其他任何时间任何方式的修改，迭代器都将抛出 ConcurrentModificationException。因此，面对并发的修改，迭代器很快就完全失败，而不是冒着在将来不确定的时间任意发生不确定行为的风险。<br>注意，我们不能确保迭代器不失败，一般来说，存在不同步的并发修改时，不可能做出任何完全确定的保证。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;综合前面的介绍和实例代码，我们可以知道，如果涉及到堆栈、队列等操作，应该考虑用 List。对于需要快速插入、删除元素等操作，应该使用 LinkedList。如果需要快速随机访问元素，应该使用 ArrayList。如果程序在单线程环境中，或者访问仅仅在一个线程中进行，考虑非同步的类，其效率较高。如果多个线程可能同时操作一个类，应该使用同步的类。要特别注意对哈希表的操作，作为 Key 的对象要正确复写 Equals 和 HashCode 方法。尽量返回接口而非实际的类型，如返回 List 而非 ArrayList，这样如果以后需要将 ArrayList 换成 LinkedList 时，客户端代码不用改变，这就是针对抽象进行编程思想。<br>本文只是针对应用层面的分享，后续文章会针对具体源代码级别的实现进行深入介绍，也会对具体实现所基于的算法进行深入介绍，请有需要的读者关注后续文章。非常感谢作者的精心分享【<a href="https://www.ibm.com/developerworks/cn/java/j-lo-set-operation/index.html" target="_blank" rel="noopener"><font color=red>源地址</font></a>】</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/18/Quartz%E4%B8%AD%E5%85%B3%E4%BA%8EcronExpression%E7%9A%84%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2016/03/18/Quartz%E4%B8%AD%E5%85%B3%E4%BA%8EcronExpression%E7%9A%84%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">Quartz中关于cronExpression的使用过程</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2016-03-18 11:20:40" itemprop="dateCreated datePublished" datetime="2016-03-18T11:20:40+08:00">2016-03-18</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaWeb第三方框架</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="随笔"><a href="#随笔" class="headerlink" title="随笔"></a>随笔</h2><p>最近，由于项目中使用到定时任务调度的程序，且调度器使用的是公认的Quartz。在此记录下期中使用到的CronExpression表达式。<br>其中比较重要的是如何理解表达式中各个位置的含义以及各个位置中能用到的符号。</p>
-<p>表达式：A-B-C-D-E-F-G</p>
-<p>解释：上述表达中为读者可以看得明白使用“-”代表空格。</p>
-<p>A：表示的是执行时间中的秒 取值范围是{0-59}，可以使用的特殊符号有{ , - * / }<br>B：表示的是执行时间中的分 取值范围是{0-59}，可以使用的特殊符号有{ , - * / }<br>C：表示的是执行时间中的时 取值范围是{0-23}，可以使用的特殊符号有{ , - * / }<br>D：表示的是执行时间中的日 取值范围是{1-31}，可以使用的特殊符号有{ , - * / L W C }<br>E：表示的是执行时间中的月 取值范围是{1-12或JAN-DEC}，可以使用的特殊符号有{ , - * / }<br>F：表示的是执行时间中的星期 取值范围是{1-7或SUN-SAT}，可以使用的特殊符号有{ , - * / L C # }<br>G：表示的是执行时间中的年 取值范围是{留空或1970-2099}，可以使用的特殊符号有{ , - * / }</p>
-<p>特殊符号解释：<br>“* ”字符被用来指定所有的值。如：“*“在分钟的字段域里表示“每分钟”。<br>“-”字符被用来指定一个范围。如：“10-12”在小时域意味着“10点、11点、12点”。<br>“/” 字符被用来指定每隔多久。如：“2/15”在分钟域意味着”重2开始每隔15分钟”。<br>“,”字符被用来指定另外的值。如：“MON,WED,FRI”在星期域里表示”星期一、星期三、星期五”.<br>“?”字符只在日期域和星期域中使用。它被用来指定“非明确的值”。当你需要通过在这两个域中的一个来指定一些东西的时候，它是有用的。看下面的例子你就会明白。<br>“L”字符指定在月或者星期中的某天（最后一天）。即“Last ”的缩写。但是在星期和月中“Ｌ”表示不同的意思，如：在月子段中“L”指月份的最后一天-1月31日，2月28日，如果在星期字段中则简单的表示为“7”或者“SAT”。如果在星期字段中在某个value值得后面，则表示“某月的最后一个星期value”,如“6L”表示某月的最后一个星期五。<br>“W”字符只能用在月份字段中，该字段指定了离指定日期最近的那个星期日。<br>“#”字符只能用在星期字段，该字段指定了第几个星期value在某月中</p>
-<p>例子：<br>“0 0 12 * * ?” 每天中午12点触发<br>“0 0/5 14,18 * * ?” 在每天下午2点到2:55期间和下午6点到6:55期间的每5分钟触发<br>“0 10,44 14 ? 3 WED” 每年三月的星期三的下午2:10和2:44触发</p>
-<p>More info: <a href="http://www.quartz-scheduler.org/" target="_blank" rel="noopener">Quartz</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">关于POI导出excel过程总结</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-12-29 15:22:42" itemprop="dateCreated datePublished" datetime="2015-12-29T15:22:42+08:00">2015-12-29</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaWeb第三方框架</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>5 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="随笔"><a href="#随笔" class="headerlink" title="随笔"></a>随笔</h2><p>今天在维护项目过程中拿到一份关于导出员工薪酬数据的需求，要求使用Excel。查阅了之前导出的功能，都是使用服务器存储模板，然后按照指定路径读取并将查询到的数据在写入到模板中，过程稍稍微有些繁琐（同时后期维护的话也要修改模板）就直接使用POI创建Excel了。<br>大致在开发之前整理了一下必要的信息：</p>
-<p>1：创建要使用的Excel对象</p>
-<p>2：创建导出文档分三个部分（标题，列标题，数据主体）</p>
-<p>标题：使用标题的样式以及命名规则<br>列标题：使用列标题的样式以及命名规则<br>数据主体：使用数据主体的样式以及命名规则</p>
-<p>具体的逻辑如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">HSSFWorkbook workbook = <span class="keyword">new</span> HSSFWorkbook();<span class="comment">//创建Excel主体  </span></span><br><span class="line">Sheet sheet = workbook.createSheet(sheet_name);<span class="comment">//创建工作空间  </span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">	sheet.setColumnWidth(i, title_names[i].getBytes().length * <span class="number">256</span> + offset * <span class="number">256</span>);<span class="comment">//设置每列的宽度  </span></span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//开始创建表头标题样式  </span></span><br><span class="line">CellStyle cellStyle_title_row = workbook.createCellStyle();  </span><br><span class="line">Font font_title_row = workbook.createFont();  </span><br><span class="line">font_title_row.setFontHeightInPoints(height_title_row_font_size); <span class="comment">//字体大小  </span></span><br><span class="line">font_title_row.setFontName(<span class="string">"宋体"</span>);  </span><br><span class="line">font_title_row.setBoldweight(Font.BOLDWEIGHT_BOLD); <span class="comment">//粗体  </span></span><br><span class="line">font_title_row.setColor(HSSFColor.BLACK.index);    <span class="comment">//黑字  </span></span><br><span class="line">cellStyle_title_row.setAlignment(HSSFCellStyle.ALIGN_CENTER); <span class="comment">// 居中  </span></span><br><span class="line">cellStyle_title_row.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);<span class="comment">// 垂直居中  </span></span><br><span class="line">cellStyle_title_row.setFillForegroundColor(IndexedColors.YELLOW.getIndex());  </span><br><span class="line">cellStyle_title_row.setFillPattern(CellStyle.SOLID_FOREGROUND);  </span><br><span class="line">cellStyle_title_row.setFont(font_title_row);  </span><br><span class="line">cellStyle_title_row.setBorderBottom(height_title_row_border_size); <span class="comment">//设置边框线宽度  </span></span><br><span class="line">cellStyle_title_row.setBorderRight(height_title_row_border_size);  </span><br><span class="line">cellStyle_title_row.setBottomBorderColor(IndexedColors.BLACK.getIndex());<span class="comment">//设置边框线颜色  </span></span><br><span class="line"><span class="comment">//开始创建并表体标题样式  </span></span><br><span class="line">CellStyle cellStyle_title_body = workbook.createCellStyle();  </span><br><span class="line">Font font_title_body = workbook.createFont();  </span><br><span class="line">font_title_body.setFontHeightInPoints(height_title_body_font_size); <span class="comment">//字体大小  </span></span><br><span class="line">font_title_body.setFontName(<span class="string">"宋体"</span>);  </span><br><span class="line">font_title_body.setBoldweight(Font.BOLDWEIGHT_BOLD); <span class="comment">//粗体  </span></span><br><span class="line">font_title_body.setColor(HSSFColor.BLACK.index);    <span class="comment">//黑字  </span></span><br><span class="line">cellStyle_title_body.setAlignment(HSSFCellStyle.ALIGN_CENTER);  </span><br><span class="line">cellStyle_title_body.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);<span class="comment">// 垂直居中  </span></span><br><span class="line">cellStyle_title_body.setFont(font_title_body);  </span><br><span class="line">cellStyle_title_body.setBorderBottom(height_title_body_border_size); <span class="comment">//设置边框线宽度  </span></span><br><span class="line">cellStyle_title_body.setBorderRight(height_title_body_border_size);  </span><br><span class="line">cellStyle_title_body.setBottomBorderColor(IndexedColors.BLACK.getIndex());<span class="comment">//设置边框线颜色  </span></span><br><span class="line"><span class="comment">//开始创建表体标题并设置其样式  </span></span><br><span class="line">Row row_0 = sheet.createRow(<span class="number">0</span>);<span class="comment">//表体标题  </span></span><br><span class="line">row_0.setHeightInPoints(height_title_body);  </span><br><span class="line">sheet.addMergedRegion(<span class="keyword">new</span> CellRangeAddress(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, title_names.length-<span class="number">1</span>)); <span class="comment">//合并单元格  </span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">        Cell cell = row_0.createCell(i);  </span><br><span class="line">        <span class="keyword">if</span>(i==<span class="number">0</span>)&#123;  </span><br><span class="line">            cell.setCellValue(body_title_name);  </span><br><span class="line">        &#125;  </span><br><span class="line">        cell.setCellStyle(cellStyle_title_body);  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//开始创建表头标题并设置其样式  </span></span><br><span class="line">Row row_1 = sheet.createRow(<span class="number">1</span>);<span class="comment">//表头标题  </span></span><br><span class="line">row_1.setHeightInPoints(height_title_row);  </span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">    Cell cell = row_1.createCell(i);  </span><br><span class="line">    cell.setCellValue(title_names[i]);  </span><br><span class="line">    cell.setCellStyle(cellStyle_title_row);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//开始查询数据  </span></span><br><span class="line">HttpSession session = request.getSession();  </span><br><span class="line">StringBuffer sbsql = <span class="keyword">this</span>.getPsnCostSql(vo, session);  </span><br><span class="line">List&lt;PsnCostBVo&gt; list = comDao.queryBySQL(sbsql.toString(), PsnCostBVo<span class="class">.<span class="keyword">class</span>)</span>;  </span><br><span class="line">  </span><br><span class="line">HSSFSheet sheet = workbook.getSheetAt(<span class="number">0</span>);  </span><br><span class="line">HSSFDataFormat format= workbook.createDataFormat();  </span><br><span class="line">CellStyle cellstyle_money = workbook.createCellStyle();  </span><br><span class="line">cellstyle_money.setDataFormat(format.getFormat(<span class="string">"#,##0.00"</span>));<span class="comment">//金额格式  </span></span><br><span class="line">CellStyle cellstyle_text = workbook.createCellStyle();  </span><br><span class="line">cellstyle_text.setDataFormat(format.getFormat(<span class="string">"@"</span>));<span class="comment">//文本格式  </span></span><br><span class="line">sheet.createRow(<span class="number">2</span>);  </span><br><span class="line">Map&lt;String, Object&gt; map = <span class="keyword">null</span>;  </span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;list.size();i++)&#123;  </span><br><span class="line">    map= Constant.ConvertObjToMap(list.get(i));  </span><br><span class="line">    HSSFRow row = sheet.createRow(i+<span class="number">2</span>);  </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;title_names.length;j++)&#123;  </span><br><span class="line">        HSSFCell cell = row.createCell(j);  </span><br><span class="line">        <span class="keyword">if</span> (j==<span class="number">6</span>)&#123;  </span><br><span class="line">            cell.setCellStyle(cellstyle_text);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_STRING);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue(((String)map.get(title_fileds[j])).equals(<span class="string">"0"</span>) ? <span class="string">"已发放"</span>:<span class="string">"未发放"</span>);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(j&lt;<span class="number">7</span>)&#123;  </span><br><span class="line">            cell.setCellStyle(cellstyle_text);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_STRING);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue((String)map.get(title_fileds[j]));  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            &lt;span style="white-space:pre"&gt;        &lt;/span&gt;cell.setCellStyle(cellstyle_money);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue((Double)map.get(title_fileds[j]));  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="数据格式总结"><a href="#数据格式总结" class="headerlink" title="数据格式总结"></a>数据格式总结</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cellstyle.setDataFormat(format.getFormat(<span class="string">"￥#,##0.00"</span>)); <span class="comment">//金额格式</span></span><br><span class="line">cellstyle.setDataFormat(format.getFormat(<span class="string">"@"</span>)); <span class="comment">//文本格式  </span></span><br><span class="line">cellStyle.setDataFormat(format.getFormat(<span class="string">"yyyy年m月d日"</span>));</span><br><span class="line">cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00"</span>)); <span class="comment">//两位小数格式  </span></span><br><span class="line">cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00%"</span>)); <span class="comment">//百分比格式  </span></span><br><span class="line">cellStyle.setDataFormat( HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00E+00"</span>)); <span class="comment">//科学计数法格式  </span></span><br><span class="line"><span class="comment">//这里与上面有所不同，用的是HSSFDataFormat.getBuiltinFormat()方法，因为0.00是Excel内嵌的格式，Excel内嵌格式列表大家可以在Excel文件中查看。  </span></span><br><span class="line">cellStyle.setDataFormat(format.getFormat(<span class="string">"[DbNum2][$-804]0"</span>)); <span class="comment">//中文大写格式</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/08/14/ThreadLocal%20%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/08/14/ThreadLocal%20%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">ThreadLocal 的使用原理</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-08-14 14:21:52" itemprop="dateCreated datePublished" datetime="2015-08-14T14:21:52+08:00">2015-08-14</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ThreadLocal 为解决多线程程序的并发问题提供了一种新的思路。使用这个工具类可以很简洁地编写出优美的多线程程序， ThreadLocal 并不是一个 Thread ，而是 Thread 的局部变量。一个静态（static）的 ThreadLocal ，每个线程只能 initialValue，get ，set  或 remove 自己的变量，而不会影响其他线程的变量。</p>
-<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 ThreadLocal 源码中我们可以看到有如下几个常用的方法：</p>
-<p>1· ThreadLocal.get()：获取ThreadLocal中当前线程共享变量的值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//这里是关键，获取当前的线程实例</span></span><br><span class="line">    Thread t = Thread.currentThread(); </span><br><span class="line">    <span class="comment">//在获取的线程实例中获取线程变量的Map，具体可以查阅 Thread 源码（ThreadLocal.ThreadLocalMap threadLocals = null;）;</span></span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123; <span class="comment">//进行对获取到的Map校验，如果为空则进行初始化否则在已有的Map通过当前的线程对象进行获取</span></span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> (T)e.value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>2· ThreadLocal.set(T value)：设置ThreadLocal中当前线程共享变量的值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread(); <span class="comment">//获取当前的线程对象</span></span><br><span class="line">    ThreadLocalMap map = getMap(t); <span class="comment">//获取当前线程的变量的Map</span></span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value); <span class="comment">// 通过当前线程对象进行在线程变量map中设置值</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value); <span class="comment">// 创建并设置</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>3· ThreadLocal.remove()：移除ThreadLocal中当前线程共享变量的值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123; <span class="comment">//移除当前线程的变量Map中对应的值</span></span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>4· ThreadLocal.initialValue()：ThreadLocal没有被当前线程赋值时或当前线程刚调用remove方法后调用get方法，返回此方法值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 该方法一般情况下会被重写，并按照不同的需求返回不同的初始值</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>ThreadLocal 在很多框架中都有它的影子，例如 Spring MVC 中的 RequestContextHolder 就是使用了 ThreadLocal 来存储每个 Web 请求所属线程的参数对象。由于 ThreadLocal 是存储每一个线程的参数对象。</p>
-<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接下来我们通过对 ThreadLocal 的具体示例来进行进一步的探究其背后的运行逻辑。 首先，我们在 ThreadLocal 源码中可以看到有这样一个使用样例，主要是模拟一个”线程ID”的生成过程，具体样例源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.threadlocal;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadId</span> </span>&#123;</span><br><span class="line">     <span class="comment">// 这里通过一个原子整数进行对线程提供唯一的值</span></span><br><span class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger nextId = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">     <span class="comment">//通过 ThreadLocal 来维护每个线程的线程 ID，这里最有趣的还是使用了privte static </span></span><br><span class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Integer&gt; threadId =</span><br><span class="line">         <span class="keyword">new</span> ThreadLocal&lt;Integer&gt;() &#123;</span><br><span class="line">             <span class="meta">@Override</span> </span><br><span class="line">	     <span class="function"><span class="keyword">protected</span> Integer <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                 <span class="keyword">return</span> nextId.getAndIncrement();</span><br><span class="line">	     &#125;</span><br><span class="line">     &#125;;</span><br><span class="line"></span><br><span class="line">     <span class="comment">//这里就是获取当前线程的 ID</span></span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> threadId.get();</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>测试代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.threadlocal;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestThreadLocal</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test_01</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">final</span> Set&lt;Integer&gt; set = <span class="keyword">new</span> HashSet&lt;Integer&gt;();</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">5</span>; i++)&#123;</span><br><span class="line">			<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">					System.out.println(Thread.currentThread().getName() + <span class="string">"-----------&gt;"</span> + ThreadId.get());</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;).start();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">			System.out.println(set.size());</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>运行结果如下图：<img src='/uploads/2015-08-14-001.png' title="样例运行结果" />在上述示例中我仅使用了 ThreadLocal 的初始化方法（initialValue）和获取值的方法（get）。而在初始化值的方法中最关键的就是返回的值使用了一个原子计数器，而非固定的常量。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1699,20 +1708,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1755,13 +1764,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">318k</span>
+    <span title="站点总字数">327k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">4:49</span>
+    <span title="站点阅读时长">4:57</span>
 </div>
 
         

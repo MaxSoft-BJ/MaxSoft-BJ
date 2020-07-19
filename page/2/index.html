@@ -185,6 +185,493 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/08/12/Spring%E6%95%B4%E5%90%88Ehcache%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">Spring整合Ehcache过程</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2016-08-12 16:05:31" itemprop="dateCreated datePublished" datetime="2016-08-12T16:05:31+08:00">2016-08-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb第三方框架</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最近在项目中使用 Ehcache 作为了系统的缓冲插件，关于Ehcache请移步「 <a href="http://www.ehcache.org/about/" target="_blank" rel="noopener">关于Ehcache</a> 」。在这里只记录其在本次项目中的使用的过程。</p>
+<p>当前项目使用 Spring 以及 Maven 所以主要介绍 Spring 整合 Ehcache 的过程。</p>
+<p>1&sdot;&nbsp;&nbsp;首先在Maven配置文件pom.xml中新增关于 Ehcache 的依赖包：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">	...</span><br><span class="line">	<span class="comment">&lt;!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache --&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.sf.ehcache<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>ehcache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">	...</span><br><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>2&sdot;&nbsp;&nbsp;新增 ehcache.xml 配置文件，并将其放入到对应的项目资源目录中（例如：/WEB-INF/conf/cache/）。<br>配置文件内容如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">ehcache</span> <span class="attr">updateCheck</span>=<span class="string">"false"</span> <span class="attr">name</span>=<span class="string">"yonyou-brotel-ehcache"</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">diskStore</span> <span class="attr">path</span>=<span class="string">"java.io.tmpdir"</span>/&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- DefaultCache setting. --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 定义缓存策略  </span></span><br><span class="line"><span class="comment">        eternal="false"                 // 元素是否永恒,如果是就永不过期(必须设置)  </span></span><br><span class="line"><span class="comment">        maxEntriesLocalHeap="1000"      // 堆内存中最大缓存对象数,0没有限制(必须设置)  </span></span><br><span class="line"><span class="comment">        overflowToDisk="false"          // 当缓存达到maxElementsInMemory值是,是否允许溢出到磁盘(必须设置)  </span></span><br><span class="line"><span class="comment">        diskPersistent="false"          // 磁盘缓存在VM重新启动时是否保持(默认为false)  </span></span><br><span class="line"><span class="comment">        timeToIdleSeconds="0"           // 导致元素过期的访问间隔(秒为单位). 当eternal为false时，这个属性才有效，0表示可以永远空闲,默认为0  </span></span><br><span class="line"><span class="comment">        timeToLiveSeconds="600"         // 元素在缓存里存在的时间(秒为单位). 0 表示永远存在不过期  </span></span><br><span class="line"><span class="comment">        memoryStoreEvictionPolicy="LFU" // 当达到maxElementsInMemory时,如何强制进行驱逐默认使用"最近使用(LRU)"策略,其它还有先入先出FIFO,最少使用LFU,较少使用LRU  </span></span><br><span class="line"><span class="comment">    --&gt;</span>  </span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">cache</span> <span class="attr">name</span>=<span class="string">"login_times_cache"</span> <span class="attr">eternal</span>=<span class="string">"false"</span> <span class="attr">maxEntriesLocalHeap</span>=<span class="string">"0"</span> <span class="attr">overflowToDisk</span>=<span class="string">"false"</span> <span class="attr">timeToIdleSeconds</span>=<span class="string">"1800"</span> <span class="attr">timeToLiveSeconds</span>=<span class="string">"1800"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">ehcache</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>3&sdot;&nbsp;&nbsp;在Spring的配置文件（applicationContext.xml）中引入 ehcache.xml ，并注入缓冲管理实例，代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>  </span><br><span class="line"><span class="tag">&lt;<span class="name">beans</span> <span class="attr">xmlns</span>=<span class="string">"http://www.springframework.org/schema/beans"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:xsi</span>=<span class="string">"http://www.w3.org/2001/XMLSchema-instance"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:aop</span>=<span class="string">"http://www.springframework.org/schema/aop"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:tx</span>=<span class="string">"http://www.springframework.org/schema/tx"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:mvc</span>=<span class="string">"http://www.springframework.org/schema/mvc"</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:context</span>=<span class="string">"http://www.springframework.org/schema/context"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:p</span>=<span class="string">"http://www.springframework.org/schema/p"</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:jaxws</span>=<span class="string">"http://cxf.apache.org/jaxws"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xmlns:simple</span>=<span class="string">"http://cxf.apache.org/simple"</span></span></span><br><span class="line"><span class="tag">	<span class="attr">xsi:schemaLocation</span>=<span class="string">"</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://cxf.apache.org/simple http://cxf.apache.org/schemas/simple.xsd</span></span></span><br><span class="line"><span class="tag"><span class="string">	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"</span>&gt;</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"ehcache_manager_factory"</span> <span class="attr">class</span>=<span class="string">"org.springframework.cache.ehcache.EhCacheManagerFactoryBean"</span> <span class="attr">p:shared</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"configLocation"</span> <span class="attr">value</span>=<span class="string">"/WEB-INF/conf/cache/ehcache.xml"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"spring_cache_manager"</span> <span class="attr">class</span>=<span class="string">"org.springframework.cache.ehcache.EhCacheCacheManager"</span>&gt;</span></span><br><span class="line">    	<span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">"cacheManager"</span> <span class="attr">ref</span>=<span class="string">"ehcache_manager_factory"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>4&sdot;&nbsp;&nbsp;以上代码就是全部的配置过程，接下来我们就可以使用缓冲组件来存储数据了，示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> EhCacheCacheManager manager;</span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> HttpServletRequest request;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/checkuser"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Map&lt;String, String&gt; <span class="title">checkUser</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	Map&lt;String, String&gt; msgMap = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">	String userCode = request.getParameter(<span class="string">"userCode"</span>);</span><br><span class="line">	Cache cache = manager.getCache(<span class="string">"login_times_cache"</span>);</span><br><span class="line">	String ip = MethodUtil.getRemoteHost(request);</span><br><span class="line">	String key = ip+userCode;</span><br><span class="line">	ValueWrapper value = cache.get(key);</span><br><span class="line">	<span class="keyword">int</span> times = value==<span class="keyword">null</span>?<span class="number">0</span>:(Integer)value.get();</span><br><span class="line">	<span class="keyword">if</span>(times&gt;<span class="number">4</span>)&#123;</span><br><span class="line">		msgMap.put(<span class="string">"status"</span>, <span class="string">"false"</span>);</span><br><span class="line">		msgMap.put(<span class="string">"errormsg"</span>, <span class="string">"登陆错误次数超出5次，账户已被锁定！请稍后再试！"</span>);</span><br><span class="line">		<span class="keyword">return</span> msgMap;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(校验失败)&#123;</span><br><span class="line">		countTimesInfo(msgMap,cache,keytimes);</span><br><span class="line">		<span class="keyword">return</span> msgMap;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//省略其他校验...</span></span><br><span class="line">	cache.evict(key); <span class="comment">//通过前面所有的校验，移除连续登陆错误次数缓存信息</span></span><br><span class="line">	<span class="keyword">return</span> msgMap;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">countTimesInfo</span><span class="params">(Map&lt;String, String&gt; msgMap, Cache cache,String key, <span class="keyword">int</span> times)</span> </span>&#123;</span><br><span class="line">	msgMap.put(<span class="string">"errormsg"</span>, <span class="string">"账户或密码错误！第"</span> + (times+<span class="number">1</span>) + <span class="string">"次；【5次后，账户将被锁定】"</span>);</span><br><span class="line">	cache.put(key,times+<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://maven.apache.org/guides/index.html" target="_blank" rel="noopener">Maven</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/03/20/Java%20%E9%9B%86%E5%90%88%E7%B1%BB%E6%93%8D%E4%BD%9C%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C%E6%80%BB%E7%BB%93-%E8%BD%AC%E8%BD%BD/" class="post-title-link" itemprop="url">Java 集合类操作优化经验总结</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2016-03-20 20:37:20" itemprop="dateCreated datePublished" datetime="2016-03-20T20:37:20+08:00">2016-03-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;毕业到现在已经有小俩年的时间了，在这俩年中一直都是围绕着 JavaWeb 相关的技术进行 JavaWeb 系统开发（Java，JSP，JavaScript，SQL 等）。学到的知识相对于学校中学习的知识要既丰富又有深度……<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本着站在巨人的肩膀上成长的想法，经常 Google 或 Baidu 一些有深度或相对丰富的技术博客来膜拜学习。今天看到了这位牛人对于Java 集合相关知识的总结，觉着是我的菜 +_+ ，很合胃口就转来了。转载自【<a href="https://www.ibm.com/developerworks/cn/java/j-lo-set-operation/index.html" target="_blank" rel="noopener"><font color=red>IBM Java technology</font></a>】</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在实际的项目开发中会有很多的对象，如何高效、方便地管理对象，成为影响程序性能与可维护性的重要环节。Java 提供了集合框架来解决此类问题，线性表、链表、哈希表等是常用的数据结构，在进行 Java 开发时，JDK 已经为我们提供了一系列相应的类来实现基本的数据结构，所有类都在 java.util 这个包里，图1. 描述了集合类的关系。<img src="/uploads/2016-03-20-001.png" title="图 1.集合类之间关系"/>本文讲的就是集合框架的使用经验总结，注意，本文所有代码基于 JDK7。</p>
+<h2 id="集合接口"><a href="#集合接口" class="headerlink" title="集合接口"></a>集合接口</h2><h3 id="Collection-接口"><a href="#Collection-接口" class="headerlink" title="Collection 接口"></a>Collection 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Collection 是最基本的集合接口，一个 Collection 代表一组 Object，即 Collection 的元素（Elements）。一些 Collection 允许相同的元素、支持对元素进行排序，另一些则不行。JDK 不提供直接继承自 Collection 的类，JDK 提供的类都是继承自 Collection 的子接口，如 List 和 Set。所有实现 Collection 接口的类都必须提供两个标准的构造函数，无参数的构造函数用于创建一个空的 Collection，有一个 Collection 参数的构造函数用于创建一个新的 Collection，这个新的 Collection 与传入的 Collection 有相同的元素，后一个构造函数允许用户复制一个 Collection。<br><font color=red>如何遍历 Collection 中的每一个元素？</font><br>不论 Collection 的实际类型如何，它都支持一个 iterator() 的方法，该方法返回一个迭代子，使用该迭代子即可逐一访问 Collection 中每一个元素。典型的用法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Iterator it = collection.iterator(); <span class="comment">// 获得一个迭代子</span></span><br><span class="line"><span class="keyword">while</span>(it.hasNext())&#123;</span><br><span class="line">	Object obj = it.next(); <span class="comment">// 得到下一个元素</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Collection 接口派生的两个接口是 List 和 Set。<br>Collection 接口提供的主要方法：<br>1· boolean add(Object o) 添加对象到集合；<br>2· boolean remove(Object o) 删除指定的对象；<br>3· int size() 返回当前集合中元素的数量；<br>4· boolean contains(Object o) 查找集合中是否有指定的对象；<br>5· boolean isEmpty() 判断集合是否为空；<br>6· Iterator iterator() 返回一个迭代器；<br>7· boolean containsAll(Collection c) 查找集合中是否有集合 C 中的元素；<br>8· boolean addAll(Collection c) 将集合 C 中所有的元素添加给该集合；<br>9· void clear() 删除集合中所有元素；<br>10· void removeAll(Collection c) 从集合中删除 C 集合中也有的元素；<br>11· void retainAll(Collection c) 从集合中删除集合 C 中不包含的元素；</p>
+<h3 id="List-接口"><a href="#List-接口" class="headerlink" title="List 接口"></a>List 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List 是有序的 Collection，使用此接口能够精确的控制每个元素插入的位置。用户能够使用索引（元素在 List 中的位置，类似于数组下标）来访问 List 中的元素，这类似于 Java 的数组。和下文要提到的 Set 不同，List 允许有相同的元素。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;除了具有 Collection 接口必备的 iterator() 方法外，List 还提供一个 listIterator() 方法，返回一个 ListIterator 接口。和标准的 Iterator 接口相比，ListIterator 多了一些 add() 之类的方法，允许添加、删除、设定元素、向前或向后遍历等功能。实现 List 接口的常用类有 LinkedList，ArrayList，Vector 和 Stack 等。<br>List 接口提供的主要方法：<br>1· void add(int index,Object element) 在指定位置上添加一个对象；<br>2· boolean addAll(int index,Collection c) 将集合 C 的元素添加到指定的位置；<br>3· Object get(int index) 返回 List 中指定位置的元素；<br>4· int indexOf(Object o) 返回第一个出现元素 O 的位置；<br>5· Object removeint(int index) 删除指定位置的元素；<br>6· Object set(int index,Object element) 用元素 element 取代位置 index 上的元素, 返回被取代的元素；</p>
+<h3 id="Map-接口"><a href="#Map-接口" class="headerlink" title="Map 接口"></a>Map 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map 没有继承 Collection 接口。Map 提供 Key 到 Value 的映射，一个 Map 中不能包含相同的 Key，每个 Key 只能映射一个 Value。Map 接口提供 3 种集合的视图，Map 的内容可以被当作一组 Key 集合，一组 Value 集合，或者一组 Key-Value 映射。<br>Map 提供的主要方法：<br>1· boolean equals(Object o) 比较对象；<br>2· boolean remove(Object o) 删除一个对象；<br>3· put(Object key,Object value) 添加 key 和 value。</p>
+<h3 id="RandomAccess-接口"><a href="#RandomAccess-接口" class="headerlink" title="RandomAccess 接口"></a>RandomAccess 接口</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RandomAccess 接口是一个标志接口，本身并没有提供任何方法，任务凡是通过调用 RandomAccess 接口的对象都可以认为是支持快速随机访问的对象。此接口的主要目的是标识那些可支持快速随机访问的 List 实现。任何一个基于数组的 List 实现都实现了 RaodomAccess 接口，而基于链表的实现则都没有。因为只有数组能够进行快速的随机访问，而对链表的随机访问需要进行链表的遍历。因此，此接口的好处是，可以在应用程序中知道正在处理的 List 对象是否可以进行快速随机访问，从而针对不同的 List 进行不同的操作，以提高程序的性能。</p>
+<h2 id="集合类介绍"><a href="#集合类介绍" class="headerlink" title="集合类介绍"></a>集合类介绍</h2><h3 id="LinkedList-类"><a href="#LinkedList-类" class="headerlink" title="LinkedList 类"></a>LinkedList 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedList 实现了 List 接口，允许 Null 元素。此外 LinkedList 提供额外的 Get、Remove、Insert 等方法在 LinkedList 的首部或尾部操作数据。这些操作使得 LinkedList 可被用作堆栈（Stack）、队列（Queue）或双向队列（Deque）。请注意 LinkedList 没有同步方法，它不是线程同步的，即如果多个线程同时访问一个 List，则必须自己实现访问同步。一种解决方法是在创建 List 时构造一个同步的 List，方法如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List list = Collections.synchronizedList(<span class="keyword">new</span> LinkedList(...));</span><br></pre></td></tr></table></figure>
+<h3 id="ArrayList-类"><a href="#ArrayList-类" class="headerlink" title="ArrayList 类"></a>ArrayList 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 实现了可变大小的数组。它允许所有元素，包括 Null。Size、IsEmpty、Get、Set 等方法的运行时间为常数，但是 Add 方法开销为分摊的常数，添加 N 个元素需要 O(N) 的时间，其他的方法运行时间为线性。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;每个 ArrayList 实例都有一个容量（Capacity），用于存储元素的数组的大小，这个容量可随着不断添加新元素而自动增加。当需要插入大量元素时，在插入前可以调用 ensureCapacity 方法来增加 ArrayList 的容量以提高插入效率。和 LinkedList 一样，ArrayList 也是线程非同步的（unsynchronized）。<br>ArrayList 提供的主要方法：<br>1· Boolean add(Object o) 将指定元素添加到列表的末尾；<br>2· Boolean add(int index,Object element) 在列表中指定位置加入指定元素；<br>3· Boolean addAll(Collection c) 将指定集合添加到列表末尾；<br>4· Boolean addAll(int index,Collection c) 在列表中指定位置加入指定集合；<br>5· Boolean clear() 删除列表中所有元素；<br>6· Boolean clone() 返回该列表实例的一个拷贝；<br>7· Boolean contains(Object o) 判断列表中是否包含元素；<br>8· Boolean ensureCapacity(int m) 增加列表的容量，如果必须，该列表能够容纳 m 个元素；<br>9· Object get(int index) 返回列表中指定位置的元素；<br>10· Int indexOf(Object elem) 在列表中查找指定元素的下标；<br>11· Int size() 返回当前列表的元素个数；</p>
+<h3 id="Vector-类"><a href="#Vector-类" class="headerlink" title="Vector 类"></a>Vector 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Vector 非常类似于 ArrayList，区别是 Vector 是线程同步的。由 Vector 创建的 Iterator，虽然和 ArrayList 创建的 Iterator 是同一接口，但是，因为 Vector 是同步的，当一个 Iterator 被创建而且正在被使用，另一个线程改变了 Vector 的状态（例如，添加或删除了一些元素），这时调用 Iterator 的方法时将抛出 ConcurrentModificationException，因此必须捕获该异常。</p>
+<h3 id="Stack-类"><a href="#Stack-类" class="headerlink" title="Stack 类"></a>Stack 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack 继承自 Vector，实现了一个后进先出的堆栈。Stack 提供 5 个额外的方法使得 Vector 得以被当作堆栈使用。除了基本的 Push 和 Pop 方法，还有 Peek 方法得到栈顶的元素，Empty 方法测试堆栈是否为空，Search 方法检测一个元素在堆栈中的位置。注意，Stack 刚创建后是空栈。</p>
+<h3 id="Set-类"><a href="#Set-类" class="headerlink" title="Set 类"></a>Set 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Set 是一种不包含重复的元素的 Collection，即任意的两个元素 e1 和 e2 都有 e1.equals(e2)=false。Set 最多有一个 null 元素。很明显，Set 的构造函数有一个约束条件，传入的 Collection 参数不能包含重复的元素。请注意，必须小心操作可变对象（Mutable Object），如果一个 Set 中的可变元素改变了自身状态，这可能会导致一些问题。</p>
+<h3 id="Hashtable-类"><a href="#Hashtable-类" class="headerlink" title="Hashtable 类"></a>Hashtable 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hashtable 继承 Map 接口，实现了一个基于 Key-Value 映射的哈希表。任何非空（non-null）的对象都可作为 Key 或者 Value。添加数据使用 Put(Key，Value)，取出数据使用 Get(Key)，这两个基本操作的时间开销为常数。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hashtable 通过 Initial Capacity 和 Load Factor 两个参数调整性能。通常缺省的 Load Factor 0.75 较好地实现了时间和空间的均衡。增大 Load Factor 可以节省空间但相应的查找时间将增大，会影响像 Get 和 Put 这样的操作。使用 Hashtable 的简单示例，将 1、2、3 这三个数字放到 Hashtable 里面，他们的 Key 分别是”one”、”two”、”three”，代码如清单 2 所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Hashtable numbers = <span class="keyword">new</span> Hashtable();</span><br><span class="line">numbers.put(“one”, <span class="keyword">new</span> Integer(<span class="number">1</span>));</span><br><span class="line">numbers.put(“two”, <span class="keyword">new</span> Integer(<span class="number">2</span>));</span><br><span class="line">numbers.put(“three”, <span class="keyword">new</span> Integer(<span class="number">3</span>));</span><br></pre></td></tr></table></figure>
+<p>如果我们需要取出一个数，比如 2，可以用相应的 key 来取出，代码如清单 3 所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer n = (Integer)numbers.get(“two”); </span><br><span class="line">System.out.println(“two =”+ n);</span><br></pre></td></tr></table></figure>
+<p>由于作为 Key 的对象将通过计算其散列函数来确定与之对应的 Value 的位置，因此任何作为 key 的对象都必须实现 HashCode 和 Equals 方法。HashCode 和 Equals 方法继承自根类 Object，如果你用自定义的类当作 Key 的话，要相当小心，按照散列函数的定义，如果两个对象相同，即 obj1.equals(obj2)=true，则它们的 HashCode 必须相同，但如果两个对象不同，则它们的 HashCode 不一定不同，如果两个不同对象的 HashCode 相同，这种现象称为冲突，冲突会导致操作哈希表的时间开销增大，所以尽量定义好的 HashCode() 方法，能加快哈希表的操作。<br>如果相同的对象有不同的 HashCode，对哈希表的操作会出现意想不到的结果（期待的 Get 方法返回 Null），要避免这种问题，最好同时复写 Equals 方法和 HashCode 方法，而不要只写其中一个。</p>
+<h3 id="HashMap-类"><a href="#HashMap-类" class="headerlink" title="HashMap 类"></a>HashMap 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 和 Hashtable 类似，不同之处在于 HashMap 是线程非同步的，并且允许 Null，即 Null Value 和 Null Key。但是将 HashMap 视为 Collection 时（values() 方法可返回 Collection），其迭代子操作时间开销和 HashMap 的容量成比例。因此，如果迭代操作的性能相当重要的话，不要将 HashMap 的初始化容量设得过高，或者 Load Factor 参数设置过低。</p>
+<h3 id="WeakHashMap-类"><a href="#WeakHashMap-类" class="headerlink" title="WeakHashMap 类"></a>WeakHashMap 类</h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 是一种改进的 HashMap，它对 Key 实行“弱引用”，如果一个 Key 不再被外部所引用，那么该 Key 可以被 GC 回收。</p>
+<h2 id="集合类实践"><a href="#集合类实践" class="headerlink" title="集合类实践"></a>集合类实践</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList、Vector、LinkedList 均来自 AbstractList 的实现，而 AbstractList 直接实现了 List 接口，并扩展自 AbstarctCollection。ArrayList 和 Vector 使用了数组实现，ArrayList 没有对任何一个方法提供线程同步，因此不是线程安全的，Vector 中绝大部分方法都做了线程同步，是一种线程安全的实现。LinkedList 使用了循环双向链表数据结构，由一系列表项连接而成，一个表项总是包含 3 个部分，元素内容、前驱表项和后驱表项。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当 ArrayList 对容量的需求超过当前数组的大小时，需要进行扩容。扩容过程中，会进行大量的数组复制操作，而数组复制时，最终将调用 System.arraycopy() 方法。LinkedList 由于使用了链表的结构，因此不需要维护容量的大小，然而每次的元素增加都需要新建一个 Entry 对象，并进行更多的赋值操作，在频繁的系统调用下，对性能会产生一定的影响，在不间断地生成新的对象还是占用了一定的资源。而因为数组的连续性，因此总是在尾端增加元素时，只有在空间不足时才产生数组扩容和数组复制。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 是基于数组实现的，而数组是一块连续的内存空间，如果在数组的任意位置插入元素，必然导致在该位置后的所有元素需要重新排列，因此其效率较差，尽可能将数据插入到尾部。LinkedList 不会因为插入数据导致性能下降。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList 的每一次有效的元素删除操作后都要进行数组的重组，并且删除的元素位置越靠前，数组重组时的开销越大，要删除的元素位置越靠后，开销越小。LinkedList 要移除中间的数据需要便利完半个 List。<br> ArrayList 和 LinkedList 使用示例代码：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.LinkedList;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayListandLinkedList</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line"> <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line"> ArrayList list = <span class="keyword">new</span> ArrayList();</span><br><span class="line"> Object obj = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5000000</span>;i++)&#123;</span><br><span class="line"> list.add(obj);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> LinkedList list1 = <span class="keyword">new</span> LinkedList();</span><br><span class="line"> Object obj1 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5000000</span>;i++)&#123;</span><br><span class="line"> list1.add(obj1);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> Object obj2 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</span><br><span class="line"> list.add(<span class="number">0</span>,obj2);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> Object obj3 = <span class="keyword">new</span> Object();</span><br><span class="line"> <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">1000</span>;i++)&#123;</span><br><span class="line"> list1.add(obj1);</span><br><span class="line"> &#125;</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> list.remove(<span class="number">0</span>);</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line">  </span><br><span class="line"> start = System.currentTimeMillis();</span><br><span class="line"> list1.remove(<span class="number">250000</span>);</span><br><span class="line"> end = System.currentTimeMillis();</span><br><span class="line"> System.out.println(end-start);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br> 执行结果如下图：<img src="/uploads/2017-03-20-001.png" title="上述代码运行结果图">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 是将 Key 做 Hash 算法，然后将 Hash 值映射到内存地址，直接取得 Key 所对应的数据。在 HashMap 中，底层数据结构使用的是数组，所谓的内存地址即数组的下标索引。HashMap 的高性能需要保证以下几点：<br>1· Hash 算法必须是高效的；<br>2· Hash 值到内存地址 (数组索引) 的算法是快速的；<br>3· 根据内存地址 (数组索引) 可以直接取得对应的值。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 实际上是一个链表的数组。前面已经介绍过，基于 HashMap 的链表方式实现机制，只要 HashCode() 和 Hash() 方法实现得足够好，能够尽可能地减少冲突的产生，那么对 HashMap 的操作几乎等价于对数组的随机访问操作，具有很好的性能。但是，如果 HashCode() 或者 Hash() 方法实现较差，在大量冲突产生的情况下，HashMap 事实上就退化为几个链表，对 HashMap 的操作等价于遍历链表，此时性能很差。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 的一个功能缺点是它的无序性，被存入到 HashMap 中的元素，在遍历 HashMap 时，其输出是无序的。如果希望元素保持输入的顺序，可以使用 LinkedHashMap 替代。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedHashMap 继承自 HashMap，具有高效性，同时在 HashMap 的基础上，又在内部增加了一个链表，用以存放元素的顺序。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HashMap 通过 hash 算法可以最快速地进行 Put() 和 Get() 操作。TreeMap 则提供了一种完全不同的 Map 实现。从功能上讲，TreeMap 有着比 HashMap 更为强大的功能，它实现了 SortedMap 接口，这意味着它可以对元素进行排序。TreeMap 的性能略微低于 HashMap。如果在开发中需要对元素进行排序，那么使用 HashMap 便无法实现这种功能，使用 TreeMap 的迭代输出将会以元素顺序进行。LinkedHashMap 是基于元素进入集合的顺序或者被访问的先后顺序排序，TreeMap 则是基于元素的固有顺序 (由 Comparator 或者 Comparable 确定)。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;LinkedHashMap 是根据元素增加或者访问的先后顺序进行排序，而 TreeMap 则根据元素的 Key 进行排序。<br>清单 6 所示代码演示了使用 TreeMap 实现业务逻辑的排序，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"><span class="keyword">import</span> java.util.TreeMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Student</span>&gt;</span>&#123;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> String name;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">int</span> score;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Student</span><span class="params">(String name,<span class="keyword">int</span> score)</span></span>&#123;</span><br><span class="line"><span class="keyword">this</span>.name = name;</span><br><span class="line"><span class="keyword">this</span>.score = score;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="comment">//告诉 TreeMap 如何排序</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Student o)</span> </span>&#123;</span><br><span class="line"><span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line"><span class="keyword">if</span>(o.score&lt;<span class="keyword">this</span>.score)&#123;</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;<span class="keyword">else</span> <span class="keyword">if</span>(o.score&gt;<span class="keyword">this</span>.score)&#123;</span><br><span class="line"><span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line">StringBuffer sb = <span class="keyword">new</span> StringBuffer();</span><br><span class="line">sb.append(<span class="string">"name:"</span>);</span><br><span class="line">sb.append(name);</span><br><span class="line">sb.append(<span class="string">" "</span>);</span><br><span class="line">sb.append(<span class="string">"score:"</span>);</span><br><span class="line">sb.append(score);</span><br><span class="line"><span class="keyword">return</span> sb.toString();</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">TreeMap map = <span class="keyword">new</span> TreeMap();</span><br><span class="line">Student s1 = <span class="keyword">new</span> Student(<span class="string">"1"</span>,<span class="number">100</span>);</span><br><span class="line">Student s2 = <span class="keyword">new</span> Student(<span class="string">"2"</span>,<span class="number">99</span>);</span><br><span class="line">Student s3 = <span class="keyword">new</span> Student(<span class="string">"3"</span>,<span class="number">97</span>);</span><br><span class="line">Student s4 = <span class="keyword">new</span> Student(<span class="string">"4"</span>,<span class="number">91</span>);</span><br><span class="line">map.put(s1, <span class="keyword">new</span> StudentDetailInfo(s1));</span><br><span class="line">map.put(s2, <span class="keyword">new</span> StudentDetailInfo(s2));</span><br><span class="line">map.put(s3, <span class="keyword">new</span> StudentDetailInfo(s3));</span><br><span class="line">map.put(s4, <span class="keyword">new</span> StudentDetailInfo(s4));</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数位于 S4 和 S2 之间的人</span></span><br><span class="line">Map map1=((TreeMap)map).subMap(s4, s2);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数比 s1 低的人</span></span><br><span class="line">map1=((TreeMap)map).headMap(s1);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line"> </span><br><span class="line"><span class="comment">//打印分数比 s1 高的人</span></span><br><span class="line">map1=((TreeMap)map).tailMap(s1);</span><br><span class="line"><span class="keyword">for</span>(Iterator iterator=map1.keySet().iterator();iterator.hasNext();)&#123;</span><br><span class="line">Student key = (Student)iterator.next();</span><br><span class="line">System.out.println(key+<span class="string">"-&gt;"</span>+map.get(key));</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"subMap end"</span>);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StudentDetailInfo</span></span>&#123;</span><br><span class="line">Student s;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">StudentDetailInfo</span><span class="params">(Student s)</span></span>&#123;</span><br><span class="line"><span class="keyword">this</span>.s = s;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;</span><br><span class="line"><span class="keyword">return</span> s.name + <span class="string">"'s detail information"</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上示例代码运行结果如下：<img src="/uploads/2017-03-20-002.png" title="上述示例代码运行结果图">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 特点是当除了自身有对 Key 的引用外，如果此 Key 没有其他引用，那么此 Map 会自动丢弃该值。如清单 8 所示代码声明了两个 Map 对象，一个是 HashMap，一个是 WeakHashMap，同时向两个 map 中放入 A、B 两个对象，当 HashMap 删除 A，并且 A、B 都指向 Null 时，WeakHashMap 中的 A 将自动被回收掉。出现这个状况的原因是，对于 A 对象而言，当 HashMap 删除并且将 A 指向 Null 后，除了 WeakHashMap 中还保存 A 外已经没有指向 A 的指针了，所以 WeakHashMap 会自动舍弃掉 a，而对于 B 对象虽然指向了 null，但 HashMap 中还有指向 B 的指针，所以 WeakHashMap 将会保留 B 对象。<br>WeakHashMap 示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.HashMap; </span><br><span class="line"><span class="keyword">import</span> java.util.Iterator; </span><br><span class="line"><span class="keyword">import</span> java.util.Map; </span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap; </span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest</span> </span>&#123; </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123; </span><br><span class="line"> String a = <span class="keyword">new</span> String(<span class="string">"a"</span>); </span><br><span class="line"> String b = <span class="keyword">new</span> String(<span class="string">"b"</span>); </span><br><span class="line"> Map weakmap = <span class="keyword">new</span> WeakHashMap(); </span><br><span class="line"> Map map = <span class="keyword">new</span> HashMap(); </span><br><span class="line"> map.put(a, <span class="string">"aaa"</span>); </span><br><span class="line"> map.put(b, <span class="string">"bbb"</span>);</span><br><span class="line"> weakmap.put(a, <span class="string">"aaa"</span>); </span><br><span class="line"> weakmap.put(b, <span class="string">"bbb"</span>);</span><br><span class="line"> map.remove(a);</span><br><span class="line"> a=<span class="keyword">null</span>; </span><br><span class="line"> b=<span class="keyword">null</span>;</span><br><span class="line"> System.gc(); </span><br><span class="line"> Iterator i = map.entrySet().iterator(); </span><br><span class="line"> <span class="keyword">while</span> (i.hasNext()) &#123; </span><br><span class="line"> Map.Entry en = (Map.Entry)i.next(); </span><br><span class="line"> System.out.println(<span class="string">"map:"</span>+en.getKey()+<span class="string">":"</span>+en.getValue()); </span><br><span class="line"> &#125; </span><br><span class="line"> Iterator j = weakmap.entrySet().iterator(); </span><br><span class="line"> <span class="keyword">while</span> (j.hasNext()) &#123; </span><br><span class="line"> Map.Entry en = (Map.Entry)j.next(); </span><br><span class="line"> System.out.println(<span class="string">"weakmap:"</span>+en.getKey()+<span class="string">":"</span>+en.getValue()); </span><br><span class="line"> &#125; </span><br><span class="line"> &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码运行结果如下：<img src="/uploads/2017-03-20-003.png" title="WeakHashMap 示例运行结果图"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 主要通过 expungeStaleEntries 这个函数来实现移除其内部不用的条目，从而达到自动释放内存的目的。基本上只要对 WeakHashMap 的内容进行访问就会调用这个函数，从而达到清除其内部不再为外部引用的条目。但是如果预先生成了 WeakHashMap，而在 GC 以前又不曾访问该 WeakHashMap, 那不是就不能释放内存了吗？如下示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest1</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"> List&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt; maps = <span class="keyword">new</span> ArrayList&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt;();</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line"> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt; d = <span class="keyword">new</span> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;();</span><br><span class="line"> d.put(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>], <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>]);</span><br><span class="line"> maps.add(d);</span><br><span class="line"> System.gc();</span><br><span class="line"> System.err.println(i);</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不改变任何 JVM 参数的情况运行清单 10 所示代码，由于 Java 默认内存是 64M，抛出内存溢出了错误。<br>上述示例运行结果如下：<img src="/uploads/2017-03-20-004.png" title="上述示例运行结果图"/>果不其然，WeakHashMap 这个时候并没有自动帮我们释放不用的内存。清单 12 所示代码不会出现内存溢出问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.WeakHashMap;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WeakHashMapTest2</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"> List&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt; maps = <span class="keyword">new</span> ArrayList&lt;WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;&gt;();</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line"> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt; d = <span class="keyword">new</span> WeakHashMap&lt;<span class="keyword">byte</span>[][], <span class="keyword">byte</span>[][]&gt;();</span><br><span class="line"> d.put(<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>], <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1000</span>][<span class="number">1000</span>]);</span><br><span class="line"> maps.add(d);</span><br><span class="line"> System.gc();</span><br><span class="line"> System.err.println(i);</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; i; j++) &#123;</span><br><span class="line"> System.err.println(j + <span class="string">" size"</span> + maps.get(j).size());</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果发现这次测试输出正常, 不再出现内存溢出问题。<br>总的来说，WeakHashMap 并不是你什么也干它就能自动释放内部不用的对象的，而是在你访问它的内容的时候释放内部不用的对象。<br>WeakHashMap 实现弱引用，是因为它的 Entry&lt;K,V&gt;是继承自 WeakReference<K>的，<br>在 WeakHashMap$Entry&lt;K,V&gt;的类定义及构造函数里面如清单 13 所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">K</span>&gt; </span></span><br><span class="line"><span class="class"><span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="title">Entry</span>(<span class="title">K</span> <span class="title">key</span>, <span class="title">V</span> <span class="title">value</span>, <span class="title">ReferenceQueue</span>&lt;<span class="title">K</span>&gt; <span class="title">queue</span>,<span class="title">int</span> <span class="title">hash</span>, <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="title">next</span>) </span>&#123; </span><br><span class="line"><span class="keyword">super</span>(key, queue); </span><br><span class="line"><span class="keyword">this</span>.value = value; </span><br><span class="line"><span class="keyword">this</span>.hash = hash; </span><br><span class="line"><span class="keyword">this</span>.next = next; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;请注意它构造父类的语句：“super(key, queue);”，传入的是 Key，因此 Key 才是进行弱引用的，Value 是直接强引用关联在 this.value 之中。在 System.gc() 时，Key 中的 Byte 数组进行了回收，而 Value 依然保持 (Value 被强关联到 Entry 上，Entry 又关联在 Map 中，Map 关联在 ArrayList 中)。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For 循环中每次都 New 一个新的 WeakHashMap，在 Put 操作后，虽然 GC 将 WeakReference 的 Key 中的 Byte 数组回收了，并将事件通知到了 ReferenceQueue，但后续却没有相应的动作去触发 WeakHashMap 去处理 ReferenceQueue，所以 WeakReference 包装 Key 依然存在于 WeakHashMap 中，其对应的 value 也当然存在。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;那 value 是何时被清除的呢? 对清单 10 和清单 11 两个示例程序进行分析可知，清单 11 的 maps.get(j).size() 触发了 Value 的回收，那又如何触发的呢？查看 WeakHashMap 源码可知,Size 方法调用了 expungeStaleEntries 方法，该方法对 JVM 要回收的的 Entry(Quene 中) 进行遍历，并将 Entry 的 Value 置空，回收了内存。所以效果是 Key 在 GC 的时候被清除，Value 在 Key 清除后访问 WeakHashMap 被清除。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WeakHashMap 类是线程不同步的，可以使用 Collections.synchronizedMap 方法来构造同步的 WeakHashMap, 每个键对象间接地存储为一个弱引用的指示对象。因此，不管是在映射内还是在映射之外，只有在垃圾回收器清除某个键的弱引用之后，该键才会自动移除。需要注意的是，WeakHashMap 中的值对象由普通的强引用保持。因此应该小心谨慎，确保值对象不会直接或间接地强引用其自身的键，因为这会阻止键的丢弃。注意，值对象可以通过 WeakHashMap 本身间接引用其对应的键，这就是说，某个值对象可能强引用某个其他的键对象，而与该键对象相关联的值对象转而强引用第一个值对象的键。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;处理此问题的一种方法是，在插入前将值自身包装在 WeakReferences 中，如：m.put(key, new WeakReference(value))，然后，分别用 get 进行解包，该类所有“collection 视图方法”返回的迭代器均是快速失败的，在迭代器创建之后，如果从结构上对映射进行修改，除非通过迭代器自身的 Remove 或 Add 方法，其他任何时间任何方式的修改，迭代器都将抛出 ConcurrentModificationException。因此，面对并发的修改，迭代器很快就完全失败，而不是冒着在将来不确定的时间任意发生不确定行为的风险。<br>注意，我们不能确保迭代器不失败，一般来说，存在不同步的并发修改时，不可能做出任何完全确定的保证。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;综合前面的介绍和实例代码，我们可以知道，如果涉及到堆栈、队列等操作，应该考虑用 List。对于需要快速插入、删除元素等操作，应该使用 LinkedList。如果需要快速随机访问元素，应该使用 ArrayList。如果程序在单线程环境中，或者访问仅仅在一个线程中进行，考虑非同步的类，其效率较高。如果多个线程可能同时操作一个类，应该使用同步的类。要特别注意对哈希表的操作，作为 Key 的对象要正确复写 Equals 和 HashCode 方法。尽量返回接口而非实际的类型，如返回 List 而非 ArrayList，这样如果以后需要将 ArrayList 换成 LinkedList 时，客户端代码不用改变，这就是针对抽象进行编程思想。<br>本文只是针对应用层面的分享，后续文章会针对具体源代码级别的实现进行深入介绍，也会对具体实现所基于的算法进行深入介绍，请有需要的读者关注后续文章。非常感谢作者的精心分享【<a href="https://www.ibm.com/developerworks/cn/java/j-lo-set-operation/index.html" target="_blank" rel="noopener"><font color=red>源地址</font></a>】</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/03/18/Quartz%E4%B8%AD%E5%85%B3%E4%BA%8EcronExpression%E7%9A%84%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/03/18/Quartz%E4%B8%AD%E5%85%B3%E4%BA%8EcronExpression%E7%9A%84%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">Quartz中关于cronExpression的使用过程</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2016-03-18 11:20:40" itemprop="dateCreated datePublished" datetime="2016-03-18T11:20:40+08:00">2016-03-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb第三方框架</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="随笔"><a href="#随笔" class="headerlink" title="随笔"></a>随笔</h2><p>最近，由于项目中使用到定时任务调度的程序，且调度器使用的是公认的Quartz。在此记录下期中使用到的CronExpression表达式。<br>其中比较重要的是如何理解表达式中各个位置的含义以及各个位置中能用到的符号。</p>
+<p>表达式：A-B-C-D-E-F-G</p>
+<p>解释：上述表达中为读者可以看得明白使用“-”代表空格。</p>
+<p>A：表示的是执行时间中的秒 取值范围是{0-59}，可以使用的特殊符号有{ , - * / }<br>B：表示的是执行时间中的分 取值范围是{0-59}，可以使用的特殊符号有{ , - * / }<br>C：表示的是执行时间中的时 取值范围是{0-23}，可以使用的特殊符号有{ , - * / }<br>D：表示的是执行时间中的日 取值范围是{1-31}，可以使用的特殊符号有{ , - * / L W C }<br>E：表示的是执行时间中的月 取值范围是{1-12或JAN-DEC}，可以使用的特殊符号有{ , - * / }<br>F：表示的是执行时间中的星期 取值范围是{1-7或SUN-SAT}，可以使用的特殊符号有{ , - * / L C # }<br>G：表示的是执行时间中的年 取值范围是{留空或1970-2099}，可以使用的特殊符号有{ , - * / }</p>
+<p>特殊符号解释：<br>“* ”字符被用来指定所有的值。如：“*“在分钟的字段域里表示“每分钟”。<br>“-”字符被用来指定一个范围。如：“10-12”在小时域意味着“10点、11点、12点”。<br>“/” 字符被用来指定每隔多久。如：“2/15”在分钟域意味着”重2开始每隔15分钟”。<br>“,”字符被用来指定另外的值。如：“MON,WED,FRI”在星期域里表示”星期一、星期三、星期五”.<br>“?”字符只在日期域和星期域中使用。它被用来指定“非明确的值”。当你需要通过在这两个域中的一个来指定一些东西的时候，它是有用的。看下面的例子你就会明白。<br>“L”字符指定在月或者星期中的某天（最后一天）。即“Last ”的缩写。但是在星期和月中“Ｌ”表示不同的意思，如：在月子段中“L”指月份的最后一天-1月31日，2月28日，如果在星期字段中则简单的表示为“7”或者“SAT”。如果在星期字段中在某个value值得后面，则表示“某月的最后一个星期value”,如“6L”表示某月的最后一个星期五。<br>“W”字符只能用在月份字段中，该字段指定了离指定日期最近的那个星期日。<br>“#”字符只能用在星期字段，该字段指定了第几个星期value在某月中</p>
+<p>例子：<br>“0 0 12 * * ?” 每天中午12点触发<br>“0 0/5 14,18 * * ?” 在每天下午2点到2:55期间和下午6点到6:55期间的每5分钟触发<br>“0 10,44 14 ? 3 WED” 每年三月的星期三的下午2:10和2:44触发</p>
+<p>More info: <a href="http://www.quartz-scheduler.org/" target="_blank" rel="noopener">Quartz</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/12/29/%E5%85%B3%E4%BA%8EPOI%E5%AF%BC%E5%87%BAexcel%E8%BF%87%E7%A8%8B%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">关于POI导出excel过程总结</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2015-12-29 15:22:42" itemprop="dateCreated datePublished" datetime="2015-12-29T15:22:42+08:00">2015-12-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaWeb%E7%AC%AC%E4%B8%89%E6%96%B9%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaWeb第三方框架</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="随笔"><a href="#随笔" class="headerlink" title="随笔"></a>随笔</h2><p>今天在维护项目过程中拿到一份关于导出员工薪酬数据的需求，要求使用Excel。查阅了之前导出的功能，都是使用服务器存储模板，然后按照指定路径读取并将查询到的数据在写入到模板中，过程稍稍微有些繁琐（同时后期维护的话也要修改模板）就直接使用POI创建Excel了。<br>大致在开发之前整理了一下必要的信息：</p>
+<p>1：创建要使用的Excel对象</p>
+<p>2：创建导出文档分三个部分（标题，列标题，数据主体）</p>
+<p>标题：使用标题的样式以及命名规则<br>列标题：使用列标题的样式以及命名规则<br>数据主体：使用数据主体的样式以及命名规则</p>
+<p>具体的逻辑如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">HSSFWorkbook workbook = <span class="keyword">new</span> HSSFWorkbook();<span class="comment">//创建Excel主体  </span></span><br><span class="line">Sheet sheet = workbook.createSheet(sheet_name);<span class="comment">//创建工作空间  </span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">	sheet.setColumnWidth(i, title_names[i].getBytes().length * <span class="number">256</span> + offset * <span class="number">256</span>);<span class="comment">//设置每列的宽度  </span></span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//开始创建表头标题样式  </span></span><br><span class="line">CellStyle cellStyle_title_row = workbook.createCellStyle();  </span><br><span class="line">Font font_title_row = workbook.createFont();  </span><br><span class="line">font_title_row.setFontHeightInPoints(height_title_row_font_size); <span class="comment">//字体大小  </span></span><br><span class="line">font_title_row.setFontName(<span class="string">"宋体"</span>);  </span><br><span class="line">font_title_row.setBoldweight(Font.BOLDWEIGHT_BOLD); <span class="comment">//粗体  </span></span><br><span class="line">font_title_row.setColor(HSSFColor.BLACK.index);    <span class="comment">//黑字  </span></span><br><span class="line">cellStyle_title_row.setAlignment(HSSFCellStyle.ALIGN_CENTER); <span class="comment">// 居中  </span></span><br><span class="line">cellStyle_title_row.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);<span class="comment">// 垂直居中  </span></span><br><span class="line">cellStyle_title_row.setFillForegroundColor(IndexedColors.YELLOW.getIndex());  </span><br><span class="line">cellStyle_title_row.setFillPattern(CellStyle.SOLID_FOREGROUND);  </span><br><span class="line">cellStyle_title_row.setFont(font_title_row);  </span><br><span class="line">cellStyle_title_row.setBorderBottom(height_title_row_border_size); <span class="comment">//设置边框线宽度  </span></span><br><span class="line">cellStyle_title_row.setBorderRight(height_title_row_border_size);  </span><br><span class="line">cellStyle_title_row.setBottomBorderColor(IndexedColors.BLACK.getIndex());<span class="comment">//设置边框线颜色  </span></span><br><span class="line"><span class="comment">//开始创建并表体标题样式  </span></span><br><span class="line">CellStyle cellStyle_title_body = workbook.createCellStyle();  </span><br><span class="line">Font font_title_body = workbook.createFont();  </span><br><span class="line">font_title_body.setFontHeightInPoints(height_title_body_font_size); <span class="comment">//字体大小  </span></span><br><span class="line">font_title_body.setFontName(<span class="string">"宋体"</span>);  </span><br><span class="line">font_title_body.setBoldweight(Font.BOLDWEIGHT_BOLD); <span class="comment">//粗体  </span></span><br><span class="line">font_title_body.setColor(HSSFColor.BLACK.index);    <span class="comment">//黑字  </span></span><br><span class="line">cellStyle_title_body.setAlignment(HSSFCellStyle.ALIGN_CENTER);  </span><br><span class="line">cellStyle_title_body.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);<span class="comment">// 垂直居中  </span></span><br><span class="line">cellStyle_title_body.setFont(font_title_body);  </span><br><span class="line">cellStyle_title_body.setBorderBottom(height_title_body_border_size); <span class="comment">//设置边框线宽度  </span></span><br><span class="line">cellStyle_title_body.setBorderRight(height_title_body_border_size);  </span><br><span class="line">cellStyle_title_body.setBottomBorderColor(IndexedColors.BLACK.getIndex());<span class="comment">//设置边框线颜色  </span></span><br><span class="line"><span class="comment">//开始创建表体标题并设置其样式  </span></span><br><span class="line">Row row_0 = sheet.createRow(<span class="number">0</span>);<span class="comment">//表体标题  </span></span><br><span class="line">row_0.setHeightInPoints(height_title_body);  </span><br><span class="line">sheet.addMergedRegion(<span class="keyword">new</span> CellRangeAddress(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, title_names.length-<span class="number">1</span>)); <span class="comment">//合并单元格  </span></span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">        Cell cell = row_0.createCell(i);  </span><br><span class="line">        <span class="keyword">if</span>(i==<span class="number">0</span>)&#123;  </span><br><span class="line">            cell.setCellValue(body_title_name);  </span><br><span class="line">        &#125;  </span><br><span class="line">        cell.setCellStyle(cellStyle_title_body);  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="comment">//开始创建表头标题并设置其样式  </span></span><br><span class="line">Row row_1 = sheet.createRow(<span class="number">1</span>);<span class="comment">//表头标题  </span></span><br><span class="line">row_1.setHeightInPoints(height_title_row);  </span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;title_names.length;i++)&#123;  </span><br><span class="line">    Cell cell = row_1.createCell(i);  </span><br><span class="line">    cell.setCellValue(title_names[i]);  </span><br><span class="line">    cell.setCellStyle(cellStyle_title_row);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//开始查询数据  </span></span><br><span class="line">HttpSession session = request.getSession();  </span><br><span class="line">StringBuffer sbsql = <span class="keyword">this</span>.getPsnCostSql(vo, session);  </span><br><span class="line">List&lt;PsnCostBVo&gt; list = comDao.queryBySQL(sbsql.toString(), PsnCostBVo<span class="class">.<span class="keyword">class</span>)</span>;  </span><br><span class="line">  </span><br><span class="line">HSSFSheet sheet = workbook.getSheetAt(<span class="number">0</span>);  </span><br><span class="line">HSSFDataFormat format= workbook.createDataFormat();  </span><br><span class="line">CellStyle cellstyle_money = workbook.createCellStyle();  </span><br><span class="line">cellstyle_money.setDataFormat(format.getFormat(<span class="string">"#,##0.00"</span>));<span class="comment">//金额格式  </span></span><br><span class="line">CellStyle cellstyle_text = workbook.createCellStyle();  </span><br><span class="line">cellstyle_text.setDataFormat(format.getFormat(<span class="string">"@"</span>));<span class="comment">//文本格式  </span></span><br><span class="line">sheet.createRow(<span class="number">2</span>);  </span><br><span class="line">Map&lt;String, Object&gt; map = <span class="keyword">null</span>;  </span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;list.size();i++)&#123;  </span><br><span class="line">    map= Constant.ConvertObjToMap(list.get(i));  </span><br><span class="line">    HSSFRow row = sheet.createRow(i+<span class="number">2</span>);  </span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;title_names.length;j++)&#123;  </span><br><span class="line">        HSSFCell cell = row.createCell(j);  </span><br><span class="line">        <span class="keyword">if</span> (j==<span class="number">6</span>)&#123;  </span><br><span class="line">            cell.setCellStyle(cellstyle_text);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_STRING);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue(((String)map.get(title_fileds[j])).equals(<span class="string">"0"</span>) ? <span class="string">"已发放"</span>:<span class="string">"未发放"</span>);  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(j&lt;<span class="number">7</span>)&#123;  </span><br><span class="line">            cell.setCellStyle(cellstyle_text);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_STRING);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue((String)map.get(title_fileds[j]));  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            &lt;span style="white-space:pre"&gt;        &lt;/span&gt;cell.setCellStyle(cellstyle_money);  </span><br><span class="line">            cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);  </span><br><span class="line">            <span class="keyword">if</span>(map.get(title_fileds[j]) != <span class="keyword">null</span> &amp;&amp; !(<span class="string">"null"</span>).equals(map.get(title_fileds[j])))&#123;  </span><br><span class="line">                cell.setCellValue((Double)map.get(title_fileds[j]));  </span><br><span class="line">            &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据格式总结"><a href="#数据格式总结" class="headerlink" title="数据格式总结"></a>数据格式总结</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cellstyle.setDataFormat(format.getFormat(<span class="string">"￥#,##0.00"</span>)); <span class="comment">//金额格式</span></span><br><span class="line">cellstyle.setDataFormat(format.getFormat(<span class="string">"@"</span>)); <span class="comment">//文本格式  </span></span><br><span class="line">cellStyle.setDataFormat(format.getFormat(<span class="string">"yyyy年m月d日"</span>));</span><br><span class="line">cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00"</span>)); <span class="comment">//两位小数格式  </span></span><br><span class="line">cellStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00%"</span>)); <span class="comment">//百分比格式  </span></span><br><span class="line">cellStyle.setDataFormat( HSSFDataFormat.getBuiltinFormat(<span class="string">"0.00E+00"</span>)); <span class="comment">//科学计数法格式  </span></span><br><span class="line"><span class="comment">//这里与上面有所不同，用的是HSSFDataFormat.getBuiltinFormat()方法，因为0.00是Excel内嵌的格式，Excel内嵌格式列表大家可以在Excel文件中查看。  </span></span><br><span class="line">cellStyle.setDataFormat(format.getFormat(<span class="string">"[DbNum2][$-804]0"</span>)); <span class="comment">//中文大写格式</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/08/14/ThreadLocal%20%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
+      <meta itemprop="name" content="maxsoft">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="MaxSoft">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/08/14/ThreadLocal%20%E7%9A%84%E4%BD%BF%E7%94%A8%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">ThreadLocal 的使用原理</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表时间</span>
+
+              <time title="创建时间：2015-08-14 14:21:52" itemprop="dateCreated datePublished" datetime="2015-08-14T14:21:52+08:00">2015-08-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ThreadLocal 为解决多线程程序的并发问题提供了一种新的思路。使用这个工具类可以很简洁地编写出优美的多线程程序， ThreadLocal 并不是一个 Thread ，而是 Thread 的局部变量。一个静态（static）的 ThreadLocal ，每个线程只能 initialValue，get ，set  或 remove 自己的变量，而不会影响其他线程的变量。</p>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在 ThreadLocal 源码中我们可以看到有如下几个常用的方法：</p>
+<p>1· ThreadLocal.get()：获取ThreadLocal中当前线程共享变量的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//这里是关键，获取当前的线程实例</span></span><br><span class="line">    Thread t = Thread.currentThread(); </span><br><span class="line">    <span class="comment">//在获取的线程实例中获取线程变量的Map，具体可以查阅 Thread 源码（ThreadLocal.ThreadLocalMap threadLocals = null;）;</span></span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123; <span class="comment">//进行对获取到的Map校验，如果为空则进行初始化否则在已有的Map通过当前的线程对象进行获取</span></span><br><span class="line">        ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> (T)e.value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> setInitialValue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>2· ThreadLocal.set(T value)：设置ThreadLocal中当前线程共享变量的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread(); <span class="comment">//获取当前的线程对象</span></span><br><span class="line">    ThreadLocalMap map = getMap(t); <span class="comment">//获取当前线程的变量的Map</span></span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value); <span class="comment">// 通过当前线程对象进行在线程变量map中设置值</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value); <span class="comment">// 创建并设置</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>3· ThreadLocal.remove()：移除ThreadLocal中当前线程共享变量的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123; <span class="comment">//移除当前线程的变量Map中对应的值</span></span><br><span class="line">    ThreadLocalMap m = getMap(Thread.currentThread());</span><br><span class="line">    <span class="keyword">if</span> (m != <span class="keyword">null</span>)</span><br><span class="line">        m.remove(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>4· ThreadLocal.initialValue()：ThreadLocal没有被当前线程赋值时或当前线程刚调用remove方法后调用get方法，返回此方法值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 该方法一般情况下会被重写，并按照不同的需求返回不同的初始值</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> T <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ThreadLocal 在很多框架中都有它的影子，例如 Spring MVC 中的 RequestContextHolder 就是使用了 ThreadLocal 来存储每个 Web 请求所属线程的参数对象。由于 ThreadLocal 是存储每一个线程的参数对象。</p>
+<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接下来我们通过对 ThreadLocal 的具体示例来进行进一步的探究其背后的运行逻辑。 首先，我们在 ThreadLocal 源码中可以看到有这样一个使用样例，主要是模拟一个”线程ID”的生成过程，具体样例源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.threadlocal;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"> <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadId</span> </span>&#123;</span><br><span class="line">     <span class="comment">// 这里通过一个原子整数进行对线程提供唯一的值</span></span><br><span class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> AtomicInteger nextId = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">     <span class="comment">//通过 ThreadLocal 来维护每个线程的线程 ID，这里最有趣的还是使用了privte static </span></span><br><span class="line">     <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Integer&gt; threadId =</span><br><span class="line">         <span class="keyword">new</span> ThreadLocal&lt;Integer&gt;() &#123;</span><br><span class="line">             <span class="meta">@Override</span> </span><br><span class="line">	     <span class="function"><span class="keyword">protected</span> Integer <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                 <span class="keyword">return</span> nextId.getAndIncrement();</span><br><span class="line">	     &#125;</span><br><span class="line">     &#125;;</span><br><span class="line"></span><br><span class="line">     <span class="comment">//这里就是获取当前线程的 ID</span></span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">         <span class="keyword">return</span> threadId.get();</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>测试代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.threadlocal;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestThreadLocal</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test_01</span><span class="params">()</span></span>&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">final</span> Set&lt;Integer&gt; set = <span class="keyword">new</span> HashSet&lt;Integer&gt;();</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;<span class="number">5</span>; i++)&#123;</span><br><span class="line">			<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">				<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">					System.out.println(Thread.currentThread().getName() + <span class="string">"-----------&gt;"</span> + ThreadId.get());</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;).start();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">			System.out.println(set.size());</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下图：<img src='/uploads/2015-08-14-001.png' title="样例运行结果" />在上述示例中我仅使用了 ThreadLocal 的初始化方法（initialValue）和获取值的方法（get）。而在初始化值的方法中最关键的就是返回的值使用了一个原子计数器，而非固定的常量。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/23/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%8610/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1280,502 +1767,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/06/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%862/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/06/06/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%862/" class="post-title-link" itemprop="url">JavaScript基础知识整理<二>-笔记</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-06-06 20:23:02" itemprop="dateCreated datePublished" datetime="2015-06-06T20:23:02+08:00">2015-06-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;昨天主要整理了 JavaScript 语言的历史渊源，以及其相关的组织部分。从今天开始主要总结一些 JavaScript 核心 ECMAScript 基础的语法知识，其实 ECMAScript 的语法结构和 Java 、C++ 等有许多相似之处。因为 ECMAScript 语言的设计者在当初设计该语言的时候借鉴了这些语言的相关语法结构。所以学习过 Java、C++ 的同学都比较相对容易的掌握其语法结构，笔者就是其中之一 O<sub>S</sub>O ……</p>
-<h2 id="语法结构"><a href="#语法结构" class="headerlink" title="语法结构"></a>语法结构</h2><p>1&gt; <font color=red>区分大小写</font>：和 Java 语言一样，变量、函数名、运算符以及其他一切内容都是区分大小写的；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name = <span class="string">"MaxSoft"</span>;</span><br><span class="line"><span class="keyword">var</span> age = <span class="number">25</span>;</span><br><span class="line"><span class="keyword">var</span> sex = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">var</span> birthday = <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="string">'1992-03-13'</span>);</span><br></pre></td></tr></table></figure>
-<p>2&gt; <font color=red>变量为弱类型</font>：和 Java 、C++ 等语言不同，ECMAScript 的变量没有特定的数据类型。定义变量时只用 var 运算符，可以将变量初始化为任意值。因此，在程序运行过程中可以随时改变变量所存储的数据类型；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doAction</span>(<span class="params">flag</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> obj = &#123;&#125;;</span><br><span class="line">	<span class="keyword">if</span>(flag==<span class="number">1</span>)&#123;</span><br><span class="line">		obj = &#123;<span class="attr">name</span>:<span class="string">'MaxSoft'</span>,<span class="attr">age</span>:<span class="number">24</span>,<span class="attr">sex</span>:<span class="literal">false</span>&#125;</span><br><span class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(flag ==<span class="number">2</span>)&#123;</span><br><span class="line">		obj = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">"系统异常"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		obj();</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		obj = <span class="string">"参数无效"</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="keyword">typeof</span>(obj));</span><br><span class="line">	<span class="built_in">console</span>.log(obj);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上代码执行结果如下图：<img src='/uploads/dynamic_type.png'><br>3&gt; <font color=red>行结束分号可有可无</font>：Java、C++ 等都要求每行代码以分号（;）结束才符合语法，而 ECMAScript 语法结构无该要求。出于 ECMAScript 程序代码的可读性与后期的可维护性，建议在编写 ECMAScript 程序时，尽量在该增加行结束标识的时候都加上结束标识符分号（;），养成一个良好的代码编写习惯。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name=<span class="string">"MaxSoft"</span></span><br><span class="line"><span class="keyword">var</span> age=<span class="number">24</span>;</span><br></pre></td></tr></table></figure>
-<p>4&gt; <font color=red>注释</font>：和 Java 语言的注释类似，有俩种：一种是单行注释（// 注释内容）； 一种是多行注释（/<em>注释内容</em>/）；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> name=<span class="string">"MaxSoft"</span>; <span class="comment">// 声明姓名字段并初始化内容</span></span><br><span class="line"><span class="comment">/*获取Name字段的值*/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getName</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">return</span> name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>5&gt; <font color=red>括号表示代码块</font>：从 Java 中借鉴的又一个概念是代码块。代码块表示一系列应该按顺序执行的语句，这些语句被封装在左花括号（{）和右花括号（}）之间；</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">doLogin</span>(<span class="params">data</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">typeof</span>(data)==<span class="string">'undefined'</span> || data == <span class="literal">null</span>)&#123;</span><br><span class="line">		<span class="built_in">console</span>.error(<span class="string">'表单数据为空，请检查'</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>( <span class="keyword">typeof</span>(data)==<span class="string">'object'</span> )&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">'解析登录表单数据'</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">'数据类型有误....'</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="代码实例"><a href="#代码实例" class="headerlink" title="代码实例"></a>代码实例</h2><p>通过以下代码片段我们就可以更加直观的了解 ECMAScript 的语法结构。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span>(<span class="params">name</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">var</span> msg = <span class="string">"你好，"</span>; <span class="comment">// 申明字符串</span></span><br><span class="line">	<span class="keyword">var</span> age = <span class="number">24</span>; <span class="comment">//申明数字类型变量</span></span><br><span class="line">	alert(<span class="string">"姓名："</span>+name + <span class="string">"; 年龄："</span> + age);</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">"姓名："</span>+name + <span class="string">"; 年龄："</span> + age);</span><br><span class="line">	<span class="keyword">return</span> msg + name;</span><br><span class="line">&#125;</span><br><span class="line">hello(<span class="string">'MaxSoft'</span>);</span><br></pre></td></tr></table></figure>
-<p>以上代码执行后，通过 hello(‘MaxSoft’); 调用执行，结果如下：<br>1&gt; 首先会弹出一个弹框<img src='/uploads/hello_res.png'>2&gt; 在浏览器的控制台会输出 ：姓名：MaxSoft; 年龄：24<br>3&gt; 方法的返回值为：”你好，MaxSoft”</p>
-<p><font color=red><b>注意：</b>以上代码的执行环境为 Google Chrome 浏览器；</font></p>
-<p>参阅 <a href="http://www.w3school.com.cn/js/pro_js_implement.asp" target="_blank" rel="noopener">W3C School</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/06/05/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%861/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/06/05/JavaScript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%95%B4%E7%90%861/" class="post-title-link" itemprop="url">JavaScript基础知识整理<一>-笔记</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-06-05 22:23:02" itemprop="dateCreated datePublished" datetime="2015-06-05T22:23:02+08:00">2015-06-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
-                    <span itemprop="name">JavaScript</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;从大学开始学习Web编程到现在对JavaScript这门神奇的语言始终是用的时候拿来用，不用的时候也不去总结学习，用唐代李节《饯潭州疏言禅师诣太原求藏经诗序》中的一句名句总结就是“知其然而不知其所以然”。最近的[外包管理系统]项目基本都在使用其来开发Web页面效果以及用户的交互（有的功能需求确实会觉得Hold不住），正好借今天是周五的时间，（明天可以睡个懒觉A<sub>W</sub>A）来系统的做一个整理总结，以备更深层次的学习和使用。</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JavaScript最初由 Netscape 和 Sun公司共同推出的在浏览器和服务器（原名叫 LiveWire）端使用的脚本语言。在1997 年，JavaScript 1.1 作为一个草案提交给欧洲计算机制造商协会（ECMA）。第 39 技术委员会（TC39）被委派来“标准化一个通用、跨平台、中立于厂商的脚本语言的语法和语义”（ <a href="http://www.ecma-international.org/memento/TC39.htm" target="_blank" rel="noopener">http://www.ecma-international.org/memento/TC39.htm</a> ）。由来自 Netscape、Sun、微软、Borland 和其他一些对脚本编程感兴趣的公司的程序员组成的 TC39 锤炼出了 ECMA-262，该标准定义了名为 ECMAScript 的全新脚本语言。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在接下来的几年里，国际标准化组织及国际电工委员会（ISO/IEC）也采纳 ECMAScript 作为标准（ISO/IEC-16262）。从此，Web 浏览器就开始努力（虽然有着不同的程度的成功和失败）将 ECMAScript 作为 JavaScript 实现的基础。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;最终，JavaScript的实现是以ECMAScript（语法，对象）、浏览器对象模型（BOM）、文档对象模型（DOM）组合而成，如下图所示：<br><img src='/uploads/JavaScript.gif'></p>
-<p> 1&gt; <font color=red>ECMAScript</font> ：描述了该语言的语法、类型、语句、关键字、保留字、运算符、基本对象等；<br> 2&gt; <font color=green>文档对象模型（DOM）</font>：描述了处理网页内容的方法和接口，例如：视图、事件、样式、遍历和范围、可缩放矢量语言（SVG）、数字标记语言（MathML）、同步多媒体集成语言（SMIL）等；<br> 3&gt; <font color=blue>浏览器对象模型（BOM）</font>：描述了与浏览器进行交互的方法和接口，例如：弹出新的浏览器窗口，移动、关闭浏览器窗口以及调整窗口大小，提供 Web 浏览器详细信息的定位对象，提供用户屏幕分辨率详细信息的屏幕对象，对 cookie 的支持等；</p>
-<h2 id="ECMAScript"><a href="#ECMAScript" class="headerlink" title="ECMAScript"></a>ECMAScript</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ECMAScript 并不与任何具体浏览器进行绑定，浏览器对于 ECMAScript 而言只是一个宿主环境。ECMAScript 是一种描述，它定义了各种脚本语言的所有属性、方法和对象。其他脚本语言可以实现 ECMAScript 来作为功能的核心基准，JavaScript 就是这样以 ECMAScript 为核心（语法，类型等）。<br><img src='/uploads/EMCAScript.gif'> 其中每个浏览器都有其自己的 ECMAScript 接口的实现，然后在这个实现的基础之上又进行了个性化的扩展。当然还有其他实现并扩展了 ECMAScript 的语言，例如 Windows 脚本宿主（Windows Scripting Host, WSH）、Macromedia 在 Flash 和 Director MX 中的 ActionScript，以及 Nombas ScriptEase。</p>
-<h2 id="DOM（文档对象模型）"><a href="#DOM（文档对象模型）" class="headerlink" title="DOM（文档对象模型）"></a>DOM（文档对象模型）</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DOM（文档对象模型）是 HTML 和 XML 的应用程序接口（API）。DOM 将把整个页面规划成由节点层级构成的文档。HTML 或 XML 页面的每个部分都是一个节点的衍生物。如下：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span> HTML Page <span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">p</span>&gt;</span>hello MaxSoft<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>将以上代码用DOM绘制成一个节点层级图：<img src="/uploads/domtree.jpg">DOM 通过创建树来表示文档，从而使开发者对文档的内容和结构具有相对较容易的控制程度。用 DOM API 可以进行删除、添加和替换DOM的各个节点。<br>HTML DOM 教程移步： <a href="http://www.w3school.com.cn/htmldom/index.asp" target="_blank" rel="noopener">HTML DOM</a><br>XML DOM 教程移步： <a href="http://www.w3school.com.cn/xmldom/index.asp" target="_blank" rel="noopener">XML DOM</a></p>
-<h2 id="BOM（浏览器对象模型）"><a href="#BOM（浏览器对象模型）" class="headerlink" title="BOM（浏览器对象模型）"></a>BOM（浏览器对象模型）</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BOM（浏览器对象模型），可以对浏览器窗口进行访问和操作。使用 BOM，开发者可以移动窗口、改变状态栏中的文本以及执行其他与页面内容不直接相关的动作。BOM只是 JavaScript 的一个部分，没有任何相关的标准。BOM 主要处理浏览器窗口和框架，不过通常浏览器特定的 JavaScript 扩展都被看做 BOM 的一部分。由于没有相关的 BOM 标准，每种浏览器都有自己的 BOM 实现。<br>每个浏览器的实现都离不开以下几个对象：<br>1&gt;<font color=red> Window </font>：该对象表示浏览器中打开的窗口。如果文档包含框架（frame 或 iframe 标签），浏览器会为 HTML 文档创建一个 window 对象，并为每个框架创建一个额外的 window 对象。<br>2&gt;<font color=red> Navigator </font>：该对象包含的属性描述了正在使用的浏览器。可以使用这些属性进行平台专用的配置。Navigator 对象的实例是唯一的，可以用 Window 对象的 navigator 属性来引用它。<br>3&gt;<font color=red> Screen </font>：每个 Window 对象的 screen 属性都引用一个 Screen 对象。Screen 对象中存放着有关显示浏览器屏幕的信息。JavaScript 程序将利用这些信息来优化它们的输出，以达到用户的显示要求。<br>4&gt;<font color=red> History </font>：该对象最初设计来表示窗口的浏览历史。但出于隐私方面的原因，History 对象不再允许脚本访问已经访问过的实际 URL。唯一保持使用的功能只有 back()、forward() 和 go() 方法。<br>5&gt;<font color=red> Location </font>：该对象存储在 Window 对象的 Location 属性中，表示那个窗口中当前显示的文档的 Web 地址。它的 href 属性存放的是文档的完整 URL，其他属性则分别描述了 URL 的各个部分。</p>
-<p>参阅 <a href="http://www.w3school.com.cn/js/pro_js_implement.asp" target="_blank" rel="noopener">W3C School</a><br>嚓嚓，已经是凌晨2点半了，睡觉 …… 抽空再继续……</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/04/03/%E6%B5%85%E6%9E%90ExecutorService%E4%B8%AD%E7%9A%84submit%E4%B8%8Eexecute%E6%96%B9%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/04/03/%E6%B5%85%E6%9E%90ExecutorService%E4%B8%AD%E7%9A%84submit%E4%B8%8Eexecute%E6%96%B9%E6%B3%95/" class="post-title-link" itemprop="url">浅析ExecutorService中的submit与execute方法</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-04-03 21:11:16" itemprop="dateCreated datePublished" datetime="2015-04-03T21:11:16+08:00">2015-04-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>879</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 昨天的代码中用到了一个线程处理器（ExecutorService），主要是用于发送邮件的一个业务场景。看到 ExecutorService 中提供的 submit() 和 execute() 方法进行了一下简单的源码分析。</p>
-<h2 id="submit-方法"><a href="#submit-方法" class="headerlink" title="submit() 方法"></a>submit() 方法</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 该方法的参数有所不同，源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Callable&lt;T&gt; task)</span></span>;</span><br><span class="line"></span><br><span class="line">&lt;T&gt; <span class="function">Future&lt;T&gt; <span class="title">submit</span><span class="params">(Runnable task, T result)</span></span>;</span><br><span class="line"></span><br><span class="line">Future&lt;?&gt; submit(Runnable task);</span><br></pre></td></tr></table></figure>
-<p>通过上述源码我们可以看到在 submit(…) 方法中既可以接收 Callable 的实现类，也可以接收 Runnable 的实现类，同时还返回执行任务（ Callable , Runnable ）的结果。</p>
-<h2 id="execute-方法"><a href="#execute-方法" class="headerlink" title="execute() 方法"></a>execute() 方法</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 该方法与上述的 submit(…) 有所不同，只能接收Runnable 实现类参数，源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span></span>;</span><br></pre></td></tr></table></figure>
-<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MaxSoftTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Test_001</span><span class="params">()</span></span>&#123;</span><br><span class="line">        ExecutorService executorService = Executors.newSingleThreadExecutor();</span><br><span class="line">        executorService.execute(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">"-------------------------&gt;开始执行任务！"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/03/27/JUC%E5%8C%85%E4%B9%8B%20LinkedBlockingQueue%20%E8%A7%A3%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/03/27/JUC%E5%8C%85%E4%B9%8B%20LinkedBlockingQueue%20%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">JUC包之 LinkedBlockingQueue 解析</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-03-27 20:17:16" itemprop="dateCreated datePublished" datetime="2015-03-27T20:17:16+08:00">2015-03-27</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>8.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本文主要接上一篇继续介绍 Java 源码中 JUC 包中的链表阻塞队列（ LinkedBlockingQueue ） 。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LinkedBlockingQueue 是一个基础链表的阻塞式可选的有界队列。该队列的元素遵循FIFO（先进先出）原则。 队列头是最长时间在队列中的元素。 队列的尾部是最短时间在队列中的元素。 新元素插入到队列尾部，队列检索操作获取队列头部的元素。 链接队列通常比基于阵列的队列具有更高的吞吐量，但在大多数并发应用程序中的可预测性能较差。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;该链接阻塞式队列的大小默认是 Integer.MAX_VALUE ，其有参构造函数也可以指定容量的大小。</p>
-<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LinkedBlockingQueue 和 ArrayBlockingQueue 一样，都继承自 AbstractQueue ，以及实现了 BlockingQueue 、Serializable 接口。通过 LinkedBlockingQueue 源码我们可以很直观的看到其底层的数据存储是以链表的形式进行的。部分源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedBlockingQueue</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractQueue</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt;, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">6903933977591709194L</span>;</span><br><span class="line">    <span class="comment">// 省略部分代码</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/*和Linked List 的实现一样，都是通过该静态类进行链表的阻塞式队列元素的存储*/</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">        E item; <span class="comment">//当前节点本省</span></span><br><span class="line"></span><br><span class="line">        Node&lt;E&gt; next; <span class="comment">//当前节点的下一个节点</span></span><br><span class="line"></span><br><span class="line">        Node(E x) &#123; item = x; &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> capacity; </span><br><span class="line">    <span class="comment">// 链表阻塞式队列的最大容量，可以通过构造函数进行手动指定或使用默认值（Integer.MAX_VALUE）</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>); </span><br><span class="line">    <span class="comment">// 当前链表阻塞队列的元素数量。注意：这里和 ArrayBlockingQueue 有很大的区别。</span></span><br><span class="line">    <span class="comment">// 因为在 ArrayBlockingQueue 中使用了一个 int 变量来记录 ArrayBlockingQueue </span></span><br><span class="line">    <span class="comment">// 数据数量，而对数据的操作（插入和取出）使用了同一个锁对象，所以在操作上不</span></span><br><span class="line">    <span class="comment">// 会出现线程的并发访问。而 LinkedBlockingQueue 中在操作数据（插入和取出）</span></span><br><span class="line">    <span class="comment">// 使用了不同的锁，所以在这个过程中会出现对 ArrayBlockingQueue 数据数量的并</span></span><br><span class="line">    <span class="comment">// 发修改，因此，LinkedBlockingQueue 使用了一个原子计数器来避免并发修改的线程安全问题；</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> Node&lt;E&gt; head; <span class="comment">// 链表头，其元素总是为 null 即 head.item = null;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> Node&lt;E&gt; last; <span class="comment">//链表尾，其下一个元素总是为 null 即 last.next = null;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock takeLock = <span class="keyword">new</span> ReentrantLock();<span class="comment">// 获取数据的锁对象</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty = takeLock.newCondition(); <span class="comment">//通过该 notEmpty 让从空队列中获取元素的线程处于等待状态</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock putLock = <span class="keyword">new</span> ReentrantLock();<span class="comment">// 插入数据的锁对象</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition notFull = putLock.newCondition(); <span class="comment">//通过该 notFull 让从满队列（容量等于capacity）中插入元素的线程处于等待状态</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略部分代码</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinkedBlockingQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinkedBlockingQueue</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (capacity &lt;= <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">        <span class="keyword">this</span>.capacity = capacity;</span><br><span class="line">        last = head = <span class="keyword">new</span> Node&lt;E&gt;(<span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinkedBlockingQueue</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(Integer.MAX_VALUE);</span><br><span class="line">        <span class="keyword">final</span> ReentrantLock putLock = <span class="keyword">this</span>.putLock;</span><br><span class="line">        putLock.lock(); <span class="comment">// Never contended, but necessary for visibility</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> n = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (E e : c) &#123;</span><br><span class="line">                <span class="keyword">if</span> (e == <span class="keyword">null</span>)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">                <span class="keyword">if</span> (n == capacity)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Queue full"</span>);</span><br><span class="line">                enqueue(<span class="keyword">new</span> Node&lt;E&gt;(e));</span><br><span class="line">                ++n;</span><br><span class="line">            &#125;</span><br><span class="line">            count.set(n);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            putLock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 省略部分代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>通过上述的部分源码我们可以分别看到如下三个构造函数：<br>1· <font color=red>public LinkedBlockingQueue()</font>;<br>该构造函数默认初始的容量为Integer.MAX_VALUE;<br>2· <font color=red>public LinkedBlockingQueue(int capacity)</font>;<br>该构造函数指定了链表阻塞式队列的最大容量，且 capacity 要大于0，否则会抛出 IllegalArgumentException 异常；<br>3· <font color=red>public LinkedBlockingQueue(Collection&lt;? extends E&gt; c)</font>;<br>该构造函数初始化了链表阻塞式队列的数据，同时，也给定了该链表的最大容量为 Integer.MAX_VALUE；值的注意的是，在给定的元素集合对象不能为空，其中的元素也不能有 null 值否则会抛出 NullPointerException 异常，元素集合的容量必须小于或等于链表阻塞式队列的最大容量，否则会抛出 IllegalStateException 异常（链表已满）。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;接下来我们继续分析 LinkedBlockingQueue 的相关操作方法，如下：<br>1· <font color=red>public void put(E e)</font>;<br>2· <font color=red>public boolean offer(E e, long timeout, TimeUnit unit)</font>;<br>3· <font color=red>public boolean offer(E e)</font>;<br>4· <font color=red>public E take()</font>;<br>5· <font color=red>public E poll(long timeout, TimeUnit unit)</font>;<br>6· <font color=red>public E poll()</font>;<br>7· <font color=red>public E peek()</font>;<br>8· <font color=red>public boolean remove(Object o)</font>;<br>这些方法中大致可以分为四种类型：<br>第一种为插入指定的元素到队列的尾部的方法（ put , offer）；<br>第二种为从队列的头部取出元素的方法（ take , poll ）；<br>第三种是获取头部元素的方法（peek）（注意：该方法不会导致链表的元素数量发生变化）；<br>第四种为移除队列中指定的元素的方法（ remove ）；<br>我们再来进一步深度的分析一下put以及take方法的实现过程，<br>put(E e) 方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(E e)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (e == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">int</span> c = -<span class="number">1</span>;</span><br><span class="line">    Node&lt;E&gt; node = <span class="keyword">new</span> Node(e);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock putLock = <span class="keyword">this</span>.putLock;</span><br><span class="line">    <span class="keyword">final</span> AtomicInteger count = <span class="keyword">this</span>.count; </span><br><span class="line">    putLock.lockInterruptibly(); <span class="comment">// 获取非中断入队锁</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (count.get() == capacity) &#123; <span class="comment">// 通过原子计数器来和初始容量进行比对，如果达到容量值，则put线程进入等待状态</span></span><br><span class="line">            notFull.await();</span><br><span class="line">        &#125;</span><br><span class="line">        enqueue(node); <span class="comment">// 执行入队操作</span></span><br><span class="line">        c = count.getAndIncrement(); <span class="comment">// 原子计数器进行计数操作</span></span><br><span class="line">        <span class="keyword">if</span> (c + <span class="number">1</span> &lt; capacity) <span class="comment">// 判断计数器值是否已经达到了最大容量值，否则唤醒入队线程继续插入操作</span></span><br><span class="line">            notFull.signal();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        putLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>)</span><br><span class="line">        signalNotEmpty();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>enqueue(Node<E> node) （入队）方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(Node&lt;E&gt; node)</span> </span>&#123; <span class="comment">// 由于在其他的调用操作中增加了线程锁，所以这里就没有必要再增加线程锁了</span></span><br><span class="line">    <span class="comment">// assert putLock.isHeldByCurrentThread();</span></span><br><span class="line">    <span class="comment">// assert last.next == null;</span></span><br><span class="line">    last = last.next = node; <span class="comment">// 入队操作始终都是在队列的尾巴进行增加</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>take() 方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    E x;</span><br><span class="line">    <span class="keyword">int</span> c = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">final</span> AtomicInteger count = <span class="keyword">this</span>.count;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock takeLock = <span class="keyword">this</span>.takeLock;</span><br><span class="line">    takeLock.lockInterruptibly(); <span class="comment">// 获取出队非中断锁</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (count.get() == <span class="number">0</span>) &#123; <span class="comment">// 如果原子计数器的值为0，则将出队线程进行等待状态</span></span><br><span class="line">            notEmpty.await();</span><br><span class="line">        &#125;</span><br><span class="line">        x = dequeue(); <span class="comment">// 执行出队操作</span></span><br><span class="line">        c = count.getAndDecrement(); <span class="comment">// 原始计数器进行减一操作</span></span><br><span class="line">        <span class="keyword">if</span> (c &gt; <span class="number">1</span>) <span class="comment">// 如果原始计数器的值大于1 则唤醒其他出队线程，继续出队操作</span></span><br><span class="line">            notEmpty.signal();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        takeLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (c == capacity)</span><br><span class="line">        signalNotFull();</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>dequeue() （出队）方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> E <span class="title">dequeue</span><span class="params">()</span> </span>&#123; <span class="comment">// 由于在其他的调用操作中增加了线程锁，所以这里就没有必要再增加线程锁了</span></span><br><span class="line">    <span class="comment">// assert takeLock.isHeldByCurrentThread();</span></span><br><span class="line">    <span class="comment">// assert head.item == null;</span></span><br><span class="line">    Node&lt;E&gt; h = head;</span><br><span class="line">    Node&lt;E&gt; first = h.next;</span><br><span class="line">    h.next = h; <span class="comment">// help GC</span></span><br><span class="line">    head = first;</span><br><span class="line">    E x = first.item; <span class="comment">// 出队方法始终是在队列的头部进行元素获取</span></span><br><span class="line">    first.item = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>通过上述源码片段我们可以清晰的理解上述前俩中类型的元素操作过程，都是入队在尾部，出队在头部；<br>接下来我们继续分析相对比较特殊的俩个方法，分别是 peek ，remove(Object o) 方法：<br>peek() 方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">peek</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (count.get() == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock takeLock = <span class="keyword">this</span>.takeLock;</span><br><span class="line">    takeLock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Node&lt;E&gt; first = head.next; <span class="comment">// 注意：这里只是单纯的进行了一个引用处理，并没有把元素做出队处理</span></span><br><span class="line">        <span class="keyword">if</span> (first == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> first.item;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        takeLock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们通过上述源码可以看到，peek 方法的特殊之处在于其并没有做出队操作，而是做了一个元素的引用操作；<br>remove(Object o) 方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (o == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    fullyLock(); <span class="comment">// 获取入队锁以及出队锁</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (Node&lt;E&gt; trail = head, p = trail.next;</span><br><span class="line">            p != <span class="keyword">null</span>;</span><br><span class="line">            trail = p, p = p.next) &#123;</span><br><span class="line">            <span class="keyword">if</span> (o.equals(p.item)) &#123; <span class="comment">// 对遍历的对象进行匹配</span></span><br><span class="line">                unlink(p, trail);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        fullyUnlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fullyLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    putLock.lock();</span><br><span class="line">    takeLock.lock();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fullyUnlock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    takeLock.unlock();</span><br><span class="line">    putLock.unlock();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unlink</span><span class="params">(Node&lt;E&gt; p, Node&lt;E&gt; trail)</span> </span>&#123;</span><br><span class="line">    p.item = <span class="keyword">null</span>;</span><br><span class="line">    trail.next = p.next;</span><br><span class="line">    <span class="keyword">if</span> (last == p)</span><br><span class="line">        last = trail;</span><br><span class="line">    <span class="keyword">if</span> (count.getAndDecrement() == capacity)</span><br><span class="line">        notFull.signal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>通过上述代码片段的分析，我们可以看到remove( Object )方法的特殊之处在于，每次操作之前都要进行获取入队锁和出队锁，然后才进行移除指定的元素并重新连接的操作。</p>
-<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><p>我们继续通过 LinkedBlockingQueue 来模拟生产者与消费者的过程，当生产者在指定容量的 LinkedBlockingQueue 生产产品，消费者就开始消费产品，如果生产过剩则生产者进入等待状态，待消费者消费后生产者再进行继续生产。如果消费者没有可消费产品，则进入等待状态，待生产者生产产品后继续消费。<br>产品（Product.java）代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.linkedblockingqueue;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Product</span> </span>&#123;</span><br><span class="line">	 <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String <span class="title">getProduct</span><span class="params">(<span class="keyword">int</span> index)</span></span>&#123;</span><br><span class="line">		 <span class="keyword">return</span> <span class="string">"产品"</span>+index;</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>消费者（Consumer.java）代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.linkedblockingqueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.LinkedBlockingQueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">	LinkedBlockingQueue&lt;String&gt; queue;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Consumer</span><span class="params">(LinkedBlockingQueue&lt;String&gt; queue)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.queue = queue;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">for</span>(;;)&#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				System.out.println(<span class="string">"-------------&gt;开始消费产品"</span>);</span><br><span class="line">				String take = queue.take();</span><br><span class="line">				Thread.sleep(<span class="keyword">new</span> Random().nextInt(<span class="number">1000</span>));</span><br><span class="line">				System.out.println(<span class="string">"=============&gt;结束消费："</span>+take);</span><br><span class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>生产者（Producer.java）代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.linkedblockingqueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.LinkedBlockingQueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">	LinkedBlockingQueue&lt;String&gt; queue;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(LinkedBlockingQueue&lt;String&gt; queue)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.queue = queue;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">for</span>(;;)&#123;</span><br><span class="line">			String product = Product.getProduct(<span class="keyword">new</span> Random().nextInt(<span class="number">10</span>));</span><br><span class="line">			System.out.println(<span class="string">"++++++++++++++++++&gt;开始生产：产品"</span> + product);</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				queue.put(<span class="string">"产品"</span>+product);</span><br><span class="line">				Thread.sleep(<span class="keyword">new</span> Random().nextInt(<span class="number">1000</span>));</span><br><span class="line">				System.out.println(<span class="string">"+=+=+=+=+=+=+=+=+=+=&gt;结束生产产品"</span> +product );</span><br><span class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>测试代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.linkedblockingqueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.LinkedBlockingQueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedBlockingQueueTest</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException</span>&#123;</span><br><span class="line">		LinkedBlockingQueue&lt;String&gt; queue = <span class="keyword">new</span> LinkedBlockingQueue&lt;String&gt;(<span class="number">10</span>);</span><br><span class="line">		<span class="keyword">new</span> Thread(<span class="keyword">new</span> Producer(queue)).start();</span><br><span class="line">		Thread.sleep(<span class="keyword">new</span> Random().nextInt(<span class="number">1000</span>));</span><br><span class="line">		<span class="keyword">new</span> Thread(<span class="keyword">new</span> Consumer(queue)).start();</span><br><span class="line">		Thread.sleep(<span class="number">50000</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>测试运行结果如下：<img src='/uploads/linkedblockingqueue_0.png' title="LinkedBlockingQueue 模拟生产者消费者示例"/></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2015/03/22/JUC%E5%8C%85%E4%B9%8B%20ArrayBlockingQueue%20%E8%A7%A3%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/apple-touch-icon-next.png">
-      <meta itemprop="name" content="maxsoft">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="MaxSoft">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2015/03/22/JUC%E5%8C%85%E4%B9%8B%20ArrayBlockingQueue%20%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">JUC包之 ArrayBlockingQueue 解析</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">发表时间</span>
-
-              <time title="创建时间：2015-03-22 20:47:10" itemprop="dateCreated datePublished" datetime="2015-03-22T20:47:10+08:00">2015-03-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-file-word-o"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-clock-o"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>本文主要介绍 Java 源码中 JUC 包中的数组阻塞队列（ArrayBlockingQueue） 。</p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayBlockingQueue 是一个由数组支持的有界阻塞式队列，所以该队列的元素遵循「先进先出（First-in-First-out）」的原则。因此，队列头是最长时间在队列中的元素， 队列的尾部是最短时间在队列中的元素。 新元素插入到队列尾部，队列检索操作获取队列头部的元素。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;由于有数组的支持，可以将其看作一个典型的「有界缓冲区」，其中一个固定容量的数组包含生产者插入的元素，并由消费者获取。 当然由于数组的特性决定了该阻塞队列一旦创建，其容量就不能被改变。 尝试将元素放入完整队列将导致操作阻塞; 尝试从一个空队列中取一个元素也会同样阻塞。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;同时，该类支持订购等待生产者和消费者线程的可选公平策略。 默认情况下，这个顺序不能保证。 但是，将公平设置为true的队列可以按FIFO顺序授予线程访问权限。公平通常会降低吞吐量，但降低了可变性，避免了饥饿。</p>
-<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ArrayBlockingQueue 继承自 AbstractQueue ，以及实现了 BlockingQueue 、Serializable 接口。由此，我们可以理解 ArrayBlockingQueue 间接的实现了 Queue 和 Collection 接口。 通过源码中的构造函数，我们可以非常清晰的看到 ArrayBlockingQueue 底层以数组的形式保存数据。部分源码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayBlockingQueue</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractQueue</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt;, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="comment">//省略其他部分代码</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ArrayBlockingQueue</span><span class="params">(<span class="keyword">int</span> capacity)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(capacity, <span class="keyword">false</span>); <span class="comment">//这里默认了线程访问策略为非公平策略</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ArrayBlockingQueue</span><span class="params">(<span class="keyword">int</span> capacity, <span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (capacity &lt;= <span class="number">0</span>)  <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">        <span class="keyword">this</span>.items = <span class="keyword">new</span> Object[capacity];</span><br><span class="line">        lock = <span class="keyword">new</span> ReentrantLock(fair); <span class="comment">//初始化多线程访问锁</span></span><br><span class="line">        notEmpty = lock.newCondition(); <span class="comment">//初始化获取数据的锁</span></span><br><span class="line">        notFull =  lock.newCondition(); <span class="comment">//初始化插入数据的锁</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ArrayBlockingQueue</span><span class="params">(<span class="keyword">int</span> capacity, <span class="keyword">boolean</span> fair, Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(capacity, fair);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">        lock.lock(); <span class="comment">// 获取锁</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (E e : c) &#123;</span><br><span class="line">                    checkNotNull(e); <span class="comment">//校验是否为空</span></span><br><span class="line">                    items[i++] = e;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (ArrayIndexOutOfBoundsException ex) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">            &#125;</span><br><span class="line">            count = i;</span><br><span class="line">            putIndex = (i == capacity) ? <span class="number">0</span> : i;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.unlock(); <span class="comment">//释放锁</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//省略其他部分代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述源码中的三个构造函数分别如下：<br>1· <font color=red>public ArrayBlockingQueue(int capacity);</font><br>该构造函数只是初始化了一个指定容量的数组阻塞式队列，线程对其的访问策略为非公平策略（默认）。<br>2· <font color=red>public ArrayBlockingQueue(int capacity, boolean fair);</font><br>该构造函数在指定了数组阻塞队列的容量的同时也给定了一个可选线程访问策略标识（true：公平策略，按照FIFO的原则进行访问；false：非公平策略，线程对其的访问顺序不能保证遵循FIFO原则）。<br>3· <font color=red>public ArrayBlockingQueue(int capacity, boolean fair, Collection&lt;? extends E&gt; c);</font><br>该构造函数的功能就是在指定了容量以及线程访问策略标识外对其进行逐个赋值；这里值的注意的是，capacity 的值 必须是大于或等于 c 的容量大小，即 capactiy &gt;= c.size(); 否则会抛出数组下标越界的异常；c 不能为空且存储的数据也不能为空，否则会抛出空指针异常。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 接下来我们可以看到 ArrayBlockingQueue 常用的操作方法包括如下方法：<br>1· <font color=red>public boolean add(E e) ;</font><br>2· <font color=red>public boolean offer(E e) ;</font><br>3· <font color=red>public boolean offer(E e, long timeout, TimeUnit unit);</font><br>4· <font color=red>public boolean put(E e) ;</font><br>5· <font color=red>public boolean remove(Object o);</font><br>6· <font color=red>public E poll();</font><br>7· <font color=red>public E poll(long timeout, TimeUnit unit);</font><br>8· <font color=red>public E take();</font><br>9· <font color=red>public E peek();</font><br>其中 add(E e)，offer(E e)，offer(E e, long timeout, TimeUnit unit)，put(E e) 是插入数据的操作，remove(Object o)，poll()，take()，poll(long timeout, TimeUnit unit)，peek() 是取出数据的操作。<br><font color=red><b>add(E e)</b></font>方法体中调用了offer方法，当Queue已经达到容量时，会抛出一个异常，而不会阻塞，代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (offer(e))</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Queue full"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><font color=red><b>offer(E e), offer(E e, long timeout, TimeUnit unit)</b></font>方法当Queue已经达到容量时，返回 false ，而不会阻塞，代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    checkNotNull(e);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (count == items.length)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            insert(e);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e, <span class="keyword">long</span> timeout, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    checkNotNull(e);</span><br><span class="line">    <span class="keyword">long</span> nanos = unit.toNanos(timeout);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly(); <span class="comment">//线程非中断获取锁，如果线程状态为中断状态，则抛出 InterruptedException 异常;</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (count == items.length) &#123; <span class="comment">//当线程从等待中被唤醒时，会比较当前队列是否已经满了</span></span><br><span class="line">            <span class="keyword">if</span> (nanos &lt;= <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            nanos = notFull.awaitNanos(nanos);</span><br><span class="line">        &#125;</span><br><span class="line">        insert(e);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock(); <span class="comment">//释放锁</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><font color=red><b>put(E e)</b></font>方法当Queue已经达到容量时，会进入等待状态，只要不被中断，就会插入数据到队列中。会阻塞，可以响应中断。代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(E e)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    checkNotNull(e);</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (count == items.length)</span><br><span class="line">            notFull.await();</span><br><span class="line">        insert(e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>以上操作方法中 remove 和 add 相互对应；poll 与 offer 相互对应。take 和 put 相互对应。peek 方法比较特殊，前三个取出的方法，都会将元素从 Queue 的头部溢出，但是 peek 不会，实际上只是，获取队列头的元素。peek 方法也不会阻塞。当队列为空时，直接返回 null 。源代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">peek</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (count == <span class="number">0</span>) ? <span class="keyword">null</span> : itemAt(takeIndex);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">final</span> E <span class="title">itemAt</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.&lt;E&gt;cast(items[i]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> &lt;E&gt; <span class="function">E <span class="title">cast</span><span class="params">(Object item)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (E) item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;我们通过 ArrayBlockingQueue 来模拟生产者与消费者的过程，当生产者在指定容量的 ArrayBlockingQueue 生产产品，消费者就开始消费产品，如果生产过剩则生产者进入等待状态，待消费者消费后生产者再进行继续生产。如果消费者没有可消费产品，则进入等待状态，待生产者生产产品后继续消费。</p>
-<p>示例代码：<br>（产品）Product.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.arrayblockingqueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Product</span> </span>&#123;</span><br><span class="line">	 <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String <span class="title">getProduct</span><span class="params">(<span class="keyword">int</span> index)</span></span>&#123;</span><br><span class="line">		 <span class="keyword">return</span> <span class="string">"产品"</span>+index;</span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>（生产者）Producer.java </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.arrayblockingqueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ArrayBlockingQueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> ArrayBlockingQueue&lt;String&gt; queue;</span><br><span class="line">    <span class="keyword">private</span> Random random = <span class="keyword">new</span> Random();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(ArrayBlockingQueue&lt;String&gt; queue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.queue = queue;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(;;)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                String product = Product.getProduct(random.nextInt(<span class="number">20</span>));</span><br><span class="line">                System.out.println(Thread.currentThread().getName()+<span class="string">"-----&gt;开始生产： "</span> + product);</span><br><span class="line">                Thread.sleep(random.nextInt(<span class="number">500</span>));</span><br><span class="line">                System.out.println(Thread.currentThread().getName()+<span class="string">"=====&gt;结束成产："</span> + product);</span><br><span class="line">                queue.put(product);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>（消费者）Consumer.java </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.arrayblockingqueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ArrayBlockingQueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> ArrayBlockingQueue&lt;String&gt; queue;</span><br><span class="line">	<span class="keyword">private</span> Random random = <span class="keyword">new</span> Random();</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Consumer</span><span class="params">(ArrayBlockingQueue&lt;String&gt; queue)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.queue = queue;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">for</span>(;;)&#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				String take = queue.take();</span><br><span class="line">				System.out.println(Thread.currentThread().getName()+<span class="string">"----------&gt;开始消费产品："</span> + take);</span><br><span class="line">				Thread.sleep(random.nextInt(<span class="number">10000</span>));</span><br><span class="line">				System.out.println(Thread.currentThread().getName()+<span class="string">"==========&gt;结束消费产品："</span> + take);</span><br><span class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>（测试代码）ArrayBlockingQueueTest.java</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.maxsoft.arrayblockingqueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ArrayBlockingQueue;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.junit.Test;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayBlockingQueueTest</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> ArrayBlockingQueue&lt;String&gt; queue = <span class="keyword">new</span> ArrayBlockingQueue&lt;String&gt;(<span class="number">3</span>,<span class="keyword">true</span>);</span><br><span class="line">	<span class="meta">@Test</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">new</span> Thread(<span class="keyword">new</span> Producer(queue)).start();</span><br><span class="line">		<span class="keyword">new</span> Thread(<span class="keyword">new</span> Consumer(queue)).start();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			Thread.sleep(<span class="number">50000</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>测试运行结果如下：<img src="/uploads/array_blocking_queue_.png" title="生产者与消费者运行结果" />通过上述示例我们可以理解，在使用 ArrayBlockingQueue 时要依据不同的应用场景选取合适的操作方法。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1843,20 +1839,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">56</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">28</span>
+        <span class="site-state-item-count">31</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -1899,13 +1895,13 @@
       <i class="fa fa-area-chart"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">318k</span>
+    <span title="站点总字数">327k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">4:49</span>
+    <span title="站点阅读时长">4:57</span>
 </div>
 
         
